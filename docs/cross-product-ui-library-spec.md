@@ -7,13 +7,16 @@ description: >
   知見を汎用化し、Base UI + shadcn/ui + Storybook を土台に「プロトタイプ＝本番コード」を
   実現する。実装は別セッション（Claude Code 等）で行う前提のハンドオフ文書。
 adopted: 2026-07-28
-status: Draft v0.8 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
+status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
   tarballで導入済み）を反映し、Phase Cを「presentational層の全面再構築」として再定義。
   bmad-ux側のUI/UX discoveryと方針が競合していた件を解消（Kedamaは離脱先ではなく供給元）。
   最大の欠落だったAppShell一式をTier 2に追加（§4.5）、すらすらスタジオ由来のブロックを在庫に反映。
   部品の調達方針を確定（shadcnのBase UI variantをKedamaが取り込み再スタイルして配る）。
   v0.8で「AppShell最優先」という優先順位の決定と、「不満の主因はシェル未設計」という原因仮説を
-  分離（前者は確定、後者はCodex調査Q9で反証可能性を含めて検証する）
+  分離。v0.9でCodex調査（docs/codex-investigation-report.md）の結論を反映：シェル仮説は部分支持
+  にとどまり主因は複合的と判明したためPhase Cのスコープを拡大、Tier 1（チャート）をレジストリ
+  配布へ移してTier構成を再編、パッケージ名を@kedama-design/design-systemに確定、text-faintを
+  fg.decorativeへ分離
 ---
 
 # 横断 UI コンポーネント基盤 実装仕様（draft）
@@ -230,11 +233,16 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 
 **運用ルール（2点）**
 
-1. **`--text-faint` は本文用ではなく装飾ティア**として扱い、目標を 3:1 とする。本文の 4.5:1 は
-   構造的に満たせない（Light でも当初から 3.40:1 だった）。コントラストテストでは例外として
-   扱う。**意味のある文字・プレースホルダー・補助説明には使用しない。**
-   プレースホルダーには Kedama に既存の `fg.placeholder`（「WCAG 3:1 以上を確保」）を使う。
-   命名を `text-faint` のまま維持してよいか（`fg.decorative` 等へ分離すべきか）は要検討
+1. **`--text-faint` は廃止し、`fg.decorative` へ分離する**（v0.9で確定・Codex Q7の指摘を採用）。
+   当初は「テキストのまま 3:1 に緩和する」案だったが、**テキストと呼びながら基準を緩めるのは
+   誤り**であり、実体は「役割が混ざっていた」ことだった。分離後の割り当ては次のとおり。
+   - `fg.decorative` — 純装飾（区切り記号、装飾的な図形）。3:1目標。**意味のある文字には使用禁止**
+   - `fg.placeholder` — 入力欄のプレースホルダー（Kedama に既存。「WCAG 3:1 以上を確保」）
+   - `fg.disabled` — 無効状態（Kedama に既存）
+   - `fg.muted` — 補助テキスト・軸ラベルなど「読ませる」もの。**4.5:1 を満たす**
+
+   **Phase A-1 に追加作業**：Ibuki の既存 `--text-faint` 使用箇所を全て監査し、上記4つの
+   どれに該当するか振り分ける。単純な機械置換はできない
 2. **入力コントロールの枠線は `--border`（Light で 1.75:1）ではなく `--border-strong` を使う**。
    枠線がコントロールの境界を伝える要素は WCAG 上 3:1 が必要なため。単なるディバイダーは
    `--border` / `--border-muted` で構わない
@@ -347,9 +355,22 @@ shadcn/ui (Base UI variant) のブロック
 > 角丸・主要アクションのみアクセント・色だけで状態を伝えない）は、Kedama Calm UI の原則と
 > ほぼ一致している。外部事例調査から独立に同じデザイン言語へ収束していた。
 
-### Tier 0/1（npmパッケージ `@kedama/design-system`）の公開方法
+### Tier 0（npmパッケージ `@kedama-design/design-system`）の公開方法
 
-3つの選択肢を比較する。結論：**GitHub Packages（private, 無料）を推奨**。
+3つの選択肢を比較する。結論：**GitHub Packages（private, 無料）を採用**。
+
+> **パッケージ名の確定（v0.9）**：`@kedama` スコープは**使用できない**。GitHub Packages は
+> スコープ名＝アカウント名を要求するが、`github.com/kedama` は既に他者の個人アカウントとして
+> 存在する。アカウント名はユーザーと組織で共通の名前空間のため、既存アカウント
+> （`Kedama-Yuuki`）を `kedama` へ改名して取得することもできない。
+>
+> **GitHub Organization `kedama-design` を新規作成し、リポジトリを移管する。**
+> パッケージ名は **`@kedama-design/design-system`** に確定。
+>
+> 移管時の確認事項：clone/fetch/push と issues/PR は旧URLからリダイレクトされるが、
+> **GitHub Pages の URL はリダイレクトされない**。Actions の権限とパッケージのリンクは要再確認。
+> 消費側（すらすらスタジオ）は現在 `@kedama/design-system` を import しているため置換が必要
+> だが、Phase C で presentational 層を作り直す際に一緒に処理すればよい。
 
 | 方式 | 費用 | セットアップの手間 | 備考 |
 |---|---|---|---|
@@ -551,11 +572,26 @@ Ibuki `packages/ui` から移植・Base UI 化。
 > 要検証）と食い違っている。**どちらを残すかは未確定**。Codex調査（Q4）の結論を待って
 > 一本化する。
 
-### Tier 1 — チャート・可視化プリミティブ（Base UI 非依存）
-Recharts/自前SVGベースなのでBase UI移行の対象外。ほぼそのまま移植可能。
+### Tier 1 — 解体（v0.9で再編）
 
-BarH／Donut／Gauge／Sparkline／TrendLine／Waterfall／TimelineRow（列幅をprop化済）／
-Grass（GitHub草ヒートマップ）／palette・date-math ユーティリティ／TrackBar
+**チャートは npm 配布（Tier 1）をやめ、Tier 2 のレジストリ配布へ移す。**理由：チャートは
+プロダクトごとに列・軸・データ形が異なり、「コピーして手を入れる」が自然な単位であるため
+（Tier 2 の定義そのもの）。加えて上流に良質な shadcn レジストリが既に存在し、
+Ibuki の9ファミリーを移植して不足分を新造するより大幅に安い。
+
+**一貫性はコードではなくトークンで担保する。**Tier 1 を npm にしていた本来の目的
+（どのプロダクトでも見た目が同一）は、**data-viz セマンティックトークンを Tier 0（npm）側に
+置く**ことで達成する。チャートの実装コードが分岐しても、色・軸・グリッド・ヒートマップ階調は
+全プロダクトで揃う。
+
+| 移行後の置き場所 | 対象 |
+|---|---|
+| **Tier 0（npm）** | data-viz セマンティックトークン（`dataViz.categorical.*` / `.emphasis.*` / `.axis` / `.grid` / `.heatmap.*`） |
+| **Tier 2（レジストリ）** | チャート本体すべて |
+
+**Recharts への依存は消えない**点に注意。上流（bklit-ui・evilcharts）も Recharts ベースであり、
+変わるのは「依存を持つ主体」が npm パッケージから消費側プロダクトへ移ることだけ。
+結果として Codex が Q5 で提案した「optional peer + `./charts` サブパス」の仕組みは**不要**になる。
 
 ### Tier 2 — 複合パターン（新規／プロトタイプ+OpenStatus参照）
 プロトタイプに存在するが未コンポーネント化、または OpenStatus テンプレートの構成が参考になるもの。
@@ -572,6 +608,10 @@ Grass（GitHub草ヒートマップ）／palette・date-math ユーティリテ�
 | **DataTable** | shadcn/ui（Base UI variant）を取り込み＋再スタイル | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる** |
 | **FilterBar / SavedViewPicker（汎用部分）** | ベンチマーク §7.3 | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ |
 | **CommandPalette** | shadcn/ui `Command` を取り込み | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補） |
+| **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`npx shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する |
+| **Grass（草ヒートマップ）** | 同上 `heatmap-chart` | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
+| **TimelineRow** | Ibuki `timeline-row.tsx` | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない |
+| **TrackBar** | Ibuki `track-bar.tsx` | 上流に無い。自前維持 |
 | **Sheet** | shadcn/ui を取り込み | モバイルで RightPane を変換する先。Drawer と役割が重なるため §2.2 の結論と併せて整理 |
 
 ### Tier 3 — 明示的にプロダクト固有（汎用化しない）
@@ -626,9 +666,24 @@ API** を持つこと。ログイン・招待受諾・2段階認証など**認�
 | ダッシュボードがない | 画面の欠落。ただし独立KPIダッシュボードは**作らない**のが正解 | ベンチ §2「記事一覧がホーム兼ダッシュボード」を採用 |
 | Linear/VS Code/Stripe のような下部バー・左アイコンレールがない | シェルのクロムの欠落 | §4.5 の `StatusBar` / `IconRail` |
 
-**仮説：不満の主因はプリミティブ（Button・Card 等）ではなく、シェルの構成にある。**
-これは現時点では検証されていない因果推論であり、**Codex 調査 Q9 で反証可能性を含めて検証する**
-（支持する証拠／反証する証拠／シェル以外の原因、の3点を整理させる）。
+**検証結果（v0.9・Codex Q9）：仮説は「部分支持だが単独原因としては不十分」。**
+
+- **支持する証拠**：`(internal)/layout.tsx` が `<aside>` を無条件描画している。しかも冒頭コメントに
+  「/login も (internal) 配下だが未ログインで表示するためレイアウトではリダイレクトしない」と
+  明記されており、**ログイン画面がこの配下にあることは認識されていた**。認可をページ単位に
+  する判断も意図的で、**サイドバーが出る副作用だけが手当てされていなかった**。事故ではなく設計の穴
+- **反証（仮説で説明できない現象）**：クライアント側は既に `invite/layout.tsx` と
+  `(app)/layout.tsx` でシェルを分離できている。**それでも 46KB の `review-shell.tsx` が残る。**
+  シェルを直しても、この塊は解消しない
+- **シェル以外の主因（3件）**
+  1. **CSS の二重セマンティック層** — `kedama-theme.css` がパッケージCSSの後にローカル
+     `design-tokens.css` を重ねており、実質2つ目の semantic 層になっている
+  2. **container と presentational の混在** — `review-shell.tsx` に DOM text mapping・highlight・
+     fetch・MFA・sheet・comment・approval・queue navigation が同居
+  3. **状態と DOM highlighting の密結合**
+
+**結論：Phase C は「AppShell を作れば済む」規模ではない。**`review-shell` の分解と CSS 層の
+一本化が同等以上の比重を持つ（§7 Phase C 参照）。
 
 **ただし「Phase B で AppShell 一式を最優先で作る」という優先順位そのものは、この仮説の成否に
 依存しない確定事項とする。**理由は3つ。(1) シェルは Tier 在庫から実際に欠落している、
@@ -713,10 +768,26 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
    ショーケースサイトは**同一リポジトリ内・同一デプロイ**（`KedamaDesignSystem` に
    `apps/showcase` を追加する軽量monorepo構成、または既存Storybookに`/r/*.json`の静的配信を
    同居させる形）とし、`/r/*.json`の配信元も兼ねる
-5. **Phase C（すらすらスタジオへの新規適用＝本番実証）★ゴール達成地点**：
+5. **Phase C（すらすらスタジオの presentational 層 再構築＝本番実証）★ゴール達成地点**：
    すらすらスタジオの画面を、HTMLプロトタイプを介さず **Storybook上で本番コンポーネントを
    組む形で設計 → そのままcontainerを被せて本番化**する。ここで「プロトタイプと本番が同一
    コードである」状態を実証する。**本書のゴールはこのPhaseの完了をもって達成とする**
+
+   **スコープ（v0.9で拡大。§4.6 の検証結果による）**：AppShell の適用だけでは足りない。
+   次の4つを同格の作業として扱う。
+   - (a) **ルートグループの再編** — `(internal)` 直下から login/2FA を `(auth)` へ移し
+     `AuthShell` を適用。認証済み画面だけ `(app)` + `AppShell` へ。layout に認可ロジックは足さない
+   - (b) **`review-shell.tsx`（46KB）の分解** — `useReviewWorkflow` 等の container hook と、
+     表示部品（EditorCanvas / SelectionReviewToolbar / CommentThread / MetadataInspector /
+     VersionTimeline / VersionDiff / ApprovalBar / PublishStatus）へ分割。
+     **DOM anchor/highlight は純粋な adapter として独立させ、見た目の部品に混ぜない**
+   - (c) **CSS 二重セマンティック層の解消** — ローカル CSS に残すのは製品固有の article prose と
+     shell 寸法のみ。色・radius・focus・状態色は Kedama semantic へ移し、alias 経由で消費する
+   - (d) **tarball 運用の解消** — `file:vendor/...tgz` を正式なパッケージ参照へ置換
+
+   **触らない範囲**：API route・認可・Prisma のスキーマ分離・better-auth の認証フロー・
+   BullMQ ワーカー・MCPサーバー。container として残すのは、ページの認可・DB取得・
+   mutation/fetch・MFA/approval の業務状態・URL filter。
 6. **Phase D（Ibuki 変換検証）**：shadcnのAI移行スキルで `packages/ui` のRadix依存部分を
    新パッケージ相当に変換・比較検証（本番へは反映しない、検証のみ）
 7. **Phase E（Ibuki 本番置換）**：検証OKなら、Ibuki-Code-v2 の `apps/web` が `@ibuki/ui` の
@@ -750,6 +821,14 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 | すらすらスタジオの独立ダッシュボード | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2） | §4.6 |
 | データテーブル | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り | §4 |
 | Mantine | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため） | §2.1.5 |
+| **パッケージ名** | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可） | §2.1 |
+| **チャートの配布層** | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保 | §4 |
+| **チャートの調達元** | bklit-ui（MIT部分のみ）を取り込み。Grass も上流の heatmap-chart でカバー済み。TimelineRow / TrackBar のみ自前維持 | §4 |
+| **evilcharts** | 構造の参考のみ。演出（animated / effects）は Calm UI と衝突するため持ち込まない | §4 |
+| **dither-kit** | 不採用（ライセンス不明・キャンバス描画がトークン適用とa11yを阻害・ディザリング表現がCalm UIと衝突） | — |
+| **`text-faint`** | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回 | §0.7 |
+| **AppShell仮説の検証結果** | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大 | §4.6・§7 |
+| Q1〜Q8の技術的結論 | Codex調査報告書に記載。本書では重複させず参照する | `docs/codex-investigation-report.md` |
 | Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外 | §0.6・§0.7 |
 | Dark／Deep-darkテーマの値 | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え） | §0.6 |
 | コントラスト未達4箇所の修正 | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う | §0.7 |
@@ -767,6 +846,12 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 ---
 
 ## 9. 参照
+
+- **Codex 調査報告書（2026-07-29）**：`docs/codex-investigation-report.md`
+  — Q1〜Q9 の調査結果・推奨方針・未確定事項。本書 §8 の各決定の根拠であり、
+  Q1（コンポーネント統合API）・Q2（トークンalias方式）・Q3（Figmaパイプライン未稼働）・
+  Q4（Base UIの振り分け）・Q8（モーショントークンの具体値とMotionProvider設計）の
+  技術的詳細は本書に重複させず、そちらを正とする
 - 土台リポジトリ：`KedamaDesignSystem`（`@kedama/design-system`）— README.md／CLAUDE.md／
   ROADMAP.md／docs/design-principles.md／docs/design-rules.md／docs/design-system-pipeline.md／
   docs/claude-code-consumer-context.md
