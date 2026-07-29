@@ -1,0 +1,777 @@
+---
+version: draft-0.1
+name: cross-product-ui-foundation
+description: >
+  複数プロダクト（Ibuki-Code-v2／すらすらスタジオ／FP&Aデスクトップアプリ 他）で共有する
+  UIコンポーネント基盤の実装仕様。Ibuki-Code-v2 の packages/ui（doc25/doc32 準拠）で得た
+  知見を汎用化し、Base UI + shadcn/ui + Storybook を土台に「プロトタイプ＝本番コード」を
+  実現する。実装は別セッション（Claude Code 等）で行う前提のハンドオフ文書。
+adopted: 2026-07-28
+status: Draft v0.8 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
+  tarballで導入済み）を反映し、Phase Cを「presentational層の全面再構築」として再定義。
+  bmad-ux側のUI/UX discoveryと方針が競合していた件を解消（Kedamaは離脱先ではなく供給元）。
+  最大の欠落だったAppShell一式をTier 2に追加（§4.5）、すらすらスタジオ由来のブロックを在庫に反映。
+  部品の調達方針を確定（shadcnのBase UI variantをKedamaが取り込み再スタイルして配る）。
+  v0.8で「AppShell最優先」という優先順位の決定と、「不満の主因はシェル未設計」という原因仮説を
+  分離（前者は確定、後者はCodex調査Q9で反証可能性を含めて検証する）
+---
+
+# 横断 UI コンポーネント基盤 実装仕様（draft）
+
+**位置づけ**：`@kedama/design-system`（既存リポジトリ `KedamaDesignSystem`）を横断コンポーネント
+基盤の土台として採用し、そこに Ibuki-Code-v2 の `docs/planning/25_design_system.md`・
+`32_screen_spec.md`・`packages/ui` から汎用化できる部分を統合する設計書。**新規リポジトリは
+作らない**（§0.5参照）。**このリポジトリ自体では実装しない**（本書を Claude Code 等の実装
+セッションに渡して着手する）。
+
+---
+
+## 0. なぜ作るか（背景）
+
+- Ibuki-Code-v2 では「プロトタイプ（単一 HTML・`docs/prototypes/ibuki_prototype.html`）を後から
+  React で忠実再現する」工程で 2 件の実バグ（`32_screen_spec.md` §6.5）が発生した。原因は
+  プロトタイプの「動けばよい」簡易実装（列位置・文字列マッチ・二重定義）をそのまま写経したこと。
+- 一方、`packages/ui` を棚卸しした結果、doc32 §6.5 の是正 4 件（Drawer 統一・Grass 統一・
+  TimelineRow の prop 化・トグルの単一管理）は **共通コンポーネントに切り出すことで恒久的に
+  解決**していた。プロダクト非依存の部品として再利用すれば、新規プロダクトは同じ轍を踏まない。
+- 複数プロダクトを横展開する前提に立つなら、**プロトタイプ工程そのものを「本番コンポーネントを
+  Storybook 上で組む」に置き換える**のが最も確実。プロトタイプと本番実装が同一コードになり、
+  「ずれ」が構造的に起きなくなる。
+
+---
+
+## 0.5 既存資産の発見：KedamaDesignSystem（2026-07-28 追記）
+
+`/Users/y.higashimori/.../Projects/active/KedamaDesignSystem` を確認したところ、
+「複数プロダクトで共有するUI基盤」がすでに独立プロジェクトとして着手済みだった（2026年4月〜5月、
+本件とは別の文脈で構築）。想定より遥かに作り込まれており、**新規リポジトリを作る計画は撤回し、
+このリポジトリを土台にする**。
+
+**すでにあるもの**
+- パッケージ名確定済み：`@kedama/design-system`（§8の「パッケージ名」論点はこれで解消）
+- デザイン哲学が言語化済み：**Calm UI**（Amber Case の Calm Technology 8原則 + 2026年の
+  Calm Design ミニマリズムを理論的支柱に、社内業務システム・toB SaaS 向けに設計）。優先順位
+  Calm > Accessible > Resilient > Consistent > Simple
+- トークンが2層構造（primitive→semantic）で厳格に整備済み：OKLCH色空間（Atmosで生成）・
+  7色パレット×11段階・**純白/純黒を使わない**（最明色 birch/25 `#F8F7F4`）・WCAG AA全ペア検証済み
+- Figma連携済み：Figmaファイル（Variables 88+35・Text Styles 10）を single source of truth とし、
+  Tokens Studio→GitHub Actions→Style Dictionary で自動反映するパイプライン設計あり
+  （`docs/design-system-pipeline.md`）
+- コンポーネント6種を実装・テスト・Storybook化済み：Button／Badge／TextField／Card（compound）／
+  Modal（**Radix/Base UI 非依存、ネイティブ `<dialog>` + 自前フォーカストラップ**）／Icon（Lucide）
+- ビルド構成：Vite library mode、ESM/CJS dual出力、Storybook 8、Vitest（トークン値テスト・
+  WCAGコントラストテストあり）
+- ガバナンスが既に文書化済み：`docs/design-rules.md` の「AI協業ルール」（作業範囲の事前宣言・
+  読み取り先行・primitive→semantic→component の順序厳守・変更の人間レビュー）——本書 §5 の
+  「プロトタイプ実装ガイドライン」と役割が異なり衝突しないので、**両方を残して統合**する
+- 消費側テンプレート済み：`docs/claude-code-consumer-context.md`（利用するプロダクトの
+  CLAUDE.md にそのまま貼れる導入文）
+
+**未整備・要判断のもの**
+- ダークモード未実装（`semantic/colors.ts` は Light のみ。設計上は同キーで `dark/colors.ts` を
+  追加する想定はコメント済み）
+- Drawer・Accordion・Skeleton・Spinner・ThemeToggle・Toast・チャート系（Tier 1）・複合ブロック
+  （Tier 2）・レジストリ配布層は**まだ存在しない**——本書のコンポーネント在庫（§4）がそのまま
+  「今後作る」ギャップリストとして使える
+- Base UI／Radix はどちらも未導入（Modalはネイティブ要素で自作済み）。Accordion・Drawer・
+  Combobox 等をどう作るかは §2.2 で再検討が必要
+- **最大の論点：デザイン言語の衝突**（§0.6）
+- 軽微な整理（2026-07-28 対応・一部完了）：ネストした重複 `.git` ディレクトリ
+  （`KedamaDesignSystem/KedamaDesignSystem/`）は `_to_delete/KedamaDesignSystem-nested-duplicate`
+  へ退避済み。過去のクラッシュに由来する stale な `.git/index.lock` も2件除去済み（同じく
+  `_to_delete/` 配下）。**未完了**：作業ツリーに残る未コミット変更（Button/Card/tokens等）と
+  未追跡の `AGENTS.md` は、リモート経由の操作では特定ファイル（`Button.tsx` 等）で
+  "Resource deadlock avoided"（読み取りロック競合）が再現し、`git add -A` が完走しなかった。
+  Storybook/Vitest等の常駐プロセスやエディタがそれらのファイルを開いたままになっていないか
+  確認のうえ、**ローカルのターミナルから直接 `git add -A && git commit` を実行**することを推奨。
+  `_to_delete/` 配下の2フォルダは内容を確認後、手動で削除して問題ない
+
+## 0.6 デザイン言語の統合方針（確定・2026-07-28）
+
+**決定**：Ibuki は **Kedama Calm UI の思想と配色（トークン値）に合わせて再配色**する。
+それ以外——コンポーネントの構成・レイアウト・スペーシング・タイポスケール・エレベーション・
+モーション方針・画面構造——は**引き続き Ibuki（プロトタイプ／doc25の構造／doc32）を正**とする。
+
+つまり「トークンの値の出所」だけ Kedama に切り替え、「トークンの型（カテゴリ構成）」と
+「型を使う側のルール」は Ibuki 側の設計をそのまま維持する。doc25 の `brand / surface / border /
+text / semantic / data-viz` というカテゴリ構成・命名（CSS変数名）は変えず、各カテゴリの
+**実値だけ** Kedama の OKLCH パレットから引き直す。これにより、`packages/ui` の実装
+（Button・Card・Drawer 等）もプロトタイプの構造もコード変更なしで新配色に乗る。
+
+### 実装時に判断が必要な3点（推奨案つき）
+
+再配色は単純な「hexを置換するだけ」では済まない箇所が3つある。
+
+1. **オンブランドの文字色が反転する**：Ibuki の brand（`#3ecf8e`）は明るいため、ボタン文字は
+   near-black（`--on-primary:#0c3b27`）だった。Kedama の primary/600（`#315039`）は暗い色なので、
+   同じ near-black では文字が沈んで読めない。**推奨：Kedama自身の配色ルールに合わせ、
+   `--on-primary` は暖白 birch/25（`#F8F7F4`）にする**（Kedamaのaccent.primary-fgと同じ考え方）。
+2. **中立色（グレー）が暖色（birch）に総入れ替えになる**：これはアクセントカラーだけでなく、
+   `--surface`／`--border`／`--text-*` 系**すべて**が対象。「ブランド色だけ変えて背景は白のまま」
+   ではなく、Ibuki全体の温度感が変わる（これが「Kedama Calm UIの配色を踏襲する」の実体）。
+   想定通りの変化か、Storybookで一度目視確認してから本適用することを推奨。
+3. **ボーダーの主張の強さ**：Kedama自身のコンポーネントでは `border.default` に birch/300
+   （`#A29E93`、かなり主張のある色）を使っているが、これは Ibuki の「影を使わずヘアラインだけで
+   階層を作る」という**構造的なルール**（doc25 Elevation、こちらは Ibuki が正）とは強さの前提が
+   違う。**推奨：Kedama自身の割り当てより1段階薄いbirchの位置を使う**
+   （`--border`→birch/200、`--border-muted`→birch/100）ことで、
+   「色はKedama・主張の弱さはIbuki」の両立をねらう。
+
+### 再配色マッピング（Light テーマ）
+
+| Ibuki CSS変数 | 旧値（doc25） | 新値（Kedama由来） | 出典 |
+|---|---|---|---|
+| `--brand` | `#3ecf8e` | `#315039` | primary/600 |
+| `--brand-600`（hover/pressed） | `#24b47e` | `#213325` | primary/700 |
+| `--text-brand` | `#007a4d` | `#315039` | primary/600（Kedamaは1色で bg/text 兼用できる濃さ） |
+| `--brand-soft` | `#e6f6ee` | `#EEFBF1` | primary/25 |
+| `--on-primary` | `#0c3b27` | `#F8F7F4` | birch/25（判断1・反転） |
+| `--bg`（canvas） | `#f8f8f8` | `#F0EEE9` | birch/50 |
+| `--bg-sidebar` | `#fbfbfb` | `#F8F7F4` | birch/25 |
+| `--surface` | `#ffffff` | `#F8F7F4` | birch/25 |
+| `--surface-200` | `#f3f3f3` | `#E0DED7` | birch/100 |
+| `--surface-300` | `#ededed` | `#C1BDB5` | birch/200 |
+| `--bg-alt` | `#f4f4f4` | `#E0DED7` | birch/100 |
+| `--border-muted` | `#ededed` | `#E0DED7` | birch/100（判断3） |
+| `--border` | `#e6e6e6` | `#C1BDB5` | birch/200（判断3） |
+| `--border-strong` | `#dcdcdc` | `#858073` | birch/400（判断3の例外・§0.7参照） |
+| `--text` | `#1f1f1f` | `#040302` | birch/900 |
+| `--text-light` | `#525252` | `#302E27` | birch/700 |
+| `--text-muted` | `#8a8a8a` | `#676358` | birch/500 |
+| `--text-faint` | `#b0b0b0` | `#858073` | birch/400 |
+| `--warning` | `#cf8a1f` | `#462409` | warning/700（Kedamaの status.warning） |
+| `--warning-bg` | `#fbf3e2` | `#FCF5F1` | warning/25 |
+| `--destructive` | `#cf4b4b` | `#540F25` | danger/700（Kedamaの status.danger） |
+| `--destructive-bg` | `#fbeae8` | `#FFF4F5` | danger/25 |
+| （新規）`--info` | なし | `#063245` | info/700（Kedamaにあり Ibukiになかった状態色。追加を推奨） |
+| `--chart-1/2/3` | 冷グレー3段階 | birch/100・200・300 | 中立色のグラフ用3段階 |
+| `--hm0..hm4`（草ヒートマップ5段階） | 独自緑5段階 | primary/25・100・300・500・700 | brand色スケールから5段階選定 |
+
+**Light テーマの3判断は「推奨の方向で進める」で確定**（2026-07-28）。実際に Ibuki の
+プロトタイプへ適用した際に違和感があれば、該当行だけ後から調整する運用とする。
+
+### Dark／Deep-dark の再配色マッピング（仮・2026-07-28 算出）
+
+Kedama 側に Dark テーマの前例は無い（`semantic/colors.ts` は Light のみ）。正式には Kedama の
+プリミティブ生成手法（Atmos・OKLCH）でDark用の値を作り直すべきだが、それには
+Kedama側の作業が別途必要になる。ここでは **Kedamaの既存プリミティブ値（primitive/colors.ts）
+だけを再利用し、新しい色は一切発明せず**、Ibuki自身が元々持っていた Light→Dark→Deep-dark
+の関係性（実測値：Dark `--bg:#1c1c1c` `--surface:#232323`、Deep-dark `--bg:#0b0b0b`
+`--surface:#141414`、いずれも surface は bg より一段階明るい＝浮き上がって見える）を手がかりに、
+**どのステップをどの役割に充てるかだけを再マッピング**した。実装前に必ず Storybook で目視確認し、
+将来 Kedama 側で正式な Dark トークンが OKLCH生成されたら、この仮表は差し替える前提。
+
+**再マッピングの考え方（4つのルール）**
+1. **surface は bg より1段階明るい**（birchの数値が1段小さい）：Ibuki実測のDark/Deep-dark双方で
+   確認できる唯一の確定パターンなので、これを軸にする。
+2. **ボーダー・サブサーフェス系は、キャンバスが暗くなるほど「明るい」方向へシフト**：白地では
+   ボーダーは地よりやや濃い色で主張するが、暗地では逆にやや明るい色でないと視認できないため。
+3. **ブランド色（primary）は暗色背景に映える、より明るい/彩度のあるステップへシフト**：
+   Kedamaのprimary/600はLightでも暗めの色であり、暗い背景の上でボタン背景として使うには
+   コントラストが不足する。
+4. **文字色・ブランド色・ステータス色は Dark と Deep-dark で共通**とし、**サーフェス／ボーダー系
+   のみ Deep-dark でさらに一段暗く／明るく**シフトする（Ibuki実測でも bg/surface以外の値の
+   差分は確認できなかったため、変える根拠がない箇所は変えない）。
+
+| Ibuki CSS変数 | Dark（仮） | 出典 | Deep-dark（仮） | 出典 |
+|---|---|---|---|---|
+| `--bg`（canvas） | `#181611` | birch/800 | `#040302` | birch/900 |
+| `--bg-sidebar` | `#040302` | birch/900 | `#040302` | birch/900（Dark同様。OLED的に canvas と同色にし、`border-muted`のヘアラインのみで区切る） |
+| `--surface` | `#302E27` | birch/700 | `#181611` | birch/800（bgより1段階明るい、ルール1） |
+| `--surface-200` | `#4B473D` | birch/600 | `#676358` | birch/500 |
+| `--surface-300` | `#676358` | birch/500 | `#858073` | birch/400 |
+| `--bg-alt` | `#4B473D` | birch/600 | `#676358` | birch/500（surface-200と同ティア、Lightと同じ対応関係） |
+| `--border-muted` | `#4B473D` | birch/600 | `#676358` | birch/500 |
+| `--border` | `#676358` | birch/500 | `#858073` | birch/400 |
+| `--border-strong` | `#858073` | birch/400 | `#A29E93` | birch/300 |
+| `--text` | `#F0EEE9` | birch/50 | 同左 | 変更なし |
+| `--text-light` | `#C1BDB5` | birch/200 | 同左 | 変更なし |
+| `--text-muted` | `#A29E93` | birch/300 | 同左 | 変更なし |
+| `--text-faint` | `#858073` | birch/400 | 同左 | 変更なし |
+| `--brand` | `#539065` | primary/400 | 同左 | 変更なし（ルール3・4） |
+| `--brand-600`（hover/pressed） | `#6DB07F` | primary/300 | 同左 | 変更なし |
+| `--text-brand` | `#6DB07F` | primary/300 | 同左 | 変更なし |
+| `--brand-soft` | `#0F1912` | primary/800（暗地用の極薄ティント） | 同左 | 変更なし |
+| `--on-primary` | `#040302` | birch/900（明るいbrand背景の上なので文字は暗色に反転） | 同左 | 変更なし |
+| `--warning` | `#CF8D60` | warning/300 | 同左 | 変更なし |
+| `--warning-bg` | `#251002` | warning/800 | `#080200` | warning/900（surface系と同様、Deep-darkでさらに一段暗く） |
+| `--destructive` | `#E07B8E` | danger/300 | 同左 | 変更なし |
+| `--destructive-bg` | `#2E0310` | danger/800 | `#0C0002` | danger/900 |
+| `--info` | `#5AA9D0` | info/300 | 同左 | 変更なし |
+| `--chart-1/2/3` | birch/600・500・400 | — | birch/500・400・300 | Deep-darkはやや明るい側へ |
+| `--hm0..hm4`（草ヒートマップ5段階） | primary/900・800・600・400・300 | 活動量ゼロ＝背景に溶け込む極暗、活動量最大＝明るく彩度のある緑 | 同左 | 変更なし |
+
+**この表の位置づけ**：あくまで「Kedamaの既存プリミティブの中から選び直しただけ」の仮置きであり、
+Kedama自身がAtmosでDark用プリミティブを正式生成した際は、そちらに差し替える。上表の値は
+§0.7 のコントラスト検証を反映済みのもの。
+
+## 0.7 コントラスト検証と、それにもとづくトークン修正（2026-07-28）
+
+§0.6 の3テーマ全ペアについて WCAG 2.x の相対輝度式で実測したところ、**当初案では4箇所が
+基準未達**だった。§0.6 の表は以下の修正を反映済みである。
+
+| 箇所 | 当初案 | 実測 | 修正後 | 修正後の実測 |
+|---|---|---|---|---|
+| Light `--border-strong` | birch/300 | 2.50:1 | **birch/400** | 3.68:1 |
+| Dark `--text-muted` | birch/400 | 3.45:1 | **birch/300** | 5.08:1 |
+| Dark `--text-faint` | birch/600 | 1.47:1 | **birch/400** | 3.45:1 |
+| Deep-dark `--text-faint` | birch/600 | 1.95:1 | **birch/400** | 4.59:1 |
+
+**Light `--border-strong` について（判断3の例外）**：§0.6 の判断3は「Kedama自身の割り当てより
+1段階薄いbirchを使う」だったが、`border-strong` にこれを適用すると、Kedama の
+`semantic/colors.ts` が唯一「WCAG 非テキストコントラスト 3:1 確保」と明記して設計していた
+`border.strong`（birch/400）の保証を壊してしまう。したがって **`--border-strong` のみ判断3の
+対象外とし、Kedama 自身の割り当て（birch/400）を維持する**。`--border` と `--border-muted` の
+1段薄めは、Ibuki のヘアライン志向を保つためそのまま維持する。
+
+**Dark／Deep-dark のテキスト階調**：修正の結果、両テーマとも
+text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/400 に揃い、
+「文字色は Dark と Deep-dark で共通」という §0.6 のルール4がより明確に成立する。
+
+**運用ルール（2点）**
+
+1. **`--text-faint` は本文用ではなく装飾ティア**として扱い、目標を 3:1 とする。本文の 4.5:1 は
+   構造的に満たせない（Light でも当初から 3.40:1 だった）。コントラストテストでは例外として
+   扱う。**意味のある文字・プレースホルダー・補助説明には使用しない。**
+   プレースホルダーには Kedama に既存の `fg.placeholder`（「WCAG 3:1 以上を確保」）を使う。
+   命名を `text-faint` のまま維持してよいか（`fg.decorative` 等へ分離すべきか）は要検討
+2. **入力コントロールの枠線は `--border`（Light で 1.75:1）ではなく `--border-strong` を使う**。
+   枠線がコントロールの境界を伝える要素は WCAG 上 3:1 が必要なため。単なるディバイダーは
+   `--border` / `--border-muted` で構わない
+
+---
+
+## 1. スコープ
+
+### ゴールの定義（2026-07-28 確定）
+
+> 複数プロダクトで共有するUI基盤 `@kedama/design-system` を整備し、**プロトタイピング工程
+> そのものをStorybook上での本番コンポーネント組み立てに置き換える**。見た目の基準は
+> Kedama Calm UI の配色・思想 ＋ Ibuki プロトタイプの構成・挙動。
+> **すらすらスタジオ（codama portal）の本番画面が実際に新パッケージに載せ替わった状態
+> （§7 Phase C の完了）をもってゴール達成とする。**
+
+重要な点として、ゴールは「プロトタイプをうまく再現できるようになること」ではなく、
+**再現作業そのものを工程から無くすこと**である。プロトタイプをStorybook上で本番コンポーネントを
+組んで作れば、プロトタイプと本番実装が同一コードになり、「再現する」というステップが消える。
+ずれが起きにくくなるのではなく、構造的に起きなくなる。既存の単一HTMLプロトタイプ
+（Ibuki）を作り直す作業は、その移行に伴う一度きりの棚卸しであって、ゴールそのものではない。
+
+また、**ライブラリが公開できる状態になっただけでは未達**とする（Phase A-2/B の完了は
+中間マイルストーンにすぎない）。
+
+### 含む
+- デザイントークンの型（色・タイポ・スペーシング・エレベーション・角丸・モーション方針）
+- プロダクト非依存の UI プリミティブ（Tier 0）
+- プロダクト非依存のチャート・可視化プリミティブ（Tier 1）
+- ダッシュボード SaaS 共通の複合パターン（Tier 2、OpenStatus テンプレート参照）
+- Storybook によるコンポーネント開発・プロトタイピング環境
+- 「プロトタイプの簡易実装を写経しないための実装規律」（製品非依存版）
+
+### 含まない（各プロダクト側に残す）
+- ブランドカラー等トークンの実値（プロダクトごとに theme.css で上書き）
+- 業務ドメイン固有のコンポーネント（例：Ibuki の 18 観点レーダー、サイトアバター）
+- API・データ取得層（oRPC 等）
+- ページ／画面レベルのレイアウト（AppShell の中身は各プロダクトで組む。Shell の「殻」だけ提供）
+
+---
+
+## 2. 技術スタック
+
+| 領域 | 採用 | 備考 |
+|---|---|---|
+| プリミティブ | **Base UI**（`@base-ui-components/react`） | 2026-07 に shadcn/ui の新規プロジェクト既定になった。開発が活発（v1.6.0・週6,000万DL）。Radix は非推奨ではないが更新ペースが鈍化 |
+| コンポーネント配布 | **npm パッケージ＋shadcnレジストリのハイブリッド**（§2.1） | Tier 0/1 は npm 依存として共有、Tier 2「ブロック」は shadcn レジストリ形式でコピー配布 |
+| スタイル | Tailwind CSS（CSS変数テーマ） | doc25 のトークン構造を踏襲。値だけプロダクト差し替え |
+| チャート | Recharts＋自前SVG（Grassなど） | Ibuki の実装をほぼそのまま移植（Base UI 非依存＝移行リスクなし） |
+| モーション | slot-text | Ibuki の RollingText 実装（reduced-motion・アンチフラッシュ・a11y 対応込み）をそのまま移植 |
+| 開発環境 | Storybook | 各コンポーネントに variants/states の story を用意し、**そのまま prototype 兼カタログ**にする |
+| テスト | Vitest（+ Testing Library） | packages/ui の既存テスト方針を踏襲 |
+| 型 | TypeScript strict | `any` 禁止（Ibuki の規約を継続） |
+| ライセンス | MIT のみ | Base UI・Radix ともに MIT。AGPL/GPL は追加禁止 |
+
+### 2.1 配布モデル：npm パッケージ ＋ shadcn レジストリのハイブリッド
+
+「複数プロダクトの内製共有」という当初目的の**実現手段として**、配布方式に shadcn のレジストリ形式
+（`registry.json`／`shadcn build`／`npx shadcn add`）を採用する。ただし全部をレジストリ配布にすると
+「コピー後に各プロダクトでハンドエディットされ、また ずれる」というリスクを再導入してしまうため、
+Tier によって配布方式を分ける。
+
+| Tier | 配布方式 | 理由 |
+|---|---|---|
+| Tier 0（基礎プリミティブ）／Tier 1（チャート） | **npm パッケージ**（`@kedama/ui-core` 案） | どのプロダクトでも挙動が完全に同一であるべき部分。コピー配布にすると各プロダクトで独自にいじられ、今回解決したい「ずれ」がここで再発する。バージョン管理で一元的に更新を配る |
+| Tier 2（複合ブロック：DashboardShell・MetricCard・FindingCard 等） | **shadcn レジストリ**（`npx shadcn add @kedama/xxx`） | ブロックは元々「コピーしてプロダクトごとに手を入れる」ことを前提にした単位（shadcn/ui 本来の思想、shadcndashboard.dev もこの層を売っている）。Tier 0/1 に依存する形で書き、コピー後の改変は許容する |
+
+**registry.json の設計（Tier 2 用）**
+- ルートに `registry.json`、各ブロックに `registry-item.json` 相当（name / type / files / Tier0-1への依存関係）
+- `npx shadcn build` で `public/r/[name].json` を静的生成
+- ホスティングは軽量な Next.js サイト1つで良い（後述のショーケースサイトと兼用可）
+- namespace は `@kedama` を仮案（§8参照）
+
+**レジストリのホスティング先とショーケースサイトの関係（確定：同一で良い）**：shadcnレジストリは
+「人間が見る紹介ページ」と「`shadcn add`が読みに行く静的JSON（`/r/[name].json`）」を**同じ
+Next.jsサイトの中に共存させる**のが標準的な構成（shadcn/ui公式のレジストリ機能自体、
+`app/r/[name]/route.ts`のようなAPIルートと、コンポーネント一覧を人間向けに見せるページを
+同じアプリに同居させる前提で設計されている）。したがって「別ドメインにするか」を悩む必要はなく、
+1つのNext.jsサイト＝ショーケースページ兼レジストリ配信元、で問題ない。さらにそのサイト自体を
+**`KedamaDesignSystem`と同一リポジトリに同居**させてよい（`packages/design-system`＋
+`apps/showcase`のような軽量monorepo構成になる。すでにpnpmを使っているため、
+`pnpm-workspace.yaml`を1つ足すだけで済む）。
+
+### 2.1.5 不足部品の調達方針（確定・2026-07-28）
+
+AppShell・Sidebar・DataTable・Sheet・Command など、Kedama に無く、すらすらスタジオが必要と
+する部品をどこから持ってくるか。**確定：shadcn/ui（Base UI variant）のブロックを Kedama が
+一度取り込み、Kedama トークンで再スタイルして、Kedama のレジストリから各プロダクトへ配る。**
+
+```
+shadcn/ui (Base UI variant) のブロック
+    ↓ 取り込み・Kedamaトークンで再スタイル・Calm UI原則に照らして調整
+@kedama/design-system の Tier 0 / Tier 2
+    ↓ npm（Tier 0/1）／ shadcn レジストリ（Tier 2）
+すらすらスタジオ・Ibuki・その他プロダクト
+```
+
+- **ゼロから作らない**：AppShell・DataTable・Command を一から実装する工数を避ける
+- **各プロダクトが上流から直接コピーしない**：これを許すと各プロダクトが個別に分岐し、
+  本プロジェクトが解こうとしている「ずれ」が別の形で再発する
+- **仕様書の Tier 2 モデル（レジストリ配布）がそのまま使える**：取り込んだブロックを
+  Kedama の `registry.json` に載せて配るだけで、既存の設計と整合する
+
+> **背景（重要）**：すらすらスタジオ側の bmad-ux discovery では、2026-07-27 時点で
+> 「既存 design-tokens.css を shadcn 変数へ写像し、**Kedama から段階移行する**」という仮説が
+> 立てられていた（`_bmad-output/.../.memlog.md`）。これは本書の方針と正反対だったため破棄し、
+> **Kedama は離脱先ではなく供給元**であることを確定した。対立の実体は「Kedama 0.1.0 が
+> 6コンポーネントしかなく、必要な部品が無い」ことであり、デザイン言語の否定ではなかった。
+> 実際、ベンチマーク調査 §9 のビジュアル原則（ニュートラルな背景・控えめな区切り・4〜8pxの
+> 角丸・主要アクションのみアクセント・色だけで状態を伝えない）は、Kedama Calm UI の原則と
+> ほぼ一致している。外部事例調査から独立に同じデザイン言語へ収束していた。
+
+### Tier 0/1（npmパッケージ `@kedama/design-system`）の公開方法
+
+3つの選択肢を比較する。結論：**GitHub Packages（private, 無料）を推奨**。
+
+| 方式 | 費用 | セットアップの手間 | 備考 |
+|---|---|---|---|
+| **GitHub Packages（推奨）** | 無料（privateリポジトリのGitHub Packagesは無料枠内で収まる規模） | 低い。既にGitHubで管理しているリポジトリにそのまま追加できる（`.npmrc` に registry 指定＋ `GITHUB_TOKEN` を1回設定するだけ） | 認証はGitHubのPersonal Access Token（read:packages権限）で行う。社内の数プロダクトが同じGitHub組織/アカウント配下にあるなら最も摩擦が少ない |
+| 他のprivate registry（例：npm Pro、Verdaccioの自前ホスティング等） | npm Proは有料（月額）、Verdaccioは無料だがサーバー運用が要る | 中〜高。npmは課金設定、Verdaccioは自分でホストして可用性を保つ必要がある | チームが1-3人規模で、かつ既にGitHubを使っているなら、これらを選ぶ理由が薄い |
+| **git依存（レジストリ不要）** | 無料 | 最も低い（`package.json` の依存に `"@kedama/design-system": "github:Kedama-Yuuki/KedamaDesignSystem#main"` と書くだけ） | ビルド成果物（dist）をリポジトリにコミットするか、`prepare` スクリプトで各消費側インストール時にビルドさせる必要がある。バージョニング（タグ管理）がやや曖昧になりやすい |
+
+**推奨の理由**：GitHub Packagesは追加費用なし・追加インフラなしで「npmパッケージとして
+バージョン管理された配布」が実現でき、git依存方式より依存関係の解決やキャッシュの挙動が
+npm標準に近い（`npm install` だけで完結し、消費側でビルドを走らせる必要がない）。将来
+外部販売（Phase F）を見据えるなら尚更、正式なnpm配布の形に最初から寄せておく方が移行コストが低い。
+
+セットアップ手順の概要（実装フェーズで詳細化）：
+1. `package.json` に `"publishConfig": {"registry": "https://npm.pkg.github.com"}` を追加
+2. リポジトリ側でGitHub Actions（既存の `docs/design-system-pipeline.md` のCI基盤に相乗り）から
+   `npm publish` を実行するワークフローを追加
+3. 消費側（Ibuki-Code-v2等）の `.npmrc` に `@kedama:registry=https://npm.pkg.github.com` を設定し、
+   CI/開発者ローカルの両方で読み取り用トークンを用意
+
+**将来の外部販売に備えた拡張ポイント（今は実装しない）**
+- shadcn のレジストリ設定は URL を Bearer ヘッダー付きの API ルート（例：`/api/registry/[name]`）に
+  差し替えるだけで認証ゲートに切り替えられる。今回は `public/r/[name].json` の静的配信のみを実装し、
+  将来 Pro/Team 層を作る際は **同じ namespace 構造のまま** エンドポイントを認証付きAPIに置き換える
+  想定にしておく（利用側の `components.json` の書式を変えずに済む）。
+- 課金・ライセンスキー発行・DB照合は、Ibuki-Code-v2 で既に実装済みの Stripe 構成
+  （`packages/billing`）が流用できる可能性が高い。ただし shadcndashboard.dev 型は買い切り
+  （$0〜$799）でIbukiのサブスク中心モデルとは形が異なるため、流用は「決済導線・Webhook処理の型」
+  レベルにとどめ、料金体系自体は別途設計する。
+- **今回は着手しない**：ライセンスキー発行・Stripe連携・認証API・利用規約。すべて次フェーズ。
+
+### Tier 2ブロックの「再同期」問題と、デザイントークンパイプラインとの違い
+
+これは別のメカニズムであり、混同しないよう整理する。
+
+| | デザイントークンパイプライン（`docs/design-system-pipeline.md`） | Tier 2ブロックの再同期 |
+|---|---|---|
+| 対象 | **値**（色・タイポ・スペーシング等のトークン） | **コンポーネントのソースコード**そのもの（`.tsx`ファイル） |
+| 流通経路 | Figma → Tokens Studio → Style Dictionary → `variables.css`/`tokens.ts` → **npmパッケージ経由でimport**（Tier 0/1） | `npx shadcn add` で**コピー**されて消費側リポジトリに物理的に複製される（Tier 2） |
+| 更新の伝播 | npmパッケージのバージョンを上げれば、消費側は`npm update`するだけで自動追従する（コード変更不要） | コピー後は消費側の管理下になるため、元のTier 2コンポーネントが後から改善されても**自動では反映されない**。消費側が独自に手を入れている可能性もあり、単純上書きは危険 |
+| 今回の課題 | 解決済み（パイプライン設計がそのまま使える） | 追従の運用ルールを別途決める必要がある（本節のテーマ） |
+
+**Tier 2再同期の運用方針（推奨）**：自動化はせず、**手動・不定期の棚卸しにとどめる**。
+
+- 理由：Tier 2は「コピーして手を入れる」ことを前提にした配布形式（shadcn/uiの設計思想そのもの）。
+  自動同期を仕組み化すると、各プロダクトが加えたカスタマイズを機械的に上書きしてしまうリスクが
+  上がる。チーム規模（1-3人）を考えると、厳密な追従の仕組みを作るコストは見合わない。
+- 具体的な運用：`npx shadcn diff <component>` で元のブロックとの差分を確認できるコマンドが
+  shadcn CLIに用意されている。**新しいプロダクトがTier 2ブロックを取り込むたび、または
+  半年に一度など区切りのタイミングで、`shadcn diff`を各消費先で実行し、明らかなバグ修正や
+  a11y改善だけを見て個別に取り込むかどうか判断する**、という軽い運用にする。
+  厳密なバージョン管理や自動PR生成のような仕組みは、消費プロダクト数が増えて手動運用が
+  回らなくなった段階で改めて検討すればよい。
+
+### Radix → Base UI の移行方針
+- Ibuki-Code-v2 の `packages/ui`（Radix ベース）は**無理に今すぐ移行しない**。本番で動いている
+  資産であり、Radix は非推奨ではない。
+- 本パッケージ（新規）は最初から Base UI で作る。
+- Ibuki-Code-v2 側の Drawer・Button など Radix 依存コンポーネントをこのパッケージへ移す際は、
+  **shadcn 公式の AI 移行スキル**（コードモッドでなくエージェント方式。カスタム変更を保持しながら
+  変換）を使う。手動での書き換えはしない。
+- 移行後は特に以下 2 点を重点レビューする（doc32 §6.5 で複数回のレビューを経て固めた挙動のため）：
+  1. Drawer のフォーカストラップ・`aria-hidden` の他要素適用・マウント/アンマウントのタイミング
+     （Radix の `hideOthers`／`Presence` 相当の Base UI 実装を確認）
+  2. Button の `asChild`（Radix）→ `render`（Base UI）変換後も、`disabled` 時に `inert`相当で
+     ポインタ・キーボード操作両方をブロックできているか
+
+### 2.2 Base UI 導入の再検討（KedamaDesignSystem は現状どちらも未導入）
+
+KedamaDesignSystem の Modal はネイティブ `<dialog>` 要素＋自前フォーカストラップで実装されており、
+Radix にも Base UI にも依存していない。既存資産がゼロ依存である以上、「最初から Base UI で作る」を
+無条件に踏襲する必要はなく、コンポーネントごとに要否を判断する。
+
+- **ネイティブ要素で十分なもの**：Modal（実装済み）。Drawer も `<dialog>` を横からスライドさせる
+  形で拡張できる可能性がある（要検証）
+- **Base UI 導入が現実的なもの**：Accordion（フォーカス管理・aria-* 込みで自作するコストが高い）、
+  将来的な Combobox/Autocomplete（ネイティブ要素で代替しにくい）
+- 方針：**必要になったコンポーネントから都度 Base UI を追加**し、依存を先取りしない
+  （KedamaDesignSystemの「Simple」原則＝YAGNIとも整合する）
+
+---
+
+## 3. デザイントークン設計
+
+> **更新（§0.6で確定）**：Ibukiについては「値だけプロダクトごとに差し替える」ではなく、
+> **Kedama Calm UIの値に統一**する（§0.6の再配色マッピング参照）。以下の「型」の説明と
+> 新規プロダクトのオンボーディング手順は、Ibuki以外の将来プロダクトにそのまま適用する。
+
+doc25 の分類はそのまま「型」として汎用化し、**値だけをプロダクトごとの `theme.css` に閉じ込める**。
+
+```
+brand / brand-600 / text-brand / brand-soft / on-primary   ← 唯一の彩度アクセント
+bg / bg-sidebar / surface / surface-200 / surface-300 / bg-alt  ← サーフェス段差
+border / border-muted / border-strong                        ← ヘアライン階層
+text / text-light / text-muted / text-faint                  ← white→near-black階調
+warning / warning-bg / destructive / destructive-bg           ← 最小限のセマンティック
+chart-1..3 / hm0..hm4                                          ← データ可視化（グレー＋brand濃淡）
+```
+
+- タイポ・スペーシング・角丸・エレベーション（0=Flat / 1=Surface step / 2=Overlay の3段階）・
+  モーション方針（slot-text は値/状態が変わった瞬間だけ）は **構造ごと doc25 から流用**。
+- 新プロダクトのオンボーディング手順：上記トークン名をそのまま使った `theme.css` を用意し、
+  `brand` 系だけ自社カラーに差し替える。それ以外の設計判断（角丸6-8px、影を使わない、等）は
+  Do's/Don'ts としてパッケージのREADMEに固定し、プロダクトごとに再検討させない。
+
+## 3.5 モーション方針とモーショントークン（2026-07-28 追加）
+
+物理演算ベースのUIアニメーション（spring physics / inertia）を、体験価値として本基盤に組み込む。
+参照は [Nexvyn UI](https://github.com/Nexvyn/nexvyn-ui)（「Animated UI components with spring
+physics and fluid interactions」）。**ただしNexvynはRadixベースであり、本基盤のBase UI方針と
+衝突するため、コードは借りない。借りるのは spring パラメータの値と用途の対応づけという
+設計知のみ**とする（Nexvynのコンポーネント本体はMIT、図版類は CC BY-NC のため持ち込み厳禁）。
+
+### 採用ライブラリ
+
+**Motion**（パッケージ名 `motion`、旧 `framer-motion`）。バージョンは陳腐化するため、採用時点で
+公式（https://motion.dev/docs/react ）を確認し、確認日とともに記録する。
+
+**依存の扱いは peerDependency とする**。消費側プロダクトが自前でMotionを使っている場合の
+二重インストールを避けるため（Tier 1 の Recharts と同じ論点）。バンドル削減のため
+`LazyMotion` + `m` コンポーネントの採用も検討対象とする。
+
+### 物理演算の分類（Motionの実体に即した整理）
+
+Motion のアニメーション型は `tween` / `spring` / `inertia` の3種。物理演算に相当するのは
+**spring と inertia の2つだけ**であり、「弾性・バウンス・減衰・重力」は独立した4種類ではない。
+
+| 概念 | 実体 | Motion での表現 |
+|---|---|---|
+| 弾性（Elastic） | spring のパラメータ違い | `stiffness` 高め・`damping` 低めで overshoot が出る |
+| バウンス（Bounce） | 同上（弾性と別物ではない） | duration ベースなら `bounce`（0〜1） |
+| 減衰（Damping） | spring のパラメータ | `damping`。`stiffness` / `mass` と3点セット |
+| 減衰（Decay） | **別ソルバー**。上の damping とは無関係 | `type: "inertia"`。`power` / `timeConstant` / `modifyTarget` / `min` / `max` |
+| 重力（Gravity） | **Motion に存在しない** | 非対称なイージングでの疑似表現にとどめる。物理エンジン併用は業務システム向けとして過剰であり採用しない |
+
+したがって実装は「4種類を作る」のではなく、**springのプリセットを数種類定義する＋
+inertiaを直接操作系に使う**という形になる。
+
+### Calm UI との整合（採用の線引き）
+
+Kedama の優先順位は Calm > Accessible > Resilient > Consistent > Simple であり、
+弾性やバウンスは本質的に注意を引く表現のため、素朴に足すと第1原則と衝突する。
+一方 Nexvyn 自身の「springs naturally adapt when interrupted, making state changes visually
+legible」という位置づけが解になる。**springの本質的価値は跳ねることではなく、中断に強いこと**
+——固定durationのtweenは途中で状態が変わると速度が不連続に飛ぶが、springは現在速度を
+引き継ぐため繋がる。これは装飾ではなく可読性であり、Calm と矛盾しない。
+
+**線引き：指やカーソルで対象を直接つかんで動かしている操作（ドラッグ・スワイプ）の
+「余韻」としてのみ overshoot を使う。それ以外はすべて damped（overshootなし）。**
+境界は「ユーザーが操作したか」ではなく「**自分の指が対象に触れて連続的に動かしているか**」。
+
+| | 例 | 使うもの |
+|---|---|---|
+| overshoot 可（指が触れている） | ドロワーをスワイプで閉じて指を離す／ドラッグ並べ替えの着地／スライダーつまみのスナップ／引っ張って更新 | `inertia`、および overshoot ありの `spring` |
+| overshoot 不可（指が触れていない） | ボタン押下でモーダル/ドロワーが開く／データ更新で数値が変わる（RollingText）／トースト出現／画面遷移／スケルトン→実データ | damped `spring`（`bounce: 0` 相当） |
+
+**`prefers-reduced-motion` の担保は必須**（優先順位が Calm > Accessible である以上、選択肢ではない）。
+Motion の `MotionConfig reducedMotion="user"` をプロバイダ層で一括適用し、
+個別コンポーネントに実装させない。Ibuki の RollingText が既に reduced-motion 対応をしているため、
+そのパターンをハウスルールに昇格させる。
+
+### トークン層への追加
+
+`docs/design-rules.md` 1.1 の2層トークン構造の適用範囲は「カラー／タイポグラフィ／スペーシング／
+シャドウ／角丸」であり、**モーションが含まれていない。ここにmotionカテゴリを追加する**。
+
+- プリミティブ層：spring設定の実体（`stiffness` / `damping` / `mass` の組、または
+  `bounce` / `visualDuration` の組）、inertia設定の実体
+- セマンティック層：用途名（`motion.enter` / `motion.exit` / `motion.value-change` /
+  `motion.drag-release` など）
+
+同ルール 3.3 が「primitive → semantic → component の順序厳守」を定めているため、
+**モーショントークンはPhase Aのトークン確定フェーズで決める。コンポーネント実装後に足すのは
+順序違反**となる。
+
+---
+
+## 4. コンポーネント在庫（Tier 分類）
+
+### Tier 0 — 基礎プリミティブ（Base UI ラップ／プロダクト非依存）
+Ibuki `packages/ui` から移植・Base UI 化。
+
+| コンポーネント | 移植元 | 備考 |
+|---|---|---|
+| Button | button.tsx | asChild→render、loading/aria-busy はそのまま踏襲 |
+| Badge | badge.tsx | そのまま |
+| Card / CardHeader / CardTitle / CardContent / CardFooter | card.tsx | そのまま |
+| Skeleton | skeleton.tsx | そのまま |
+| Spinner | spinner.tsx | そのまま |
+| Drawer（右パネル） | drawer.tsx | Base UI Dialog に置換。doc32 §6.5-3 の「共通Drawer1つ」原則を継続 |
+| ThemeProvider / ThemeToggle | theme-provider.tsx / theme-toggle.tsx | 3テーマ+自動の仕組みは汎用。ラベル文言だけ i18n 化を検討 |
+| IconSwap | icon-swap.tsx | そのまま |
+| RollingText | rolling-text.tsx | slot-text 統合・reduced-motion対応をそのまま踏襲（最も作り込まれた資産の一つ） |
+| Accordion | 新規（プロトタイプ `.acc`） | Base UI の Accordion primitive に載せ替え、`32_screen_spec.md` の観点アコーディオンを汎用化 |
+| Toast | components/index.ts（sonner再export） | 現状は素通しなので、doc25トークンでスタイルするラッパーを正式に作る（Ibuki側のTODOコメントに対応） |
+
+> **要解消の内部矛盾**：上表の Drawer 行「Base UI Dialog に置換」・Accordion 行「Base UI の
+> Accordion primitive に載せ替え」は、後から追記した §2.2「必要になったコンポーネントから都度
+> Base UI を追加し、依存を先取りしない」（Drawerはネイティブ `<dialog>` 拡張で足りる可能性、
+> 要検証）と食い違っている。**どちらを残すかは未確定**。Codex調査（Q4）の結論を待って
+> 一本化する。
+
+### Tier 1 — チャート・可視化プリミティブ（Base UI 非依存）
+Recharts/自前SVGベースなのでBase UI移行の対象外。ほぼそのまま移植可能。
+
+BarH／Donut／Gauge／Sparkline／TrendLine／Waterfall／TimelineRow（列幅をprop化済）／
+Grass（GitHub草ヒートマップ）／palette・date-math ユーティリティ／TrackBar
+
+### Tier 2 — 複合パターン（新規／プロトタイプ+OpenStatus参照）
+プロトタイプに存在するが未コンポーネント化、または OpenStatus テンプレートの構成が参考になるもの。
+
+| コンポーネント | 出典 | 用途 |
+|---|---|---|
+| ScoreRing | プロトタイプ `.ring`（円形スコアゲージ） | 「◯◯点」を主役にする画面向け。Radar18と役割が違うので別コンポーネントとして残す |
+| ChecklistStep | プロトタイプ `.ob-item`/`.ob-dot` | オンボーディング等の done/current/todo チェックリスト |
+| FindingCard | プロトタイプ `.finding` | 「重要度／問題／なぜ／どう直す」4点形式の指摘カード。Ibuki固有に見えるが構造は診断系SaaS一般に使える |
+| StatusBar | プロトタイプ `.statusbar`（未コンポーネント化） | 下部ステータスバー。Ibukiでも実は共通化されておらず、今回が初コンポーネント化の好機 |
+| MetricCard | OpenStatusテンプレート | KpiCardの汎用版。状態バリアント（default/destructive/success/warning）を持つ点がOpenStatus流 |
+| ActionCard / FormCard / Section / EmptyState | OpenStatusテンプレート | ダッシュボードSaaS全般で使う定型カード構成 |
+| **Table プリミティブ**（Table/THead/TBody/TRow/TCell） | 新規（Tier 0 側に置く） | トークンでスタイルしただけの薄い要素群。TanStack 非依存 |
+| **DataTable** | shadcn/ui（Base UI variant）を取り込み＋再スタイル | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる** |
+| **FilterBar / SavedViewPicker（汎用部分）** | ベンチマーク §7.3 | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ |
+| **CommandPalette** | shadcn/ui `Command` を取り込み | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補） |
+| **Sheet** | shadcn/ui を取り込み | モバイルで RightPane を変換する先。Drawer と役割が重なるため §2.2 の結論と併せて整理 |
+
+### Tier 3 — 明示的にプロダクト固有（汎用化しない）
+
+**Ibuki 由来**：KpiCard（`@ibuki/shared`のformatNumber依存を外せば汎用化可、優先度低）／
+SiteFaviconChip（「サイト診断」ドメイン）／Radar18（18観点・5分類決め打ち。将来的に軸数可変の
+`GroupedRadar`に育てる余地はあるが本フェーズは対象外）
+
+**すらすらスタジオ由来**（ベンチマーク調査 §8 から。記事制作ドメイン固有のため汎用化しない）：
+ClientSwitcher／ArticleTable／ArticleRow／ArticleStatus／SavedViewPicker／ArticleWorkspace／
+EditorCanvas／SelectionReviewToolbar／CommentThread／MetadataInspector／VersionTimeline／
+VersionDiff／ApprovalBar／PublishStatus
+
+> これらは Tier 2 のブロック（DataTable・RightPane・FilterBar 等）と AppShell（§4.5）を
+> 組み合わせて各プロダクト側で実装する。基盤が提供するのは「組む部品」であって
+> 「組み上がった業務画面」ではない。
+
+## 4.5 AppShell 一式（Tier 2・最優先）
+
+**v0.6 までの在庫には AppShell が1つも入っていなかった。**§1 で「Shell の殻だけ提供する」と
+書きながら、Tier 0/1/2 のどこにも実体が無かった。これは在庫の最大の欠落であり、
+すらすらスタジオの UI が「モダンに見えない」ことの主因である**可能性が高い**（§4.6。
+この因果関係は仮説であり、Codex 調査 Q9 で検証する）。
+
+出典は **Ibuki のプロトタイプ**（`.app` / `.side` / `.apphead` / `.statusbar`、27画面レジストリ）と
+**すらすらスタジオのベンチマーク調査 §7.2**。両者は独立に同じ構成へ到達している。
+「構成・レイアウト・挙動は Ibuki が正」（§0.6）の原則がそのまま適用できる。
+
+| コンポーネント | 役割 | 出典 |
+|---|---|---|
+| `AppShell` | 全体の骨格。どのスロットを持つかを型で規定する | Ibuki `.app` |
+| `SidebarNav` | 左サイドバー（224〜240px）。ラベル付きナビ | Ibuki `.side` ／ ベンチ §7.2 |
+| `IconRail` | 左端のアイコンのみの細いレール（VS Code / Linear 型） | ベンチ §3.2・3.3 |
+| `AppHeader` | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー | Ibuki `.apphead` ／ ベンチ §7.2 |
+| `StatusBar` | 下部ステータスバー。接続状態・保存状態・件数等 | Ibuki `.statusbar`（未コンポーネント化） |
+| `RightPane` | 開閉可能な右ペイン（320〜400px）。モバイルでは Sheet へ変換 | ベンチ §7.2 |
+
+**シェル適用ルール（最重要）**：`AppShell` は「どのルートに外枠を着せるか」を**明示的に選択させる
+API** を持つこと。ログイン・招待受諾・2段階認証など**認証前の画面にサイドバーが出てはならない**。
+すらすらスタジオで実際に起きた不具合（ログイン画面にサイドメニューが表示される）は、
+ルートグループのレイアウト構成ミスであり、シェルを暗黙に継承させたことが原因。
+`AppShell` は「着せる」ことを明示的な行為にし、`AuthShell`（外枠なし・中央寄せ）を別に用意する。
+
+## 4.6 「モダンに見えない」の診断（2026-07-28）
+
+すらすらスタジオの現行UIに対する評価（「言語化しづらいがとにかく違う」）を具体化すると、
+挙がった3点はすべて**アプリシェルの問題に還元される**。
+
+| 現象 | 実体 | 対応 |
+|---|---|---|
+| ログイン画面にサイドメニューが出る | シェル適用ルールの不在 | §4.5 の `AppShell` / `AuthShell` 分離 |
+| ダッシュボードがない | 画面の欠落。ただし独立KPIダッシュボードは**作らない**のが正解 | ベンチ §2「記事一覧がホーム兼ダッシュボード」を採用 |
+| Linear/VS Code/Stripe のような下部バー・左アイコンレールがない | シェルのクロムの欠落 | §4.5 の `StatusBar` / `IconRail` |
+
+**仮説：不満の主因はプリミティブ（Button・Card 等）ではなく、シェルの構成にある。**
+これは現時点では検証されていない因果推論であり、**Codex 調査 Q9 で反証可能性を含めて検証する**
+（支持する証拠／反証する証拠／シェル以外の原因、の3点を整理させる）。
+
+**ただし「Phase B で AppShell 一式を最優先で作る」という優先順位そのものは、この仮説の成否に
+依存しない確定事項とする。**理由は3つ。(1) シェルは Tier 在庫から実際に欠落している、
+(2) ベンチマーク調査 §7.2 がシェル構成を前提としている、(3) Ibuki のプロトタイプも
+シェルを持っている。仮に不満の主因が別にあったとしても、シェルは作る必要がある。
+
+---
+
+## 5. プロトタイプ実装ガイドライン（製品非依存版）
+
+`32_screen_spec.md` §6.5 のうち、コンポーネント切り出しで解決しない 2 項目（観点detail の
+文字列マッチ／タスク編集のDOM位置依存）は「作り方の規律」であり、どのプロダクトの新規プロトタイプ
+にも共通して当てはまる。以後、新しいプロトタイプ（Storybookでの組み立てを含む）は以下を守る。
+
+1. **キーはID/モデルで持つ**。ラベルの部分文字列マッチや列の位置決め打ちで値を取り出さない。
+2. **状態の視覚表現は単一箇所で管理**する（className または aria-* のどちらか一方。inline styleとの二重管理をしない）。
+3. **繰り返し出てくるレイアウト定数（幅・オフセット等）は prop 化**し、画面ごとにコピペで値だけ変えない。
+4. **同じ役割のUI（ドロワー・モーダル等）は1実装に統一**し、画面テンプレートごとに再定義しない。
+5. **プロトタイプ段階から「データはpropsで渡す」形にする**（DOMスクレイピングやグローバル変数経由で値を取り回さない）。これがTier 0/1/2をStorybookのargsでそのまま動かせる前提になる。
+
+この5項目は、Storybookでpresentational componentを組む時点で自然に守られる設計（props駆動・単一責務）でもあるため、**Storybookでの開発運用そのものが規律の強制になる**。
+
+---
+
+## 6. Storybookワークフロー（新しいプロトタイピングの姿）
+
+- 各コンポーネントに `*.stories.tsx` を用意し、variants/states（loading/empty/error含む）をargsで再現。
+- 画面単位のプロトタイプは、Storybookの複合story（複数コンポーネントを組んだcomposition story）として作る。単一HTMLファイルでの全画面プロトタイピングは廃止。
+- レビュー・stakeholder確認は Storybookのビルドを共有して行う。クリックスルー確認は既存の単一HTMLプロトタイプと同等以上の体験になる。
+- 本番化するときは、presentational componentの実装を変更せず、データ取得（oRPC等）を行うcontainerを上に薄く被せるだけ。「データ接続だけ本番用に直す」が実体化する。
+
+### Storybookのホスティング先（確定：Vercel静的ホスティング）
+
+| 選択肢 | 費用 | 主な役割 | 備考 |
+|---|---|---|---|
+| **Vercel静的ホスティング（採用）** | 既存プランの範囲内で無料〜低コスト | Storybookビルド（`storybook build`の静的出力）をそのままデプロイ | Ibuki-Code-v2で既にVercelを使っており運用の学習コストがゼロ。`vercel.json`で出力ディレクトリを指定するだけ |
+| Chromatic | 無料枠あり、本格運用は有料（スナップショット数課金） | Storybookホスティング機能に加え、**Visual Regression Testing**（コンポーネントの見た目の意図しない変化を自動検知）が主目的 | 今回はホスティングだけが目的なら過剰。ただし複数プロダクトが本パッケージを消費するようになった後、「Tier 0/1の変更が各プロダクトの見た目にどう影響するか」を自動検知したくなったタイミングで導入価値が上がる（`docs/design-system-pipeline.md`のパイプライン図でも将来組み込み先として想定済み） |
+| GitHub Pages | 無料 | 静的ホスティングのみ | Vercelと機能的に大差はないが、Ibuki-Code-v2側の運用と合わせる利点がVercelにはある |
+
+**結論**：Vercel静的ホスティングで問題ない。Chromaticは「複数プロダクトがTier0/1に依存し始めて、
+変更の影響範囲をビジュアル差分で検知したくなった時点」で追加導入を検討する、という位置づけにする。
+
+---
+
+## 7. 実装フェーズ案（2026-07-28 組み替え）
+
+**最初の本番適用先を Ibuki-Code-v2 から すらすらスタジオ（codama portal）へ変更した。**
+
+**すらすらスタジオの実態（2026-07-28 調査・v0.6の記述を訂正）**：v0.6 では「構築中のため
+置換ではなく最初から新パッケージで作れる」と書いたが、**これは誤り**だった。実際には本番用
+Docker Compose・Prisma デュアルスキーマ・better-auth＋MFA・BullMQ ワーカー・MCPサーバー・
+Playwright＋Siteimprove Alfa による a11y 自動テストを備えた、相当に作り込まれたアプリである。
+UI も記事一覧・記事編集・レビュー画面・ダッシュボード・クライアントポータルが実装済み。
+
+ただし調査で分かったことが2つあり、結論（すらすらスタジオを先にする）は変わらない。
+
+1. **`@kedama/design-system` 0.1.0 は既に導入済み**（`vendor/` に手で固めた tarball を置き
+   `file:` 参照）。統合は実証済みで、Phase C は「統合できるか」ではなく「手貼りの tarball 運用を
+   正式なパッケージ配布へ昇格させ、適用範囲を広げる」が実体になる。**この tarball 運用自体が、
+   §2.1 で GitHub Packages を推した理由の実例**である
+2. **現行UIは作り直す方針**（ユーザー判断）。既存実装を保存しながら移行する必要がないため、
+   「再現工程が存在しない状態を実践する」という当初の狙いはそのまま成立する
+
+**Phase C のスコープ境界（重要）**：作り直すのは **presentational 層のみ**。API route・認可・
+Prisma のスキーマ分離・better-auth の認証フロー・BullMQ ワーカー・MCPサーバーは**触らない**。
+Storybook で組んだ本番コンポーネントに、既存のデータ取得を container として薄く被せる
+（§6 の「データ接続だけ本番用に直す」の実践）。「UIを作り直す」が「アプリを作り直す」に
+膨らまないよう、この境界を Phase A-0 で明文化する。
+
+1. **Phase A-0（意思決定）**：着手前に潰すべき論点の調査と決着。既存コンポーネント（Button/
+   Badge/Card）の衝突解消、トークン命名体系の一本化、Figmaパイプラインの実稼働状況、
+   Base UI の要否（§4の内部矛盾の解消）、パッケージ公開方式、モーショントークン設計、
+   Phase の完了条件定義。→ `docs/codex-investigation-brief.md` として調査依頼済み
+2. **Phase A-1（トークン層）**：primitive → semantic の順に確定。Light/Dark/Deep-darkの3テーマ、
+   §0.7 のコントラスト修正反映、data-vizトークン追加、**モーショントークン追加（§3.5）**。
+   `design-rules.md` 3.3 の順序厳守により、コンポーネントより先に完了させる
+3. **Phase A-2（Tier 0/1）**：Tier 0/1 を構築・移植。Storybook立ち上げ・Vercelへデプロイ。
+   npmパッケージとして公開（公開方式はA-0の結論による）
+4. **Phase B（Tier 2＋レジストリ）**：**AppShell 一式（§4.5）を最優先**で作り、続いて
+   DataTable・Sheet・Command（shadcnから取り込み・再スタイル、§2.1.5）、
+   Tier 2 の残り（ScoreRing/ChecklistStep/FindingCard/MetricCard等）を追加し、`registry.json`＋`shadcn build`でレジストリ配布できる状態にする。
+   ショーケースサイトは**同一リポジトリ内・同一デプロイ**（`KedamaDesignSystem` に
+   `apps/showcase` を追加する軽量monorepo構成、または既存Storybookに`/r/*.json`の静的配信を
+   同居させる形）とし、`/r/*.json`の配信元も兼ねる
+5. **Phase C（すらすらスタジオへの新規適用＝本番実証）★ゴール達成地点**：
+   すらすらスタジオの画面を、HTMLプロトタイプを介さず **Storybook上で本番コンポーネントを
+   組む形で設計 → そのままcontainerを被せて本番化**する。ここで「プロトタイプと本番が同一
+   コードである」状態を実証する。**本書のゴールはこのPhaseの完了をもって達成とする**
+6. **Phase D（Ibuki 変換検証）**：shadcnのAI移行スキルで `packages/ui` のRadix依存部分を
+   新パッケージ相当に変換・比較検証（本番へは反映しない、検証のみ）
+7. **Phase E（Ibuki 本番置換）**：検証OKなら、Ibuki-Code-v2 の `apps/web` が `@ibuki/ui` の
+   代わりに新パッケージ（npm import）＋Tier2ブロック（`npx shadcn add`でコピー）＋Tier3の
+   Ibuki固有ラッパー（別途 `packages/ui-ibuki` 等に残す）を参照するよう置き換え。
+   §0.6 の再配色をIbukiプロトタイプと突き合わせて検証するのもここ
+8. **Phase F**：残るプロダクト（FP&Aアプリ等）が新パッケージ・レジストリを新規に取り込む
+9. **Phase G（将来・今回スコープ外）**：外部販売する場合のみ、Tier 2レジストリのエンドポイントを
+   認証付きAPIに切り替え、Stripe決済・ライセンスキー発行を追加
+
+Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的ロールアウト（既存の doc32/37 と
+同じレビュー運用）を継続する。
+
+---
+
+## 8. 決定事項サマリー
+
+ユーザー判断が済んだ論点。決定内容と参照先のみ記載する。
+**未決着の技術論点は Codex 調査に移管済み**（`docs/codex-investigation-brief.md` の Q1〜Q8。
+既存コンポーネントの衝突／トークン命名の一本化／Figmaパイプラインの稼働状況／Base UIの要否と
+§4の内部矛盾／Tier 1の棚卸し／パッケージ公開方式／コントラスト修正のレビューと完了条件／
+モーショントークン設計）。それらの結論は本書 v0.7 で反映する。
+
+| 論点 | 決定 | 参照 |
+|---|---|---|
+| ゴールの定義 | すらすらスタジオの本番画面が新パッケージに載せ替わった状態（Phase C完了）をもって達成 | §1・§7 |
+| 最初の本番適用先 | Ibuki ではなく **すらすらスタジオ**。ただし新規適用ではなく既存UIの全面再構築（presentational層のみ） | §7 |
+| 不足部品の調達方針 | shadcnのBase UI variantをKedamaが取り込み・再スタイルし、Kedamaのレジストリから配る | §2.1.5 |
+| bmad-ux discovery との関係 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元） | §2.1.5 |
+| AppShell の扱い | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先** | §4.5 |
+| すらすらスタジオの独立ダッシュボード | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2） | §4.6 |
+| データテーブル | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り | §4 |
+| Mantine | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため） | §2.1.5 |
+| Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外 | §0.6・§0.7 |
+| Dark／Deep-darkテーマの値 | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え） | §0.6 |
+| コントラスト未達4箇所の修正 | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う | §0.7 |
+| 物理演算アニメーションの採用 | Motion（peerDependency）。spring と inertia の2本立て。overshoot は直接操作の余韻のみ | §3.5 |
+| モーショントークン | 2層トークンに motion カテゴリを追加。Phase A-1（コンポーネントより先）で確定 | §3.5 |
+| KedamaDesignSystemの作業ツリー整理 | 重複`.git`・stale lock除去は完了。残る変更のコミットはユーザー側で実施 | §0.5 |
+| Tier 0/1 の公開方法 | GitHub Packages（無料・低摩擦）を推奨・採用 | §2.1 |
+| Tier 2 レジストリのホスティング先 | ショーケースサイトと同一デプロイ（shadcn標準構成） | §2.1 |
+| レジストリ/ショーケースサイトのリポジトリ | KedamaDesignSystemと同一（軽量monorepo化） | §2.1 |
+| Tier 2 を初期スコープに含めるか | 含める（Ibukiダッシュボード再構築で直接使うため） | §7 Phase B |
+| ダークモードの実装タイミング | 今回のスコープに含める（仮トークンで先行実装） | §0.6・§7 Phase A |
+| Storybookのホスティング先 | Vercel静的ホスティング。Chromaticは複数プロダクト消費開始後に再検討 | §6 |
+| Tier 2ブロックの再同期運用 | 自動化しない。`shadcn diff`による手動・不定期の棚卸しにとどめる | §2.1 |
+
+---
+
+## 9. 参照
+- 土台リポジトリ：`KedamaDesignSystem`（`@kedama/design-system`）— README.md／CLAUDE.md／
+  ROADMAP.md／docs/design-principles.md／docs/design-rules.md／docs/design-system-pipeline.md／
+  docs/claude-code-consumer-context.md
+- 見た目の正（現行・Ibuki）：`docs/prototypes/ibuki_prototype.html`（Ibuki-Code-v2）
+- デザイン（現行・Ibuki）：`docs/planning/25_design_system.md`
+- 実装教訓：`docs/planning/32_screen_spec.md` §6.5
+- 参考実装：[OpenStatusHQ/openstatus-template](https://github.com/OpenStatusHQ/openstatus-template)（shadcn/ui構成のダッシュボードSaaSテンプレート）
+- Base UI採用の背景：[shadcn/ui changelog 2026-07](https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default)
