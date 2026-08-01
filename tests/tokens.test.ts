@@ -21,6 +21,9 @@ import {
   containerPadding,
   semanticColors,
   semanticTypography,
+  themes,
+  isColorMix,
+  type ColorValue,
 } from '@/tokens';
 
 // ─── Primitive Color Tokens ─────────────────────────────
@@ -29,8 +32,9 @@ describe('Primitive Colors', () => {
   const palettes = Object.entries(primitiveColors);
   const steps = [25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 
-  it('has 7 color palettes', () => {
-    expect(palettes).toHaveLength(7);
+  // amber は 2026-07-31 に廃止（未使用 + 新 warning 84° と 1.9° 差で衝突）
+  it('has 6 color palettes', () => {
+    expect(palettes).toHaveLength(6);
   });
 
   it.each(palettes)('%s has all 11 steps (25–900)', (_name, palette) => {
@@ -66,10 +70,18 @@ describe('Primitive Colors', () => {
 // ─── Primitive Typography Tokens ────────────────────────
 
 describe('Primitive Typography', () => {
-  it('fontFamily has heading, body, mono', () => {
+  it('fontFamily has heading, body, numeric, mono', () => {
     expect(fontFamily).toHaveProperty('heading');
     expect(fontFamily).toHaveProperty('body');
+    expect(fontFamily).toHaveProperty('numeric');
     expect(fontFamily).toHaveProperty('mono');
+  });
+
+  // DM Sans は tnum を持たずプロポーショナル数字のため、桁を揃える数値の
+  // スタックに入れてはならない（2026-07-29 実測。primitive/typography.ts 参照）。
+  it('fontFamily.numeric does not fall back to DM Sans', () => {
+    expect(fontFamily.numeric).not.toContain('DM Sans');
+    expect(fontFamily.numeric).toContain('Noto Sans JP');
   });
 
   it('fontSize values are rem strings', () => {
@@ -171,6 +183,10 @@ describe('Opacity', () => {
       expect(value).toBeLessThanOrEqual(1);
     }
   });
+
+  it('backdropBlur is a px length', () => {
+    expect(backdropBlur).toMatch(/^\d+px$/);
+  });
 });
 
 describe('Breakpoints', () => {
@@ -182,17 +198,27 @@ describe('Breakpoints', () => {
       expect(curr).toBeGreaterThan(prev);
     }
   });
+
+  it('contentWidth values are px lengths', () => {
+    for (const value of Object.values(contentWidth)) {
+      expect(value).toMatch(/^\d+px$/);
+    }
+  });
+
+  it('containerPadding values are px lengths', () => {
+    for (const value of Object.values(containerPadding)) {
+      expect(value).toMatch(/^\d+px$/);
+    }
+  });
 });
 
 // ─── Semantic Color Tokens ──────────────────────────────
 
 describe('Semantic Colors', () => {
-  it('has fg, bg, border, accent, status groups', () => {
-    expect(semanticColors).toHaveProperty('fg');
-    expect(semanticColors).toHaveProperty('bg');
-    expect(semanticColors).toHaveProperty('border');
-    expect(semanticColors).toHaveProperty('accent');
-    expect(semanticColors).toHaveProperty('status');
+  it('has fg, bg, border, accent, status, dataViz groups', () => {
+    for (const group of ['fg', 'bg', 'border', 'accent', 'status', 'dataViz']) {
+      expect(semanticColors).toHaveProperty(group);
+    }
   });
 
   it('fg.default is birch-900', () => {
@@ -203,16 +229,40 @@ describe('Semantic Colors', () => {
     expect(semanticColors.bg.surface).toBe('#F8F7F4');
   });
 
-  it('all semantic color values are valid CSS color strings', () => {
-    const allValues = [
-      ...Object.values(semanticColors.fg),
-      ...Object.values(semanticColors.bg),
-      ...Object.values(semanticColors.border),
-      ...Object.values(semanticColors.accent),
-      ...Object.values(semanticColors.status),
-    ];
-    for (const value of allValues) {
-      expect(value).toMatch(/^(#[0-9A-Fa-f]{6}|rgba?\(.+\))$/);
+  it('has all three themes with identical key sets', () => {
+    expect(Object.keys(themes).sort()).toEqual(['dark', 'deep-dark', 'light']);
+    const shape = (t: (typeof themes)['light']) =>
+      Object.entries(t)
+        .map(([g, v]) => `${g}:${Object.keys(v).sort().join(',')}`)
+        .sort()
+        .join('|');
+    const shapes = Object.values(themes).map(shape);
+    for (const s of shapes) expect(s).toBe(shapes[0]);
+  });
+
+  // セマンティックはプリミティブを参照しなければならない（design-rules.md 1.1）。
+  // 値は HEX（プリミティブと一致する）か、プリミティブのアルファ合成（ColorMix）のみ。
+  // rgba() の直値は禁止 — 以前 bg.scrim が違反していた。
+  it('every semantic color value is a HEX or a primitive ColorMix — never a raw rgba()', () => {
+    for (const [themeName, theme] of Object.entries(themes)) {
+      for (const [group, values] of Object.entries(theme)) {
+        for (const [key, value] of Object.entries(values) as [string, ColorValue][]) {
+          const where = `${themeName}.${group}.${key}`;
+          if (isColorMix(value)) {
+            expect(value.mix.color, where).toMatch(/^#[0-9A-Fa-f]{6}$/);
+            expect(value.mix.alpha, where).toBeGreaterThan(0);
+            expect(value.mix.alpha, where).toBeLessThanOrEqual(1);
+          } else {
+            expect(value, where).toMatch(/^#[0-9A-Fa-f]{6}$/);
+          }
+        }
+      }
+    }
+  });
+
+  it('bg.scrim references a primitive rather than a literal rgba()', () => {
+    for (const [themeName, theme] of Object.entries(themes)) {
+      expect(isColorMix(theme.bg.scrim), `${themeName}.bg.scrim`).toBe(true);
     }
   });
 });
@@ -220,8 +270,19 @@ describe('Semantic Colors', () => {
 // ─── Semantic Typography Tokens ─────────────────────────
 
 describe('Semantic Typography', () => {
-  it('has 10 styles', () => {
-    expect(Object.keys(semanticTypography)).toHaveLength(10);
+  it('has 13 styles', () => {
+    expect(Object.keys(semanticTypography)).toHaveLength(13);
+  });
+
+  // 桁揃えは mono ではなく fontFamily.numeric + tabular-nums で行う。
+  // DM Sans（heading）は tnum 非対応なので数値スタイルに現れてはいけない。
+  it('numeric styles use tabular-nums and never the heading font', () => {
+    const numerics = ['numeric-sm', 'numeric-md', 'numeric-xl'] as const;
+    for (const name of numerics) {
+      const style = semanticTypography[name];
+      expect(style.fontVariantNumeric, name).toBe('tabular-nums');
+      expect(style.fontFamily, name).not.toContain('DM Sans');
+    }
   });
 
   it('each style has all required properties', () => {
@@ -234,7 +295,13 @@ describe('Semantic Typography', () => {
   });
 
   it('headings use heading font family', () => {
-    const headings = ['heading-2xl', 'heading-xl', 'heading-lg', 'heading-md', 'heading-sm'] as const;
+    const headings = [
+      'heading-2xl',
+      'heading-xl',
+      'heading-lg',
+      'heading-md',
+      'heading-sm',
+    ] as const;
     for (const name of headings) {
       expect(semanticTypography[name].fontFamily).toContain('DM Sans');
     }

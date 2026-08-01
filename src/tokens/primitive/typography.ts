@@ -17,12 +17,52 @@
  */
 
 // ─── Font Family ────────────────────────────────────────
+//
+// **フォントの読み込みはこのパッケージの責任範囲外。**
+// ここで定義するのは font-family の「スタック」だけで、パッケージはフォント
+// ファイルを同梱せず、@font-face も link タグも出力しない。実体の調達と読み込みは
+// **消費側プロダクトの責任**（README「フォントの扱い」参照）。
+// 読み込まれていない場合、スタックは system-ui へフォールバックする。
+//
+// Storybook（.storybook/preview.ts）だけは Google Fonts から3書体を読み込んでいる。
+// これはトークンを目視レビューするための Storybook 専用の措置であり、
+// ビルド成果物には含まれない。
+//
+// 数字の字幅について（2026-07-29 ブラウザ実測。
+// 検証ページ: src/stories/NumericAlignment.stories.tsx）
+//
+// | フォント       | 既定の数字        | tnum の効果    | 1,111 / 8,888 (100px) |
+// |----------------|-------------------|----------------|-----------------------|
+// | Noto Sans JP   | **等幅**          | 変化なし（不要） | 揃う                 |
+// | DM Sans        | プロポーショナル   | **効果なし**    | 143px / 261px        |
+// | Noto Sans Mono | 等幅              | 変化なし（不要） | 揃う                 |
+//
+// DM Sans は OpenType の `tnum` フィーチャを持たない。`font-variant-numeric:
+// tabular-nums` も `font-feature-settings: "tnum"` も字幅を変えなかった
+// （同条件で Inter は 40.69/61.88 → 64.84/64.84 と揃うため、ブラウザ側は
+// 正しく tnum を適用している）。したがって **桁を揃えたい数値を heading
+// フォントで組んではならない**。
 export const fontFamily = {
   /** 見出し・UI英語テキスト（DM Sans 優先、日本語フォールバック） */
   heading: '"DM Sans", "Noto Sans JP", system-ui, -apple-system, sans-serif',
   /** 日本語全般 — 本文・UI（Noto Sans JP 優先、英語フォールバック） */
   body: '"Noto Sans JP", "DM Sans", system-ui, -apple-system, sans-serif',
-  /** 数値・ログ・コード */
+  /**
+   * 桁を揃える数値専用（表・KPI・チャート軸ラベル）。
+   *
+   * body から **DM Sans を意図的に外している**。body の第2候補は DM Sans だが、
+   * DM Sans はプロポーショナル数字で tnum も持たないため、Noto Sans JP の
+   * 読み込みに失敗すると桁揃えが崩れる。system-ui へ直接落とすことで、
+   * フォールバック時も `tabular-nums`（semantic 側で指定）が効く経路になる。
+   */
+  numeric: '"Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif',
+  /**
+   * ログ・コード・ID・ハッシュ。
+   *
+   * 数値の桁揃えは mono ではなく fontFamily.numeric + tabular-nums で行う
+   * （Noto Sans JP の数字がもともと等幅であり、本文と字面を揃えられるため）。
+   * mono は「文字単位で位置を数えたいテキスト」に限定する。
+   */
   mono: '"Noto Sans Mono", "JetBrains Mono", "Fira Code", monospace',
 } as const;
 

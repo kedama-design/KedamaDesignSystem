@@ -17,7 +17,13 @@
  *   例: heading/2xl, body/md, caption
  */
 
-import { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing } from '../primitive/typography';
+import {
+  fontFamily,
+  fontSize,
+  fontWeight,
+  lineHeight,
+  letterSpacing,
+} from '../primitive/typography';
 
 // ─── 型定義 ─────────────────────────────────────────────
 export type TypographyStyle = {
@@ -26,6 +32,11 @@ export type TypographyStyle = {
   fontWeight: number;
   lineHeight: number;
   letterSpacing: string;
+  /**
+   * 数字の字形指定（`font-variant-numeric`）。
+   * 桁を揃える数値スタイルだけが持つ。省略時は指定なし。
+   */
+  fontVariantNumeric?: string;
 };
 
 // ─── Heading（見出し） ──────────────────────────────────
@@ -126,6 +137,54 @@ export const overline: TypographyStyle = {
   letterSpacing: letterSpacing.wide,
 };
 
+// ─── Numeric（桁を揃える数値） ──────────────────────────
+//
+// 表の数値・KPI・チャート軸ラベルなど「縦に並べて桁位置を比べる」数値専用。
+//
+// **mono ではなく本文フォント（Noto Sans JP）で組む。** 2026-07-29 の実測で
+// Noto Sans JP の数字はもともと等幅（0〜9 すべて同じ字送り）であることを
+// 確認したため、桁揃えのために字面の違う等幅フォントへ切り替える必要がない。
+// 本文と同じ字面のまま数値が揃うほうが Calm UI の落ち着きに合う。
+// 検証ページ: src/stories/NumericAlignment.stories.tsx
+//
+// `tabular-nums` は Noto Sans JP 上では実質 no-op だが、**フォールバック時の
+// 保険として必ず付ける**。system-ui（SF Pro / Segoe UI）は既定がプロポーショナル
+// 数字で、かつ tnum に対応しているため、この宣言があるかどうかで揃うかが決まる。
+//
+// **heading フォント（DM Sans）は使用禁止。** DM Sans は tnum を持たず、
+// `1,111` と `8,888` の幅が 100px 指定で 143px と 261px にまで開く。
+// 大きな KPI 数値も numeric-xl（body 系）で組むこと。
+
+/** チャート軸ラベル・高密度テーブル — 12.8px (8/10) */
+export const numericSm: TypographyStyle = {
+  fontFamily: fontFamily.numeric,
+  fontSize: fontSize.sm,
+  fontWeight: fontWeight.regular,
+  lineHeight: lineHeight.normal,
+  letterSpacing: letterSpacing.normal,
+  fontVariantNumeric: 'tabular-nums',
+};
+
+/** 表の数値（既定） — 14.22px (8/9) */
+export const numericMd: TypographyStyle = {
+  fontFamily: fontFamily.numeric,
+  fontSize: fontSize.md,
+  fontWeight: fontWeight.regular,
+  lineHeight: lineHeight.normal,
+  letterSpacing: letterSpacing.normal,
+  fontVariantNumeric: 'tabular-nums',
+};
+
+/** KPI・主役の数値 — 32px (8/4)。heading-xl と同サイズだが body 系フォント */
+export const numericXl: TypographyStyle = {
+  fontFamily: fontFamily.numeric,
+  fontSize: fontSize['4xl'],
+  fontWeight: fontWeight.medium,
+  lineHeight: lineHeight.tight,
+  letterSpacing: letterSpacing.normal,
+  fontVariantNumeric: 'tabular-nums',
+};
+
 /**
  * セマンティック タイポグラフィ全体をエクスポート。
  * コンポーネントでの参照例:
@@ -143,4 +202,7 @@ export const semanticTypography = {
   'body-sm': bodySm,
   caption,
   overline,
+  'numeric-sm': numericSm,
+  'numeric-md': numericMd,
+  'numeric-xl': numericXl,
 } as const;

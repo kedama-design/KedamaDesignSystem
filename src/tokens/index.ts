@@ -16,7 +16,6 @@ export {
   primitiveColors,
   primary,
   birch,
-  amber,
   warning,
   danger,
   success,
@@ -37,10 +36,11 @@ export { radius } from './primitive/radius';
 export { shadow } from './primitive/shadow';
 export { breakpoints, contentWidth, containerPadding } from './primitive/breakpoints';
 export { zIndex } from './primitive/zIndex';
-export { motion, duration, easing } from './primitive/motion';
+export { motion, duration, easing, spring, inertia } from './primitive/motion';
 export { borderWidth } from './primitive/borderWidth';
 export { focusRing } from './primitive/focusRing';
 export { opacity, backdropBlur } from './primitive/opacity';
+export { dataVizPrimitives, dataVizStroke, dataVizDash, dataVizHeatmap } from './primitive/dataViz';
 
 // ─── Semantic ───────────────────────────────────────────
 export {
@@ -50,7 +50,30 @@ export {
   border,
   accent,
   status,
+  dataViz,
+  themes,
+  defaultTheme,
+  light,
+  dark,
+  deepDark,
+  darkSurfaceAlt,
+  darkSurfaceVariants,
+  createDark,
+  isColorMix,
+  type SemanticColorTheme,
+  type ThemeName,
+  type DarkSurfaceVariant,
+  type ColorMix,
+  type ColorValue,
+  type ForegroundColors,
+  type BackgroundColors,
+  type BorderColors,
+  type AccentColors,
+  type StatusColors,
+  type DataVizColors,
 } from './semantic/colors';
+
+export { semanticMotion, type SemanticMotionToken } from './semantic/motion';
 
 export {
   semanticTypography,
