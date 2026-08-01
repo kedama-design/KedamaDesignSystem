@@ -162,6 +162,18 @@ Font Family セクション冒頭／`.storybook/preview.ts` の冒頭コメン�
 
 ## 6. 意図的な保留 — Dark surface の既定値
 
+> ### ✅ 決着済み（2026-08-01）— **birch/700 を既定として確定**
+>
+> Phase A-2 で実部品を1画面に載せたページ（`Foundations/Dark Surface Realistic`）を
+> 作り、スクリーンショットで判断した。birch/800 は `data-surface="alt"` として残す。
+>
+> 決め手は「実部品を載せると差がはっきり出た」こと。単色の面を並べただけの
+> `Dark Surface Comparison` では決め手が出なかった。
+>
+> **理由と画像は `docs/phase-a2-decisions.md` §1 を参照。**
+>
+> 以下は保留していた当時の記録。経緯として残す。
+
 **birch/700 と birch/800 のどちらを既定にするかは、プロトタイプ作成時（Storybook 上で
 本番コンポーネントを組む段階）に実画面で決める**（2026-07-29 ユーザー判断）。現状は birch/700。
 
