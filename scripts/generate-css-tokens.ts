@@ -335,7 +335,12 @@ writeFileSync(resolve(__dirname, '../src/styles/tokens.css'), lines.join('\n'), 
  * `:root, [data-theme]` の両方に宣言することで、data-theme がルート以外の
  * 要素に付いていても、その場所のセマンティック値を拾う。
  */
-function buildAliasCss(title: string, notes: string[], map: Record<string, string>): string {
+function buildAliasCss(
+  title: string,
+  notes: string[],
+  map: Record<string, string>,
+  themeBridge = false,
+): string {
   const out = generatedHeader(title, notes);
   out.push(':root,');
   out.push('[data-theme] {');
@@ -344,6 +349,30 @@ function buildAliasCss(title: string, notes: string[], map: Record<string, strin
   }
   out.push('}');
   out.push('');
+
+  if (themeBridge) {
+    out.push('/*');
+    out.push(' * Tailwind ユーティリティへの橋渡し。');
+    out.push(' *');
+    out.push(' * 上の :root ブロックは変数の「値」を与えるだけで、`bg-muted` のような');
+    out.push(' * ユーティリティは生成されない。Tailwind v4 は @theme に登録された名前から');
+    out.push(' * ユーティリティを作るため、取り込んだ shadcn コンポーネントを描画するには');
+    out.push(' * この対応付けが要る。');
+    out.push(' *');
+    out.push(' * `inline` を付ける理由: これらの値は [data-theme] ごとに切り替わる。');
+    out.push(' * inline なしだと Tailwind が @theme の値を :root へ再宣言してしまい、');
+    out.push(' * テーマ切替が効かなくなる。inline は参照を使用箇所で解決させる。');
+    out.push(' */');
+    out.push('@theme inline {');
+    for (const alias of Object.keys(map)) {
+      // radius は色ではないため Tailwind の色名前空間に載せない
+      if (alias === 'radius') continue;
+      out.push(`  --color-${alias}: var(--${alias});`);
+    }
+    out.push('}');
+    out.push('');
+  }
+
   return out.join('\n');
 }
 
@@ -473,6 +502,9 @@ writeFileSync(
       '⚠️  alias-ibuki.css と同時に読み込まないこと（--destructive が衝突する）。',
     ],
     shadcnAliases,
+    // @theme ブリッジを出力する。取り込んだ shadcn コンポーネントが使う
+    // `bg-muted` 等のユーティリティは、これが無いと生成されない。
+    true,
   ),
   'utf-8',
 );

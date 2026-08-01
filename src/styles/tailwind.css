@@ -2,6 +2,18 @@
 @import './tokens.css';
 
 /*
+ * shadcn/ui 互換エイリアス。
+ *
+ * 取り込んだ shadcn コンポーネント（src/components/ui/）が使う
+ * --muted / --primary 等を Kedama トークンへ写像し、あわせて
+ * `bg-muted` などのユーティリティを @theme inline で生成する。
+ *
+ * alias-ibuki.css は読み込まない。--destructive が衝突するため、
+ * Ibuki 互換層は消費者リポジトリ側で読み込む。
+ */
+@import './alias-shadcn.css';
+
+/*
  * Kedama Design System — Tailwind v4 Theme
  *
  * CSS-first config: @theme ディレクティブでトークンのCSS変数を
