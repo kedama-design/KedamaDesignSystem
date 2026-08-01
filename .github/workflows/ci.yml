@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# 同じ ref に新しい push が来たら実行中の古いものを打ち切る
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint / Types / Tests / Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm のバージョンはここで固定する。
+      #
+      # package.json に packageManager フィールドが無いため、ローカルでは
+      # volta 経由の 9.15.9 と corepack 経由の 11.15.1 の両方が解決されうる。
+      # 実際そのせいで `pnpm build`（内部で pnpm を再帰呼び出しする）が
+      # ローカルで失敗する。CI では PATH 上の pnpm を1つに固定して回避する。
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # vitest.config.ts はクラウドストレージ上のチェックアウトでのみ
+      # ワーカーを1本に絞る。CI のパスは判定に一致しないので、ここでは
+      # 既定の並列度で走る。
+      - name: Test
+        run: pnpm test
+
+      # Phase A-1 の完了条件のひとつ。generator を2回走らせて出力が
+      # 一致することを確認する。生成物（tokens.css / alias-*.css）は
+      # .gitignore 対象なので git diff では検証できず、退避して比較する。
+      - name: Verify the token generator is idempotent
+        run: |
+          pnpm generate:tokens
+          cp -R src/styles "$RUNNER_TEMP/styles-first"
+          pnpm generate:tokens
+          diff -r "$RUNNER_TEMP/styles-first" src/styles
+
+      - name: Build
+        run: pnpm build
+# pnpm format:check はまだゲートに入れていない。
+# 現時点で 30 ファイルが Prettier 未適用で、その大半は Phase A-1 より前からの
+# もの。一度 `pnpm format` を通して差分をコミットしてから、上の Lint の隣に
+# 追加すること。
