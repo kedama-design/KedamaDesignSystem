@@ -42,7 +42,11 @@ describe('Badge', () => {
   });
 
   it('applies solid appearance', () => {
-    render(<Badge status="success" appearance="solid">Solid</Badge>);
+    render(
+      <Badge status="success" appearance="solid">
+        Solid
+      </Badge>,
+    );
     const badge = screen.getByText('Solid');
     expect(badge.className).toContain('success-solid');
   });
@@ -50,9 +54,7 @@ describe('Badge', () => {
   // ─── アイコン ─────────────────────────────────────────
 
   it('renders icon when provided', () => {
-    render(
-      <Badge icon={<span data-testid="badge-icon">●</span>}>With Icon</Badge>,
-    );
+    render(<Badge icon={<span data-testid="badge-icon">●</span>}>With Icon</Badge>);
     expect(screen.getByTestId('badge-icon')).toBeInTheDocument();
   });
 
@@ -74,7 +76,11 @@ describe('Badge', () => {
   // ─── HTML属性の透過 ───────────────────────────────────
 
   it('passes through HTML attributes', () => {
-    render(<Badge data-testid="my-badge" title="ステータス">Badge</Badge>);
+    render(
+      <Badge data-testid="my-badge" title="ステータス">
+        Badge
+      </Badge>,
+    );
     const badge = screen.getByTestId('my-badge');
     expect(badge).toHaveAttribute('title', 'ステータス');
   });
@@ -84,14 +90,15 @@ describe('Badge', () => {
   const statuses = ['default', 'success', 'warning', 'danger', 'info'] as const;
   const appearances = ['subtle', 'solid'] as const;
 
-  it.each(
-    statuses.flatMap((s) => appearances.map((a) => [s, a] as const)),
-  )('renders %s/%s without crashing', (status, appearance) => {
-    const { container } = render(
-      <Badge status={status} appearance={appearance}>
-        {status}/{appearance}
-      </Badge>,
-    );
-    expect(container.firstChild).toBeInTheDocument();
-  });
+  it.each(statuses.flatMap((s) => appearances.map((a) => [s, a] as const)))(
+    'renders %s/%s without crashing',
+    (status, appearance) => {
+      const { container } = render(
+        <Badge status={status} appearance={appearance}>
+          {status}/{appearance}
+        </Badge>,
+      );
+      expect(container.firstChild).toBeInTheDocument();
+    },
+  );
 });

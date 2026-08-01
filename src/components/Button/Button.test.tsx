@@ -78,7 +78,11 @@ describe('Button', () => {
 
   it('does not fire onClick when disabled', async () => {
     const onClick = vi.fn();
-    render(<Button disabled onClick={onClick}>Disabled</Button>);
+    render(
+      <Button disabled onClick={onClick}>
+        Disabled
+      </Button>,
+    );
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
   });
@@ -103,7 +107,11 @@ describe('Button', () => {
 
   it('does not fire onClick when loading', async () => {
     const onClick = vi.fn();
-    render(<Button loading onClick={onClick}>Loading</Button>);
+    render(
+      <Button loading onClick={onClick}>
+        Loading
+      </Button>,
+    );
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
   });
@@ -122,14 +130,18 @@ describe('Button', () => {
 
   it('hides iconLeft and shows spinner when loading', () => {
     render(
-      <Button loading iconLeft={<span data-testid="icon-left">+</span>}>Add</Button>,
+      <Button loading iconLeft={<span data-testid="icon-left">+</span>}>
+        Add
+      </Button>,
     );
     expect(screen.queryByTestId('icon-left')).not.toBeInTheDocument();
   });
 
   it('hides iconRight when loading', () => {
     render(
-      <Button loading iconRight={<span data-testid="icon-right">→</span>}>Next</Button>,
+      <Button loading iconRight={<span data-testid="icon-right">→</span>}>
+        Next
+      </Button>,
     );
     expect(screen.queryByTestId('icon-right')).not.toBeInTheDocument();
   });

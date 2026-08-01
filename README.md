@@ -41,11 +41,7 @@ function App() {
       </Card.Header>
       <Card.Body>
         <TextField label="お名前" placeholder="山田 太郎" />
-        <TextField
-          label="検索"
-          leadingIcon={<Search size={16} />}
-          placeholder="キーワード…"
-        />
+        <TextField label="検索" leadingIcon={<Search size={16} />} placeholder="キーワード…" />
       </Card.Body>
       <Card.Footer>
         <Button variant="ghost">キャンセル</Button>
@@ -85,11 +81,11 @@ const gap = spacing[16]; // '16px'
 
 ### 必要な3書体
 
-| スタック | 書体 | 用途 |
-|---|---|---|
-| `--primitive-font-family-heading` | **DM Sans** | 見出し・UI英語テキスト |
-| `--primitive-font-family-body` / `-numeric` | **Noto Sans JP** | 日本語全般・桁を揃える数値 |
-| `--primitive-font-family-mono` | **Noto Sans Mono** | ログ・コード・ID |
+| スタック                                    | 書体               | 用途                       |
+| ------------------------------------------- | ------------------ | -------------------------- |
+| `--primitive-font-family-heading`           | **DM Sans**        | 見出し・UI英語テキスト     |
+| `--primitive-font-family-body` / `-numeric` | **Noto Sans JP**   | 日本語全般・桁を揃える数値 |
+| `--primitive-font-family-mono`              | **Noto Sans Mono** | ログ・コード・ID           |
 
 ### 読み込み例（Google Fonts）
 
@@ -114,14 +110,14 @@ Storybook（`pnpm dev`）は上記3書体を preview で読み込んでいます
 
 ## コンポーネント
 
-| コンポーネント | 説明 |
-|---|---|
-| **Button** | primary / secondary / ghost / danger × sm / md / lg |
-| **Badge** | 5ステータス × subtle / solid |
-| **TextField** | ラベル・ヘルプテキスト・エラー・アイコン対応 |
-| **Card** | Header / Body / Footer のコンパウンドコンポーネント |
-| **Modal** | `<dialog>` ベース、フォーカストラップ、Escape閉じ |
-| **Icon** | Lucide React ベース、39種の業務アイコン |
+| コンポーネント | 説明                                                |
+| -------------- | --------------------------------------------------- |
+| **Button**     | primary / secondary / ghost / danger × sm / md / lg |
+| **Badge**      | 5ステータス × subtle / solid                        |
+| **TextField**  | ラベル・ヘルプテキスト・エラー・アイコン対応        |
+| **Card**       | Header / Body / Footer のコンパウンドコンポーネント |
+| **Modal**      | `<dialog>` ベース、フォーカストラップ、Escape閉じ   |
+| **Icon**       | Lucide React ベース、39種の業務アイコン             |
 
 ## デザイントークン
 

@@ -76,11 +76,21 @@ export const AllVariants: Story = {
             {variant}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Button variant={variant} size="sm">Small</Button>
-            <Button variant={variant} size="md">Medium</Button>
-            <Button variant={variant} size="lg">Large</Button>
-            <Button variant={variant} size="md" disabled>Disabled</Button>
-            <Button variant={variant} size="md" loading>読込中</Button>
+            <Button variant={variant} size="sm">
+              Small
+            </Button>
+            <Button variant={variant} size="md">
+              Medium
+            </Button>
+            <Button variant={variant} size="lg">
+              Large
+            </Button>
+            <Button variant={variant} size="md" disabled>
+              Disabled
+            </Button>
+            <Button variant={variant} size="md" loading>
+              読込中
+            </Button>
           </div>
         </div>
       ))}
@@ -120,9 +130,15 @@ export const WithIcons: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
       <Button iconLeft={<Plus size={16} />}>新規作成</Button>
-      <Button variant="secondary" iconRight={<ArrowRight size={16} />}>次へ進む</Button>
-      <Button variant="ghost" iconLeft={<Plus size={16} />}>追加する</Button>
-      <Button variant="danger" iconLeft={<Plus size={16} />} loading>削除中…</Button>
+      <Button variant="secondary" iconRight={<ArrowRight size={16} />}>
+        次へ進む
+      </Button>
+      <Button variant="ghost" iconLeft={<Plus size={16} />}>
+        追加する
+      </Button>
+      <Button variant="danger" iconLeft={<Plus size={16} />} loading>
+        削除中…
+      </Button>
     </div>
   ),
 };

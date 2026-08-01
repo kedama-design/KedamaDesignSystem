@@ -40,7 +40,6 @@
   --color-birch-800: var(--primitive-color-birch-800);
   --color-birch-900: var(--primitive-color-birch-900);
 
-
   --color-warning-25: var(--primitive-color-warning-25);
   --color-warning-50: var(--primitive-color-warning-50);
   --color-warning-100: var(--primitive-color-warning-100);
@@ -159,7 +158,9 @@
 
   /* Data visualization — チャートは Tier 2 だが色はここで統一する（仕様書 §4） */
   --color-data-viz-categorical-neutral-primary: var(--color-data-viz-categorical-neutral-primary);
-  --color-data-viz-categorical-neutral-secondary: var(--color-data-viz-categorical-neutral-secondary);
+  --color-data-viz-categorical-neutral-secondary: var(
+    --color-data-viz-categorical-neutral-secondary
+  );
   --color-data-viz-categorical-neutral-previous: var(--color-data-viz-categorical-neutral-previous);
   --color-data-viz-emphasis-positive: var(--color-data-viz-emphasis-positive);
   --color-data-viz-axis-default: var(--color-data-viz-axis-default);

@@ -70,29 +70,11 @@ export const WithTrailingIcon: Story = {
 export const AllStates: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '360px' }}>
-      <TextField
-        label="デフォルト"
-        placeholder="入力してください"
-      />
-      <TextField
-        label="入力済み"
-        defaultValue="株式会社ケダマ"
-        helperText="正式名称で入力"
-      />
-      <TextField
-        label="フォーカス（クリックして確認）"
-        placeholder="ここをクリック"
-      />
-      <TextField
-        label="エラー"
-        defaultValue="abc"
-        error="数値を入力してください"
-      />
-      <TextField
-        label="無効"
-        defaultValue="変更できません"
-        disabled
-      />
+      <TextField label="デフォルト" placeholder="入力してください" />
+      <TextField label="入力済み" defaultValue="株式会社ケダマ" helperText="正式名称で入力" />
+      <TextField label="フォーカス（クリックして確認）" placeholder="ここをクリック" />
+      <TextField label="エラー" defaultValue="abc" error="数値を入力してください" />
+      <TextField label="無効" defaultValue="変更できません" disabled />
       <TextField
         label="検索（アイコン付き）"
         placeholder="検索…"

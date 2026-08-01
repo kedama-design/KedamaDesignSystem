@@ -45,16 +45,17 @@ Kedama トークンで再スタイルして、Kedama のレジストリから各
 
 ## 2. 対象リポジトリと調査基準
 
-| | パス | 役割 |
-|---|---|---|
-| KedamaDesignSystem | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/KedamaDesignSystem` | 土台・変更対象 |
-| Ibuki-Code-v2 | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/Ibuki-Code-v2` | 移植元・参照のみ。変更しない |
-| スラスラスタジオ（こだまポータル）**調査ルート** | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/スラスラスタジオ` | **最初の適用先**・参照のみ。変更しない。**これ自体はGitリポジトリではない**（UX成果物や仕様書を含む作業ディレクトリ） |
-| └ アプリ **Gitリポジトリ** | `.../スラスラスタジオ/surasura-seo-portal` | 上記の内側。ここが実際のGitリポジトリ |
+|                                                  | パス                                                                                              | 役割                                                                                                                  |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| KedamaDesignSystem                               | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/KedamaDesignSystem` | 土台・変更対象                                                                                                        |
+| Ibuki-Code-v2                                    | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/Ibuki-Code-v2`      | 移植元・参照のみ。変更しない                                                                                          |
+| スラスラスタジオ（こだまポータル）**調査ルート** | `/Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/スラスラスタジオ`   | **最初の適用先**・参照のみ。変更しない。**これ自体はGitリポジトリではない**（UX成果物や仕様書を含む作業ディレクトリ） |
+| └ アプリ **Gitリポジトリ**                       | `.../スラスラスタジオ/surasura-seo-portal`                                                        | 上記の内側。ここが実際のGitリポジトリ                                                                                 |
 
 GitHub: `https://github.com/Kedama-Yuuki/KedamaDesignSystem.git`（branch: main）
 
 **調査基準**
+
 - Kedama 基準HEAD: **`dc3901a` 以降**（本書と親仕様書がリポジトリに追加されたコミット。
   それ以前の HEAD にはこの2ファイルが存在しない）。本書の微修正で HEAD が進む場合があるが、
   調査対象のコードには影響しない。調査開始時点の実際の値を報告書に記載すること
@@ -78,14 +79,17 @@ Q1・Q4・Q5・**Q8** に、適用先（すらすらスタジオ側）が見え�
 参照往復を減らすための再掲です。**正は親仕様書**であり、齟齬があれば親仕様書を優先してください。
 
 ### Tier 0 — 基礎プリミティブ（プロダクト非依存、npm配布）
+
 Button／Badge／Card（+ CardHeader / CardTitle / CardContent / CardFooter）／Skeleton／Spinner／
 Drawer／ThemeProvider・ThemeToggle／IconSwap／RollingText／Accordion（新規）／Toast
 
 ### Tier 1 — チャート・可視化プリミティブ（npm配布）
+
 BarH／Donut／Gauge／Sparkline／TrendLine／Waterfall／TimelineRow／Grass（GitHub草ヒートマップ）／
 palette・date-math ユーティリティ／TrackBar
 
 ### Tier 2 — 複合パターン（shadcnレジストリでコピー配布。**Phase A では対象外、Phase B で作る**）
+
 **AppShell 一式（最優先・親仕様書 §4.5）**：AppShell／SidebarNav／IconRail／AppHeader／
 StatusBar／RightPane ＋ 認証前画面用の AuthShell
 
@@ -96,6 +100,7 @@ Sheet／CommandPalette／FilterBar・SavedViewPicker（汎用部分）
 ActionCard／FormCard／Section／EmptyState
 
 ### Tier 3 — 明示的にプロダクト固有（**汎用化しない・移植対象外**）
+
 **Ibuki 由来**：KpiCard（`@ibuki/shared` の formatNumber 依存）／SiteFaviconChip／
 **Radar18**（18観点・5分類決め打ち）
 
@@ -105,6 +110,7 @@ EditorCanvas／SelectionReviewToolbar／CommentThread／MetadataInspector／Vers
 VersionDiff／ApprovalBar／PublishStatus
 
 ### ゴールの定義（親仕様書 §1）
+
 **すらすらスタジオ（codama portal）の本番画面が実際に新パッケージに載せ替わった状態
 （親仕様書 §7 Phase C の完了）をもってゴール達成とする。**ライブラリが公開できる状態に
 なっただけでは未達。
@@ -118,6 +124,7 @@ Siteimprove Alfa を備えた作り込まれたアプリである。UIも実装�
 Ibuki への適用は Phase D/E に後置された。
 
 ### Phase A の現行スコープ（親仕様書 §7）
+
 - **Phase A-0（意思決定）** — 本調査そのもの
 - **Phase A-1（トークン層）** — primitive → semantic の順に確定。3テーマ、data-vizトークン、
   **モーショントークン（Q8）**を含む。`design-rules.md` 3.3 によりコンポーネントより先に完了させる
@@ -144,12 +151,12 @@ GitHub Packages の npm レジストリは、パッケージのスコープ名�
 親仕様書 §0.6 の Dark／Deep-dark 再配色マッピング（仮）について、WCAG 2.x の相対輝度式で
 3テーマ全ペアを実測した。**以下4箇所が基準未達**であることが判明している。
 
-| 箇所 | 現案の値 | 実測 | 必要基準 |
-|---|---|---|---|
-| Light `--border-strong` | birch/300 `#A29E93` | 2.50:1 | 非テキスト 3:1 |
-| Dark `--text-muted` | birch/400 `#858073` on surface birch/700 | 3.45:1 | 本文 4.5:1 |
-| Dark `--text-faint` | birch/600 `#4B473D` on surface birch/700 | 1.47:1 | ほぼ不可視 |
-| Deep-dark `--text-faint` | birch/600 `#4B473D` on surface birch/800 | 1.95:1 | ほぼ不可視 |
+| 箇所                     | 現案の値                                 | 実測   | 必要基準       |
+| ------------------------ | ---------------------------------------- | ------ | -------------- |
+| Light `--border-strong`  | birch/300 `#A29E93`                      | 2.50:1 | 非テキスト 3:1 |
+| Dark `--text-muted`      | birch/400 `#858073` on surface birch/700 | 3.45:1 | 本文 4.5:1     |
+| Dark `--text-faint`      | birch/600 `#4B473D` on surface birch/700 | 1.47:1 | ほぼ不可視     |
+| Deep-dark `--text-faint` | birch/600 `#4B473D` on surface birch/800 | 1.95:1 | ほぼ不可視     |
 
 特に Light の `--border-strong` は、Kedama の `semantic/colors.ts` が唯一
 「WCAG 非テキストコントラスト 3:1 確保」とコメントを付けて設計していた `border.strong`
@@ -176,11 +183,11 @@ GitHub Packages の npm レジストリは、パッケージのスコープ名�
 **注意：Q番号は識別子であり、優先度順ではありません**（他文書から Q番号で参照されているため、
 追加時も番号を振り直していません）。着手順は下表に従ってください。
 
-| 優先度 | 設問 | ブロックしている工程 |
-|---|---|---|
-| **最優先** | Q1（既存コンポーネントの衝突）・Q2（トークン命名の一本化） | Phase A-1／A-2 の両方。ここが未決だと全コンポーネントの書き換えが発生する |
-| **高** | Q3（Figmaパイプラインの稼働状況）・**Q8（モーショントークン）**・Q9（すらすらスタジオの棚卸し） | Q3/Q8 は Phase A-1（トークン層）を直接ブロックする。Q9 は Phase B/C の作るものを規定する |
-| **中** | Q4（Base UIの振り分け）・Q5（Tier 1の棚卸し）・Q6（公開方式）・Q7（コントラスト修正と完了条件） | Phase A-2 以降 |
+| 優先度     | 設問                                                                                            | ブロックしている工程                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **最優先** | Q1（既存コンポーネントの衝突）・Q2（トークン命名の一本化）                                      | Phase A-1／A-2 の両方。ここが未決だと全コンポーネントの書き換えが発生する                |
+| **高**     | Q3（Figmaパイプラインの稼働状況）・**Q8（モーショントークン）**・Q9（すらすらスタジオの棚卸し） | Q3/Q8 は Phase A-1（トークン層）を直接ブロックする。Q9 は Phase B/C の作るものを規定する |
+| **中**     | Q4（Base UIの振り分け）・Q5（Tier 1の棚卸し）・Q6（公開方式）・Q7（コントラスト修正と完了条件） | Phase A-2 以降                                                                           |
 
 ### Q1【最優先】既存コンポーネントと移植対象の衝突をどう解消するか
 
@@ -190,10 +197,12 @@ GitHub Packages の npm レジストリは、パッケージのスコープ名�
 定義していない。このまま実装に入るとテスト済みの既存資産が黙って上書きされる恐れがある。
 
 **見てほしいもの**
+
 - `KedamaDesignSystem/src/components/Button/`, `Badge/`, `Card/`（実装・テスト・stories）
 - `Ibuki-Code-v2/packages/ui/src/components/button.tsx`, `badge.tsx`, `card.tsx`
 
 **答えてほしいこと**
+
 - 3コンポーネントそれぞれについて、Props API・バリアント・状態の対応表（どちらに何があるか）
 - 各コンポーネントの推奨方針：Kedama版を正としてIbukiの不足機能を足す／Ibuki版で置換／統合。
   判断根拠つきで
@@ -215,6 +224,7 @@ Kedama 自身の `docs/design-rules.md` 1.1 は「セマンティックトーク
 後で全コンポーネントの書き換えになる。
 
 **見てほしいもの**
+
 - `KedamaDesignSystem/src/tokens/primitive/colors.ts`, `src/tokens/semantic/colors.ts`
 - `KedamaDesignSystem/docs/design-rules.md` 1.1・1.2
 - `KedamaDesignSystem/docs/cross-product-ui-library-spec.md` §0.6・§3
@@ -222,6 +232,7 @@ Kedama 自身の `docs/design-rules.md` 1.1 は「セマンティックトーク
 - `Ibuki-Code-v2/packages/ui/src/styles/globals.css`
 
 **答えてほしいこと**
+
 - Kedama semantic のキーと Ibuki CSS変数の**対応表**（1:1にならない箇所を明示）
 - 一本化の方式として現実的な選択肢と推奨案。想定される候補は次の3つだが、他にあれば提案可
   - (a) Kedama semantic を正とし、Ibuki CSS変数は semantic を参照するエイリアス層として生成する
@@ -238,12 +249,14 @@ Dark トークンを直接追加すると、次のFigma同期で上書き・消�
 設計文書だけあって未実装なのか、実際にワークフローが動いているのかを確認したい。
 
 **見てほしいもの**
+
 - `KedamaDesignSystem/.github/workflows/`（存在するか、`tokens/**` を監視しているか）
 - `KedamaDesignSystem/` 直下の `tokens/` ディレクトリや `style-dictionary` 関連設定の有無
 - `package.json` の scripts・devDependencies に Style Dictionary があるか
 - `src/tokens/` の各ファイルが手書きか生成物か（ヘッダコメント・gitログで判断）
 
 **答えてほしいこと**
+
 - パイプラインの実装状況（未着手／部分実装／稼働中）
 - 稼働中の場合、Dark トークンを追加する正しい経路（Figma側に先に足すべきか、
   コード側で足してもよいか、パイプラインを一時停止すべきか）
@@ -278,12 +291,14 @@ Base UI にも依存していない。一方 Tier 0 には Drawer・Accordion・
 これを失わずに移すのが要件。
 
 **見てほしいもの**
+
 - `KedamaDesignSystem/src/components/Modal/`（ネイティブ実装の完成度）
 - `Ibuki-Code-v2/packages/ui/src/components/drawer.tsx`（コメント含めて全文）
 - `Ibuki-Code-v2/docs/prototypes/ibuki_prototype.html` の `.acc`（アコーディオン）
 - Tier 0 の対象一覧は §3 を参照
 
 **答えてほしいこと**
+
 - Tier 0 の各コンポーネントについて「ネイティブ/自作で十分」「Base UI 推奨」「要検証」の3分類
 - 特に Drawer について、Kedama の Modal（`<dialog>`）を拡張する案と Base UI Dialog を導入する案の
   比較（Ibuki drawer.tsx が担保しているフォーカストラップ・`aria-hidden` の他要素適用・
@@ -303,6 +318,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 分類されるため移植対象外**である。ファイル単位の棚卸しから始めてほしい。
 
 **見てほしいもの**
+
 - `Ibuki-Code-v2/packages/ui/src/charts/` 配下の**全ファイル**
 - `Ibuki-Code-v2/packages/ui/src/components/track-bar.tsx`
 - `Ibuki-Code-v2/packages/ui/src/index.ts`, `src/charts/index.ts`, `src/components/index.ts`（公開API）
@@ -310,6 +326,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 - `KedamaDesignSystem/package.json`, `vite.config.ts`（library mode のビルド設定）
 
 **答えてほしいこと**
+
 - **`charts/` 配下および TrackBar の全ファイル棚卸し**。各ファイルを次の3つに分類すること
   1. Tier 1 として移植する公開コンポーネント
   2. 内部ユーティリティ（公開せず一緒に移すもの。palette / date-math / grass-math 等）
@@ -317,6 +334,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 
   分類の結果として「Tier 1 は結局いくつのコンポーネントか」を確定させてほしい
   （親仕様書の記載は概数であり、正確な数え方が定まっていない）
+
 - Recharts を dependencies / peerDependencies どちらにすべきかの判断と根拠
   （ライブラリのバンドルサイズ・消費側での重複インストール回避の観点）
 - Recharts に実依存しているチャートと、自前SVGのみで完結しているチャートの切り分け
@@ -328,6 +346,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 **なぜ**: 4.1 の通り `@kedama/design-system` は GitHub Packages でそのまま公開できない。
 
 **答えてほしいこと** — 次の3案の比較と推奨（他案があれば提案可）
+
 - (a) GitHub Organization `kedama` を作成しリポジトリを移管して `@kedama/design-system` を維持
 - (b) パッケージ名を `@kedama-yuuki/design-system` に変更
 - (c) git依存（`github:Kedama-Yuuki/KedamaDesignSystem#main`）に切り替えてスコープ制約を回避
@@ -341,6 +360,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 **答えてほしいこと**
 
 **(1) コントラスト修正案のレビュー** — 4.2 の修正案について
+
 - `--text-faint` を装飾ティアとして 3:1 基準に緩める判断の是非
 - Dark の `surface`=birch/700 が明るく、テキスト階調の余地が構造的に圧迫されている点。
   bg/surface のステップ選定自体を見直す案があれば提示してほしい
@@ -377,6 +397,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 足すのは順序違反になる。
 
 **確定済みの前提**（覆さないでほしい）
+
 - ライブラリは **Motion**（パッケージ名 `motion`、旧 `framer-motion`）
 - 依存は **peerDependency**（消費側との二重インストール回避）
 - 物理演算は **spring と inertia の2つ**。弾性・バウンス・減衰は spring のパラメータ違いであり
@@ -390,6 +411,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
   同リポジトリの図版類は CC BY-NC のため持ち込み厳禁
 
 **見てほしいもの**
+
 - 親仕様書 §3.5（本Qの前提すべて）
 - `KedamaDesignSystem/docs/design-rules.md` 1.1・1.2・3.3
 - `KedamaDesignSystem/src/tokens/` の既存2層構造（motionカテゴリを足す先）
@@ -400,6 +422,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 - Nexvyn UI のリポジトリ（**パラメータ値の調査目的のみ**）
 
 **答えてほしいこと**
+
 - **モーショントークンの2層設計案**。primitive層に何を置き（spring設定の実体：
   `stiffness`/`damping`/`mass` の組、または `bounce`/`visualDuration` の組、inertia設定の実体）、
   semantic層にどんな用途名を置くか（`motion.enter` / `motion.exit` / `motion.value-change` /
@@ -420,6 +443,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 
   比較には **SSR（Next.js App Router の Server/Client 境界）での扱い**、**複数配置された場合の
   挙動**、**既存 `ThemeProvider` の API とテストへの影響**を含めること
+
 - `prefers-reduced-motion` 時のフォールバック方針（アニメーションを完全に切るのか、
   duration を極小にするのか、opacity のみ残すのか）
 - **推奨バージョンは確認日と公式URLを併記すること**
@@ -433,6 +457,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 を確定する必要がある。
 
 **確定済みの前提**（覆さないでほしい）
+
 - 作り直すのは **presentational 層のみ**。API route・認可・Prisma のスキーマ分離・
   better-auth の認証フロー・BullMQ ワーカー・MCPサーバーは触らない
 - 不足部品は **shadcn/ui（Base UI variant）を Kedama が取り込み・再スタイルして配る**（親仕様書 §2.1.5）。
@@ -446,6 +471,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 - bmad-ux 側の discovery は中断済み。**「Kedama から段階移行する」という旧仮説は破棄済み**
 
 **見てほしいもの**
+
 - `surasura-seo-portal/src/app/` 配下の全ルート（特に `(internal)` と `(client)` のルートグループ構成）
 - `(client)/client/(app)/articles/[id]/review-shell.tsx`（46KB。最大の塊）
 - `(internal)/articles/article-table.tsx`（TanStack Table の既存利用）
@@ -458,6 +484,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
 - `seo-portal-dev-spec-v2.3-FINAL.md` §10（画面一覧の正本）
 
 **答えてほしいこと**
+
 - **画面インベントリ**（ルート単位）と、各画面が使っている UI パターンの抽出。
   memlog に「主要画面12・実装済み9・部分実装1・未実装2」とあるので、その裏取りも含めて
 - **ルートグループとレイアウトの構成分析**。ログイン画面にサイドバーが出る不具合の原因を
@@ -479,6 +506,7 @@ Kedama のセマンティック層に存在しない**ため、追加設計が�
   3. **実装後に追加すべきテストケース**
 
   実装後にしか判定できないものは、その旨を明記すること
+
 - ベンチマーク調査 §8 の「プロダクト固有コンポーネント」17件について、
   **Tier 2（汎用ブロック）／Tier 3（プロダクト固有）のどちらに振り分けるべきか**の提案
 - **既存仮説の反証可能性の検証**：本書と親仕様書 §4.6 は「現行UIへの不満の主因はアプリシェルが
@@ -530,6 +558,7 @@ Kedama 自身のルール（`docs/design-rules.md` 3.3）が
 ## 7. 参照ファイル一覧
 
 ### KedamaDesignSystem（土台）
+
 - `docs/cross-product-ui-library-spec.md` — 親仕様書 **v0.8**（本件の全体像。**Q2/Q4/Q7/Q8/Q9で必読**）
 - `docs/design-principles.md` — Calm UI のデザイン哲学と優先順位
 - `docs/design-rules.md` — トークン2層ルール・命名規則・AI協業ルール（**特に 1.1 / 1.2 / 3.3**）
@@ -542,6 +571,7 @@ Kedama 自身のルール（`docs/design-rules.md` 3.3）が
 - `ROADMAP.md`, `CLAUDE.md`, `AGENTS.md`
 
 ### Ibuki-Code-v2（移植元・参照のみ）
+
 - `docs/planning/25_design_system.md` — Ibuki のデザイントークン仕様（CSS変数の定義元）
 - `docs/planning/32_screen_spec.md` — 画面仕様。**§6.5 に本件の発端となった6つのアンチパターン**
 - `docs/planning/30_uiux_implementation_guide.md`, `37_uiux_completion_wbs.md`
@@ -551,6 +581,7 @@ Kedama 自身のルール（`docs/design-rules.md` 3.3）が
 - `packages/ui/src/styles/globals.css` — CSS変数の実体
 
 ### スラスラスタジオ（最初の適用先・参照のみ）
+
 - `surasura-seo-portal/src/app/` — 全ルート。`(internal)` / `(client)` のルートグループ構成
 - `surasura-seo-portal/src/app/design-tokens.css`（23KB）／`kedama-theme.css` — 既存のトークン統合の試み
 - `surasura-seo-portal/vendor/kedama-design-system/` — 導入済みの `@kedama/design-system` 0.1.0
@@ -565,5 +596,6 @@ Kedama 自身のルール（`docs/design-rules.md` 3.3）が
 - `CLAUDE.md` §9 — 新規本番依存の追加には承認が必要、MIT優先、等
 
 ### 外部参照
+
 - [OpenStatusHQ/openstatus-template](https://github.com/OpenStatusHQ/openstatus-template) — Tier 2 の参考実装
 - [GitHub Packages / npm registry ドキュメント](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) — Q6 の制約の根拠（確認日 2026-07-28）

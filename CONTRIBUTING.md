@@ -29,21 +29,22 @@ const componentVariants = cva(
   // ベーススタイル（セマンティックトークンのみ使用）
   ['...'],
   {
-    variants: { /* ... */ },
-    defaultVariants: { /* ... */ },
+    variants: {
+      /* ... */
+    },
+    defaultVariants: {
+      /* ... */
+    },
   },
 );
 
 export interface ComponentNameProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof componentVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof componentVariants> {
   // Props 定義
 }
 
 export function ComponentName({ className, ...props }: ComponentNameProps) {
-  return (
-    <div className={cn(componentVariants({}), className)} {...props} />
-  );
+  return <div className={cn(componentVariants({}), className)} {...props} />;
 }
 
 ComponentName.displayName = 'ComponentName';
@@ -120,13 +121,13 @@ pnpm dev          # Storybook で表示確認
 
 ### 命名
 
-| 対象 | 規約 | 例 |
-|---|---|---|
-| コンポーネント | PascalCase | `Button`, `TextField` |
-| Props 型 | PascalCase + Props | `ButtonProps`, `TextFieldProps` |
-| バリアント定義 | camelCase + Variants | `buttonVariants` |
-| ファイル（コンポーネント） | PascalCase | `Button.tsx` |
-| ファイル（ユーティリティ） | camelCase | `cn.ts` |
+| 対象                       | 規約                 | 例                              |
+| -------------------------- | -------------------- | ------------------------------- |
+| コンポーネント             | PascalCase           | `Button`, `TextField`           |
+| Props 型                   | PascalCase + Props   | `ButtonProps`, `TextFieldProps` |
+| バリアント定義             | camelCase + Variants | `buttonVariants`                |
+| ファイル（コンポーネント） | PascalCase           | `Button.tsx`                    |
+| ファイル（ユーティリティ） | camelCase            | `cn.ts`                         |
 
 ### アクセシビリティ
 

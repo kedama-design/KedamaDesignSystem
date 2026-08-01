@@ -19,6 +19,7 @@ UIの実装時は、以下のソースファイルを参照して最新の定義
 /Users/y.higashimori/Library/CloudStorage/Dropbox/100_Claude/Projects/active/KedamaDesignSystem
 
 参照すべきファイル:
+
 - 開発ルール・技術スタック: CLAUDE.md
 - デザイン原則: docs/design-principles.md
 - デザインルール（コンポーネント設計規約、命名規則、AI協業ルール）: docs/design-rules.md

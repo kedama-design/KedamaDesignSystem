@@ -12,9 +12,9 @@ Phase A-1（トークン層）の実装中に行った判断の記録。
 
 ## 1. 人間が決めた設計判断
 
-| 論点 | 決定 | 根拠 |
-|---|---|---|
-| Dark surface の比較方法 | **surface だけ**を birch/700 ↔ birch/800 で切り替える。page は birch/800 固定 | ユーザー判断。alt では page と surface が同色になり、面の分離は border.muted のヘアラインだけが担う。§0.6 が Deep-dark の `--bg-sidebar` で既に採っているパターンと同じ考え方 |
+| 論点                        | 決定                                                                                                           | 根拠                                                                                                                                                                                                |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dark surface の比較方法     | **surface だけ**を birch/700 ↔ birch/800 で切り替える。page は birch/800 固定                                  | ユーザー判断。alt では page と surface が同色になり、面の分離は border.muted のヘアラインだけが担う。§0.6 が Deep-dark の `--bg-sidebar` で既に採っているパターンと同じ考え方                       |
 | data-viz プリミティブの範囲 | 色は既存プリミティブの alias（報告書 Q5 どおり）。**加えて非色のプリミティブを新設**（`primitive/dataViz.ts`） | ユーザー判断。線幅・破線パターン・ヒートマップのセル寸法は spacing / borderWidth の意味論と別物で、既存プリミティブのどこにも無かった。値は Ibuki プロトタイプの実測（`stroke-dasharray="4 4"` 等） |
 
 ---
@@ -73,14 +73,14 @@ Phase A-1（トークン層）の実装中に行った判断の記録。
 
 ## 3. 仕様書に無く、実装上必要になった追加
 
-| 追加 | 理由 |
-|---|---|
-| `fg.secondary` | §0.6 の `--text-light`（birch/700）に対応する階調が Kedama に無かった（報告書 Q2「Kedama には secondary text が1段しかない」） |
-| `bg.sidebar` | Light では surface と同値だが Dark 系では分離する（§0.6: Dark の `--bg-sidebar` は birch/900、`--surface` は birch/700） |
-| `bg.subtle-strong` | Ibuki `--surface-300` に対応する段が無かった |
-| `border` 階調の再定義 | §0.6 判断3 に従い Light の `border.default` を birch/300 → birch/200、`border.muted` を birch/200 → birch/100 に。`border.strong` だけは §0.7 の例外どおり birch/400 を維持 |
-| `accent.danger` 一式 | Button の danger バリアントが `hover:bg-danger-700` とプリミティブを直参照していた（報告書 Q2 の指摘）。`status.danger` は「状態の表示」で hover/active を持たないため、破壊的**アクション**の面として別カテゴリを立てた |
-| `bg.scrim` の型 | `rgba(4,3,2,0.5)` の直値を廃し `{ mix: { color: birch[900], alpha: opacity.scrim } }` に変更。generator が `color-mix(in srgb, var(--primitive-color-birch-900) 50%, transparent)` を出力するため、プリミティブ参照が保たれる |
+| 追加                  | 理由                                                                                                                                                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fg.secondary`        | §0.6 の `--text-light`（birch/700）に対応する階調が Kedama に無かった（報告書 Q2「Kedama には secondary text が1段しかない」）                                                                                                |
+| `bg.sidebar`          | Light では surface と同値だが Dark 系では分離する（§0.6: Dark の `--bg-sidebar` は birch/900、`--surface` は birch/700）                                                                                                      |
+| `bg.subtle-strong`    | Ibuki `--surface-300` に対応する段が無かった                                                                                                                                                                                  |
+| `border` 階調の再定義 | §0.6 判断3 に従い Light の `border.default` を birch/300 → birch/200、`border.muted` を birch/200 → birch/100 に。`border.strong` だけは §0.7 の例外どおり birch/400 を維持                                                   |
+| `accent.danger` 一式  | Button の danger バリアントが `hover:bg-danger-700` とプリミティブを直参照していた（報告書 Q2 の指摘）。`status.danger` は「状態の表示」で hover/active を持たないため、破壊的**アクション**の面として別カテゴリを立てた      |
+| `bg.scrim` の型       | `rgba(4,3,2,0.5)` の直値を廃し `{ mix: { color: birch[900], alpha: opacity.scrim } }` に変更。generator が `color-mix(in srgb, var(--primitive-color-birch-900) 50%, transparent)` を出力するため、プリミティブ参照が保たれる |
 
 ---
 
@@ -92,12 +92,12 @@ Phase A-1（トークン層）の実装中に行った判断の記録。
 100px 指定で実測。ブラウザが `tnum` を適用できることを Inter で対照確認した。
 検証ページ: `src/stories/NumericAlignment.stories.tsx`
 
-| フォント | 既定の数字 | `tabular-nums` の効果 | 判定 |
-|---|---|---|---|
-| **Noto Sans JP**（body） | **等幅**（0〜9 すべて 55.5px） | 変化なし（既に揃っているため不要） | ✅ 桁が揃う |
-| **DM Sans**（heading） | プロポーショナル（`1`=31.2px / `8`=60.8px） | **効果なし**。`font-feature-settings:"tnum"` でも変わらず | ❌ 揃わない |
-| Noto Sans Mono | 等幅 | 変化なし | ✅（ただし不要） |
-| Inter（対照） | プロポーショナル（40.69 / 61.88） | **64.84 / 64.84 に揃う** | ブラウザ側は正常 |
+| フォント                 | 既定の数字                                  | `tabular-nums` の効果                                     | 判定             |
+| ------------------------ | ------------------------------------------- | --------------------------------------------------------- | ---------------- |
+| **Noto Sans JP**（body） | **等幅**（0〜9 すべて 55.5px）              | 変化なし（既に揃っているため不要）                        | ✅ 桁が揃う      |
+| **DM Sans**（heading）   | プロポーショナル（`1`=31.2px / `8`=60.8px） | **効果なし**。`font-feature-settings:"tnum"` でも変わらず | ❌ 揃わない      |
+| Noto Sans Mono           | 等幅                                        | 変化なし                                                  | ✅（ただし不要） |
+| Inter（対照）            | プロポーショナル（40.69 / 61.88）           | **64.84 / 64.84 に揃う**                                  | ブラウザ側は正常 |
 
 **結論**: 提案どおり mono をやめてよい。ただし理由は「tnum が効くから」ではなく
 **「Noto Sans JP の数字がもともと等幅だから」**である。DM Sans は OpenType の `tnum`
@@ -122,13 +122,13 @@ Phase A-1（トークン層）の実装中に行った判断の記録。
 
 ## 5. 確認事項への回答（2026-07-29 ユーザー判断・すべて反映済み）
 
-| # | 論点 | 決定 | 反映先 |
-|---|---|---|---|
-| 1 | status `-bg` を `/50` 維持するか | **承認。`/50` を維持** | 仕様書 §0.6 の該当2行を `/50` に修正し理由を注記。実装は変更なし |
-| 2 | Deep-dark サーフェスは仕様書と実装どちらが正か | **実装が正。仕様書を修正** | 下記の2箇所 |
-| 3 | `feedback-press` の割当 | **`spring.press` に変更。報告書 Q8 が誤り** | `semantic/motion.ts` を修正。報告書 Q8 に「訂正1」を追記 |
-| 4 | Web フォント読み込みの実施時期 | **A-2 ではなく A-1（今）で実施** | `.storybook/preview.ts` で Google Fonts を読込。方針を README と `primitive/typography.ts` に明記 |
-| 5 | Dark surface の最終決定 | **比較ストーリーを用意してそこで停止** | `src/stories/DarkSurfaceComparison.stories.tsx`。決定は目視比較後 |
+| #   | 論点                                           | 決定                                        | 反映先                                                                                            |
+| --- | ---------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | status `-bg` を `/50` 維持するか               | **承認。`/50` を維持**                      | 仕様書 §0.6 の該当2行を `/50` に修正し理由を注記。実装は変更なし                                  |
+| 2   | Deep-dark サーフェスは仕様書と実装どちらが正か | **実装が正。仕様書を修正**                  | 下記の2箇所                                                                                       |
+| 3   | `feedback-press` の割当                        | **`spring.press` に変更。報告書 Q8 が誤り** | `semantic/motion.ts` を修正。報告書 Q8 に「訂正1」を追記                                          |
+| 4   | Web フォント読み込みの実施時期                 | **A-2 ではなく A-1（今）で実施**            | `.storybook/preview.ts` で Google Fonts を読込。方針を README と `primitive/typography.ts` に明記 |
+| 5   | Dark surface の最終決定                        | **比較ストーリーを用意してそこで停止**      | `src/stories/DarkSurfaceComparison.stories.tsx`。決定は目視比較後                                 |
 
 ### 2 の内訳（単純な値の差し替えではなく2箇所）
 
@@ -179,9 +179,9 @@ A-1 のブロッカーにはしない。理由は3つ。
 
 ### 比較の材料（用意済み）
 
-| | 場所 |
-|---|---|
-| Storybook | `Foundations/Dark Surface Comparison`（左右に並べたミニ画面） |
+|                          | 場所                                                                                                                 |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Storybook                | `Foundations/Dark Surface Comparison`（左右に並べたミニ画面）                                                        |
 | Ibuki プロトタイプ実画面 | scratchpad の `ibuki-prototype-kedama-compare.html`。29画面が Kedama 配色で動く。右下トグルで theme / surface を切替 |
 
 Storybook の `Foundations/Dark Surface Comparison` で左右に並べて比較できる。
@@ -205,10 +205,10 @@ Storybook の `Foundations/Dark Surface Comparison` で左右に並べて比較�
 Badge に `accent`（ブランド/選択）を追加する検討中に、**`accent.primary` と
 `status.success` が判別できない**ことが実測で判明した。
 
-| ペア | ΔE | 色覚 D 型 |
-|---|---|---|
-| accent vs success（solid） | **0.042** | 0.038 |
-| accent vs success（subtle 背景） | **0.023** | 0.020 |
+| ペア                             | ΔE        | 色覚 D 型 |
+| -------------------------------- | --------- | --------- |
+| accent vs success（solid）       | **0.042** | 0.038     |
+| accent vs success（subtle 背景） | **0.023** | 0.020     |
 
 ΔE 0.02 は「ようやく違いが分かる」水準で、実質判別不能だった。
 
@@ -218,14 +218,14 @@ amber(82.1°) と birch(88.8°) は 7.8° しか離れていなかった。
 
 ### 7.2 新しい色相の出典
 
-| パレット | 色相 | 出典 |
-|---|---|---|
-| primary | 159.3° | Starbucks Green Accent `#00754A` |
-| success | 145.4° | Notion green `#1aae39` |
-| warning | 84.0° | Starbucks yellow `#fbbc05` |
-| danger | 29.6° | Starbucks red `#c82014` |
-| info | 254.3° | Notion blue `#0075de` |
-| birch | 暖色 | **変更なし**（Calm UI の核） |
+| パレット | 色相   | 出典                             |
+| -------- | ------ | -------------------------------- |
+| primary  | 159.3° | Starbucks Green Accent `#00754A` |
+| success  | 145.4° | Notion green `#1aae39`           |
+| warning  | 84.0°  | Starbucks yellow `#fbbc05`       |
+| danger   | 29.6°  | Starbucks red `#c82014`          |
+| info     | 254.3° | Notion blue `#0075de`            |
+| birch    | 暖色   | **変更なし**（Calm UI の核）     |
 
 明度カーブは現行の実測値を踏襲（`100→90, 200→80 … 900→10` の線形、`25=97.6 / 50=95`）。
 純白・純黒の混入なし。彩度は大幅に向上（primary/500 が C 0.073 → **0.114**）。
@@ -237,11 +237,11 @@ amber(82.1°) と birch(88.8°) は 7.8° しか離れていなかった。
 新パレットにしても、**同じ段どうしでは ΔE 0.033 しか出ない**（明度カーブが段番号で
 固定されているため、色相差 13.9° では稼げない）。そこで semantic 側で参照する段をずらした。
 
-| | 段 | brand との ΔE | D型 |
-|---|---|---|---|
-| `accent.primary` | primary/600 | — | — |
-| `status.*-solid`（Light） | **/400** | **0.226** | 0.216 |
-| `status.*-solid`（Dark / Deep-dark） | **/200** | 0.212 | 0.214 |
+|                                      | 段          | brand との ΔE | D型   |
+| ------------------------------------ | ----------- | ------------- | ----- |
+| `accent.primary`                     | primary/600 | —             | —     |
+| `status.*-solid`（Light）            | **/400**    | **0.226**     | 0.216 |
+| `status.*-solid`（Dark / Deep-dark） | **/200**    | 0.212         | 0.214 |
 
 **この対応関係を崩すと判別不能に戻る。** 段を変えるときは必ずコントラストテストを再実行する。
 
@@ -251,12 +251,12 @@ amber(82.1°) と birch(88.8°) は 7.8° しか離れていなかった。
 
 ### 7.4 あわせて行った変更
 
-| 変更 | 理由 |
-|---|---|
-| **`amber` パレットを廃止** | `accent.tertiary` としてしか定義がなく未使用。かつ色相 82.1° が新 warning 84.0° と 1.9° 差で衝突し両立できない。パレットは 7 → 6 に |
-| `accent.tertiary*` 4キー削除 | 上に同じ |
-| `status.*-fg` を暖白 → near-black | solid が明るい段になったため。実測 4.63〜5.64 で AA 合格 |
-| **`--success` エイリアス新設** | Ibuki に success セマンティックが存在せず `--brand` で代用していたことが実画面で判明。詳細は `docs/ibuki-brand-audit.md` |
+| 変更                              | 理由                                                                                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **`amber` パレットを廃止**        | `accent.tertiary` としてしか定義がなく未使用。かつ色相 82.1° が新 warning 84.0° と 1.9° 差で衝突し両立できない。パレットは 7 → 6 に |
+| `accent.tertiary*` 4キー削除      | 上に同じ                                                                                                                            |
+| `status.*-fg` を暖白 → near-black | solid が明るい段になったため。実測 4.63〜5.64 で AA 合格                                                                            |
+| **`--success` エイリアス新設**    | Ibuki に success セマンティックが存在せず `--brand` で代用していたことが実画面で判明。詳細は `docs/ibuki-brand-audit.md`            |
 
 ### 7.5 検証
 
@@ -269,12 +269,12 @@ amber(82.1°) と birch(88.8°) は 7.8° しか離れていなかった。
 
 birch は改定していないが、両方とも改定後に測り直した。**どちらも依然として必要**。
 
-| 逸脱 | 候補 | bg.surface | bg.page | bg.subtle | 判定 |
-|---|---|---|---|---|---|
-| 1 `fg.muted` | birch/500（§0.6 の値） | 5.60 | 5.17 | **4.45** ✗ | 4.5 未達 |
-| | **birch/600（採用）** | 8.64 | 7.99 | **6.88** ✓ | 合格 |
-| 2 `border.focus` | primary/400 | 3.46 | 3.20 | **2.75** ✗ | 3:1 未達 |
-| | **primary/500（採用）** | 5.31 | 4.90 | **4.22** ✓ | 合格 |
+| 逸脱             | 候補                    | bg.surface | bg.page | bg.subtle  | 判定     |
+| ---------------- | ----------------------- | ---------- | ------- | ---------- | -------- |
+| 1 `fg.muted`     | birch/500（§0.6 の値）  | 5.60       | 5.17    | **4.45** ✗ | 4.5 未達 |
+|                  | **birch/600（採用）**   | 8.64       | 7.99    | **6.88** ✓ | 合格     |
+| 2 `border.focus` | primary/400             | 3.46       | 3.20    | **2.75** ✗ | 3:1 未達 |
+|                  | **primary/500（採用）** | 5.31       | 4.90    | **4.22** ✓ | 合格     |
 
 どちらも `bg.subtle` の上でだけ落ちる。面が一段沈んだ領域が最も条件が厳しい。
 

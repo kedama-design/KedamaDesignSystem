@@ -18,16 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # pnpm のバージョンはここで固定する。
+      # バージョンは指定しない。action-setup は package.json の
+      # packageManager フィールド（pnpm@9.15.9）を読む。
       #
-      # package.json に packageManager フィールドが無いため、ローカルでは
-      # volta 経由の 9.15.9 と corepack 経由の 11.15.1 の両方が解決されうる。
-      # 実際そのせいで `pnpm build`（内部で pnpm を再帰呼び出しする）が
-      # ローカルで失敗する。CI では PATH 上の pnpm を1つに固定して回避する。
+      # そのフィールドが無かった頃は、ローカルで volta 経由の 9.15.9 と
+      # corepack 経由の 11.15.1 の両方が解決されうる状態になり、
+      # `pnpm build`（内部で pnpm を再帰呼び出しする）が失敗していた。
+      # バージョンの定義箇所は package.json ひとつに保つこと。
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.9
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -40,6 +39,11 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      # 生成物より前に実行する。生成物は .gitignore 対象なので、この時点の
+      # チェックアウトには存在せず、.prettierignore と二重に守られる。
+      - name: Format check
+        run: pnpm format:check
 
       - name: Typecheck
         run: pnpm typecheck
@@ -62,7 +66,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-# pnpm format:check はまだゲートに入れていない。
-# 現時点で 30 ファイルが Prettier 未適用で、その大半は Phase A-1 より前からの
-# もの。一度 `pnpm format` を通して差分をコミットしてから、上の Lint の隣に
-# 追加すること。
