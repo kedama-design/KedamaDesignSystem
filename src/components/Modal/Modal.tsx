@@ -44,7 +44,7 @@ const sizeClasses = {
  *
  * Calm UI:
  * - shadow-lg（ブランドカラー混ぜ）で上質な浮遊感
- * - backdrop-blur で背後をうっすら感じさせる
+ * - scrim（birch/900 50%）で背面を遮る。backdrop-filter は使わない
  * - 穏やかなフェードイン（duration-normal）
  *
  * @example
@@ -117,9 +117,24 @@ function ModalRoot({
         'm-auto p-0 bg-transparent',
         // backdrop — scrim はセマンティックトークン経由。値はプリミティブの
         // birch/900 を color-mix() でアルファ合成したもの（rgba 直値ではない）
-        'backdrop:bg-scrim backdrop:backdrop-blur-[var(--primitive-backdrop-blur)]',
-        // 開閉アニメーション
-        'open:animate-in open:fade-in open:zoom-in-95',
+        //
+        // backdrop-filter: blur() は既定オフ（2026-08-01 判断）。
+        // scrim 50% だけで「背面は触れない」は十分に伝わり、blur は必要な機能を
+        // 足すのではなく「さらに読めなくする」だけだった。加えて全画面要素の
+        // backdrop-filter は GPU 負荷が高く、大きなテーブルを背面に持つ業務画面では
+        // 体感の引っかかりになり得る。経緯は docs/phase-a2-decisions.md。
+        'backdrop:bg-scrim',
+        // 開閉アニメーション — overlay-enter（slow 400ms + enter easing）
+        //
+        // 以前は tailwindcss-animate 系の `animate-in fade-in zoom-in-95` が
+        // 書かれていたが、それらを供給するパッケージが無く animation-name が
+        // none に落ちていた（Computed Style Audit で実測）。自前のキーフレーム
+        // （tailwind.css の --animate-overlay-enter）に差し替えてある。
+        //
+        // 拡大（zoom-in-95）は再現していない。95%→100% の拡大は注意を引く
+        // ための表現で、§3.5「オーバーレイの出入りは damped、overshoot 不可」
+        // の趣旨から外れる。フェードだけで出現は十分に伝わる。
+        'open:animate-overlay-enter',
       )}
     >
       <div

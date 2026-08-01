@@ -26,7 +26,19 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/10 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs",
+        // スクリムのフェード＝オーバーレイの出入り → slow(400ms)。
+        // 入りは easing.enter、出は easing.exit（data-ending-style で切替）。
+        // スクリムは bg-scrim（birch/900 を 50%）。上流の bg-black/10 から変更。
+        //
+        // 純黒は Kedama に存在しない（純白・純黒は定義しない）ので、濃さの議論とは
+        // 無関係に除去対象だった。濃さを 10% → 50% に上げたのは、Sheet が既定で
+        // モーダル（フォーカスを閉じ込め背面を不活性化する）だから。操作を遮断して
+        // いるのに見た目がほとんど遮っていないのは挙動と外観の不一致になる。
+        //
+        // Modal.tsx も bg-scrim を使っており、システム内でスクリムは1種類に揃う。
+        // モーダルでないパネルが必要になったら bg.scrim-subtle を使い分け規則と
+        // セットで足す（濃さを2つ持つと呼び出し側に判断が発生するため、先には作らない）。
+        "fixed inset-0 z-50 bg-scrim transition-opacity duration-slow ease-enter data-ending-style:opacity-0 data-ending-style:ease-exit data-starting-style:opacity-0",
         className
       )}
       {...props}
@@ -51,7 +63,10 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm",
+          // パネルの出入り＝大きな面の出入り → slow(400ms) + enter/exit easing。
+          // 上流の ease-in-out は Tailwind 既定値（Kedama の easing.default と
+          // 偶然同値）で、トークン経由ではなかった。
+          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-lg transition duration-slow ease-enter data-ending-style:opacity-0 data-ending-style:ease-exit data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm",
           className
         )}
         {...props}
