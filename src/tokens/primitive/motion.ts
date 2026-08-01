@@ -53,12 +53,24 @@ export const easing = {
 //
 // これらは CSS transition では表現できないため tokens.css には出力しない。
 // Motion（`motion` パッケージ）の transition 引数へそのまま渡す。
+//
+// ⚠️ Motion は未導入。導入は Drawer のスワイプ等の直接操作部品まで遅延する
+//    （判断日 2026-07-29）。peerDependency である以上、今入れると消費側
+//    プロダクトに未使用の依存を強いるため。§2.2「依存を先取りしない」。
+//
+// ⚠️ fast / settle / press は**現時点で semantic からの参照が無い**。
+//    未使用エクスポートとして削除しないこと。primitive は在庫であり、
+//    使われない値があってよい（Light テーマで birch/900 が使われないのと
+//    同じ）。2026-07-29 の実測で、減衰比 0.93〜0.95 のこれらは ease-out
+//    tween とほぼ同じ軌道を描くうえ 2〜3.7 倍遅いと判明したため、semantic
+//    側の割当を直接操作系（directRelease）だけに絞った。経緯と実測値は
+//    semantic/motion.ts のヘッダに記録してある。
 export const spring = {
-  /** 即時フィードバック。値の変化など短く収束させたいもの */
+  /** 即時フィードバック。値の変化など短く収束させたいもの（収束 383ms / 減衰比 0.950） */
   fast: { type: 'spring', stiffness: 400, damping: 34, mass: 0.8 },
-  /** 標準。オーバーレイの出入り、開閉。overshoot なし */
+  /** 標準。overshoot なし（収束 480ms / 減衰比 0.930） */
   settle: { type: 'spring', stiffness: 260, damping: 30, mass: 1 },
-  /** 押し込みの手応え */
+  /** 押し込みの手応え（収束 345ms / 減衰比 0.950） */
   press: { type: 'spring', stiffness: 500, damping: 38, mass: 0.8 },
   /**
    * 直接操作（ドラッグ・スワイプ）の着地。

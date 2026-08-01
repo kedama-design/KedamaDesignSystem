@@ -14,6 +14,27 @@
 @import './alias-shadcn.css';
 
 /*
+ * dark バリアントをテーマ属性方式へ差し替える。
+ *
+ * Tailwind 既定の `dark:` は `.dark` クラスで発火するが、Kedama の
+ * テーマ切替は [data-theme] 属性で行う。取り込んだ shadcn コンポーネントは
+ * `dark:border-input` のように dark: を使うため、再定義しないと
+ * ほぼ黒の背景の上に Light 前提のスタイルで描画される。
+ *
+ * deep-dark も含める理由: Deep-dark は「dark とは別のテーマ」ではなく
+ * 「より暗い dark」。仕様書 §0.6 ルール4 のとおり文字色・ブランド色・
+ * ステータス色は Dark と共通で、違うのはサーフェス／ボーダーの段だけ。
+ * その差は semantic トークンがテーマごとに解決するため、取り込み品は
+ * alias 経由で正しい値を受け取る。dark: が要るのは「暗い地の上で
+ * スタイルの構造そのものを変える」ケースで、その判断は両テーマで同じ。
+ *
+ * ⚠️ セレクタ列挙方式のため、dark 系テーマを追加したらここも更新が要る。
+ * 更新漏れは静かに壊れるので、tests/darkVariant.test.ts が
+ * テーマ定義から dark 系を引いて網羅を検証している。
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='deep-dark'], [data-theme='dark'] *, [data-theme='deep-dark'] *));
+
+/*
  * Kedama Design System — Tailwind v4 Theme
  *
  * CSS-first config: @theme ディレクティブでトークンのCSS変数を
