@@ -251,7 +251,183 @@
   --shadow-lg: var(--primitive-shadow-lg);
 
   /* ── Transition ─────────────────────────────────────── */
-  --transition-timing-function-default: var(--primitive-easing-default);
-  --transition-timing-function-enter: var(--primitive-easing-enter);
-  --transition-timing-function-exit: var(--primitive-easing-exit);
+  /*
+   * 名前空間は `--ease-*`。以前ここは `--transition-timing-function-*` だったが、
+   * Tailwind v4 にその名前空間は無く、ユーティリティが1つも生成されていなかった
+   * （Foundations/Computed Style Audit で `ease-default` の実測が初期値 `ease` を
+   *  返して発覚。grep では「変数は書いてある」としか見えない）。
+   */
+  --ease-default: var(--primitive-easing-default);
+  --ease-enter: var(--primitive-easing-enter);
+  --ease-exit: var(--primitive-easing-exit);
+
+  /* ── Animation ──────────────────────────────────────── */
+  /*
+   * 開閉（Accordion）。semantic の disclosure-expand / disclosure-collapse
+   * ＝ duration.normal（240ms）+ easing.enter / easing.exit から引いている。
+   *
+   * 高さの終点は Base UI が Panel 要素に立てる `--accordion-panel-height`。
+   * Radix の `--radix-accordion-content-height` ではない。取り込み元は
+   * Base UI 版なので、Radix 由来のキーフレームを持ってくると値が解決せず
+   * 高さ 0 のまま開かない。
+   *
+   * 取り込み時にクラス（animate-accordion-down / -up）だけが入っていて
+   * @keyframes が無く、animation-name が none に落ちていた。
+   */
+  --animate-accordion-down: accordion-down var(--primitive-duration-normal)
+    var(--primitive-easing-enter);
+  --animate-accordion-up: accordion-up var(--primitive-duration-normal) var(--primitive-easing-exit);
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--accordion-panel-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--accordion-panel-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+
+  /*
+   * オーバーレイの出現（Modal）。semantic の overlay-enter
+   * ＝ duration.slow（400ms）+ easing.enter から引いている。
+   *
+   * フェードだけで、拡大（zoom-in-95 相当）は入れない。95%→100% の拡大は
+   * 注意を引くための「ポップ」の表現であり、§3.5「オーバーレイの出入りは
+   * damped、overshoot 不可」の趣旨から外れる。業務システムのモーダルには
+   * 過剰で、フェードだけで出現したことは十分に伝わる。
+   *
+   * tw-animate-css は導入しない。この10行に依存を足す理由がない（§2.2）。
+   * 取り込み時に animate-in / fade-in / zoom-in-95 のクラスだけが入っていて、
+   * それらを供給するパッケージが無く animation-name が none に落ちていた。
+   */
+  --animate-overlay-enter: overlay-enter var(--primitive-duration-slow)
+    var(--primitive-easing-enter);
+  --animate-overlay-exit: overlay-exit var(--primitive-duration-slow) var(--primitive-easing-exit);
+
+  @keyframes overlay-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes overlay-exit {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* ── Base layer ───────────────────────────────────────────
+ *
+ * 枠線の既定色。
+ *
+ * CSS の初期値は `border-color: currentColor`、つまり文字色である。
+ * デザインシステムとして意図する既定ではない。取り込んだ shadcn の
+ * コンポーネントは shadcn の globals.css がこの規則を敷いている前提で
+ * 書かれており（`not-last:border-b` のように色を書かない）、無いと
+ * ほぼ黒のヘアラインが出る。実測値（Computed Style Audit の border-b の行）:
+ *
+ *   Light      rgb(4, 3, 2)       ← 期待は rgb(193, 189, 181)
+ *   Dark       rgb(240, 238, 233) ← 期待は rgb(103, 99, 88)
+ *   Deep-dark  rgb(240, 238, 233) ← 期待は rgb(133, 128, 115)
+ *
+ * これを置かないと、今後 shadcn から取り込むたびに個別へ色指定を足すことになり、
+ * 上流との差分が増え続ける。
+ *
+ * 効くのは border-width が設定されている要素だけなので、影響範囲は
+ * 「枠線幅は指定したが色は指定していない」箇所に限られる。そこは
+ * currentColor が出ていた＝ほぼ確実に意図しない状態だった箇所である。
+ *
+ * ⚠️ 消費側から見ると「この CSS を読み込むと全要素の既定ボーダー色が変わる」
+ *    という挙動になる。README にも明記してある。
+ *
+ * @layer base に置くのはユーティリティより優先度を下げるため。
+ * `border-border-strong` のような明示指定は必ずこれに勝つ。
+ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border-default);
+  }
+}
+
+/*
+ * duration には Tailwind v4 のテーマ名前空間が無い。
+ *
+ * `--duration-*` を @theme に置いても `duration-normal` は生成されない
+ * （実測: ベースライン 0.15s のまま変わらなかった）。easing の `--ease-*` とは
+ * 対称でないので紛らわしいが、`duration-<number>` は数値をそのまま ms として
+ * 読む機能ユーティリティで、テーマを参照しない。したがって静的ユーティリティ
+ * として自分で定義する。
+ *
+ * `--tw-duration` も併せて設定する。Tailwind の `transition` は
+ * `transition-duration: var(--tw-duration, …)` を出力するため、これを
+ * 立てないと同じレイヤ内の順序次第で打ち消される。
+ */
+@utility duration-fast {
+  --tw-duration: var(--primitive-duration-fast);
+  transition-duration: var(--primitive-duration-fast);
+}
+@utility duration-normal {
+  --tw-duration: var(--primitive-duration-normal);
+  transition-duration: var(--primitive-duration-normal);
+}
+@utility duration-slow {
+  --tw-duration: var(--primitive-duration-slow);
+  transition-duration: var(--primitive-duration-slow);
+}
+
+/* ── Reduced motion ───────────────────────────────────────
+ *
+ * prefers-reduced-motion の担保箇所は2つあり、これはそのうち CSS 側。
+ *
+ *   1. ここ（グローバル CSS）— CSS の transition / animation を無効化する
+ *   2. プロバイダ層 — Motion の `MotionConfig reducedMotion="user"`
+ *      （Motion 導入時に置く。未導入）
+ *
+ * 仕様書 §3.5 は「プロバイダ層で一括適用し、個別コンポーネントに実装させない」
+ * と定めているが、プロバイダが効くのは Motion が駆動するアニメーションだけで、
+ * CSS で描画されるものはその外側にある。取り込んだ shadcn の animate-spin /
+ * animate-pulse はまさに外側なので、受け皿がここに要る。
+ *
+ * 「個別コンポーネントに書かせない」という方針は変えていない。実装場所が
+ * プロバイダ層＋グローバル CSS の2箇所になる、という整理である。
+ *
+ * ⚠️ ここは動きを**消す**だけで、動きが担っていた情報までは補わない。
+ *    連続回転そのものが「処理中」を伝えている Spinner のような部品は、
+ *    止めたら何も残らない。そういう部品は `motion-reduce:` で代替表現を
+ *    出すこと（Spinner.tsx 参照）。これは「個別コンポーネントに
+ *    reduced-motion を実装させる」ことの例外ではなく、消した情報を
+ *    埋め合わせる責任が部品側にある、という別の話。
+ *
+ * 値は primitive の duration.reduced（0ms）。!important を付けるのは、
+ * ユーティリティが付けた duration を後から確実に上書きするため。
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    --tw-duration: var(--primitive-duration-reduced) !important;
+    transition-duration: var(--primitive-duration-reduced) !important;
+    animation-duration: var(--primitive-duration-reduced) !important;
+    /* 無限ループを1回で終わらせる。duration が 0ms なので即座に終端に落ちる */
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
