@@ -1,7 +1,6 @@
 import React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/cn';
-import { Spinner } from '../Spinner';
 
 /**
  * Button バリアントスタイル定義
@@ -60,6 +59,32 @@ const buttonVariants = cva(
     },
   },
 );
+
+// ─── Spinner（ローディング表示） ─────────────────────────
+
+function Spinner({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('animate-spin', className)}
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r="6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.25"
+      />
+      <path d="M8 2a6 6 0 0 1 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -121,8 +146,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         {...props}
       >
-        {/* 待機状態は button 自身の aria-busy が伝えるため、装飾として置く */}
-        {loading ? <Spinner decorative /> : iconLeft}
+        {loading ? <Spinner /> : iconLeft}
         {children}
         {!loading && iconRight}
       </button>

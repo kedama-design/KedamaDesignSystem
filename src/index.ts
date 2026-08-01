@@ -38,8 +38,6 @@ export {
   type ModalBodyProps,
   type ModalFooterProps,
 } from './components/Modal';
-export { Skeleton, skeletonVariants, type SkeletonProps } from './components/Skeleton';
-export { Spinner, spinnerVariants, type SpinnerProps } from './components/Spinner';
 // アイコン（Lucide React ベース）
 export * from './components/Icon';
 
