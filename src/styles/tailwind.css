@@ -40,17 +40,6 @@
   --color-birch-800: var(--primitive-color-birch-800);
   --color-birch-900: var(--primitive-color-birch-900);
 
-  --color-amber-25: var(--primitive-color-amber-25);
-  --color-amber-50: var(--primitive-color-amber-50);
-  --color-amber-100: var(--primitive-color-amber-100);
-  --color-amber-200: var(--primitive-color-amber-200);
-  --color-amber-300: var(--primitive-color-amber-300);
-  --color-amber-400: var(--primitive-color-amber-400);
-  --color-amber-500: var(--primitive-color-amber-500);
-  --color-amber-600: var(--primitive-color-amber-600);
-  --color-amber-700: var(--primitive-color-amber-700);
-  --color-amber-800: var(--primitive-color-amber-800);
-  --color-amber-900: var(--primitive-color-amber-900);
 
   --color-warning-25: var(--primitive-color-warning-25);
   --color-warning-50: var(--primitive-color-warning-50);
@@ -102,7 +91,10 @@
 
   /* Semantic colors — `bg-surface`, `text-fg-default`, `border-active` */
   --color-fg-default: var(--color-fg-default);
+  --color-fg-secondary: var(--color-fg-secondary);
   --color-fg-muted: var(--color-fg-muted);
+  /* 純装飾専用。意味のある文字には使わない（仕様書 §0.7 運用ルール1） */
+  --color-fg-decorative: var(--color-fg-decorative);
   --color-fg-placeholder: var(--color-fg-placeholder);
   --color-fg-disabled: var(--color-fg-disabled);
   --color-fg-inverse: var(--color-fg-inverse);
@@ -110,9 +102,11 @@
   --color-fg-link-hover: var(--color-fg-link-hover);
 
   --color-page: var(--color-bg-page);
+  --color-sidebar: var(--color-bg-sidebar);
   --color-surface: var(--color-bg-surface);
   --color-surface-raised: var(--color-bg-surface-raised);
   --color-subtle: var(--color-bg-subtle);
+  --color-subtle-strong: var(--color-bg-subtle-strong);
   --color-hover: var(--color-bg-hover);
   --color-selected: var(--color-bg-selected);
   --color-scrim: var(--color-bg-scrim);
@@ -132,14 +126,55 @@
   --color-accent-primary-active: var(--color-accent-primary-active);
   --color-accent-primary-subtle: var(--color-accent-primary-subtle);
   --color-accent-primary-fg: var(--color-accent-primary-fg);
-  --color-accent-tertiary: var(--color-accent-tertiary);
-  --color-accent-tertiary-hover: var(--color-accent-tertiary-hover);
-  --color-accent-tertiary-subtle: var(--color-accent-tertiary-subtle);
-  --color-accent-tertiary-fg: var(--color-accent-tertiary-fg);
+  /* 破壊的アクションの面。状態表示の status.danger とは別 */
+  --color-accent-danger: var(--color-accent-danger);
+  --color-accent-danger-hover: var(--color-accent-danger-hover);
+  --color-accent-danger-active: var(--color-accent-danger-active);
+  --color-accent-danger-fg: var(--color-accent-danger-fg);
+
+  /* Status — `text-status-danger`, `bg-status-warning-bg` */
+  --color-status-success: var(--color-status-success);
+  --color-status-success-bg: var(--color-status-success-bg);
+  --color-status-success-border: var(--color-status-success-border);
+  --color-status-success-solid: var(--color-status-success-solid);
+  --color-status-success-fg: var(--color-status-success-fg);
+
+  --color-status-warning: var(--color-status-warning);
+  --color-status-warning-bg: var(--color-status-warning-bg);
+  --color-status-warning-border: var(--color-status-warning-border);
+  --color-status-warning-solid: var(--color-status-warning-solid);
+  --color-status-warning-fg: var(--color-status-warning-fg);
+
+  --color-status-danger: var(--color-status-danger);
+  --color-status-danger-bg: var(--color-status-danger-bg);
+  --color-status-danger-border: var(--color-status-danger-border);
+  --color-status-danger-solid: var(--color-status-danger-solid);
+  --color-status-danger-fg: var(--color-status-danger-fg);
+
+  --color-status-info: var(--color-status-info);
+  --color-status-info-bg: var(--color-status-info-bg);
+  --color-status-info-border: var(--color-status-info-border);
+  --color-status-info-solid: var(--color-status-info-solid);
+  --color-status-info-fg: var(--color-status-info-fg);
+
+  /* Data visualization — チャートは Tier 2 だが色はここで統一する（仕様書 §4） */
+  --color-data-viz-categorical-neutral-primary: var(--color-data-viz-categorical-neutral-primary);
+  --color-data-viz-categorical-neutral-secondary: var(--color-data-viz-categorical-neutral-secondary);
+  --color-data-viz-categorical-neutral-previous: var(--color-data-viz-categorical-neutral-previous);
+  --color-data-viz-emphasis-positive: var(--color-data-viz-emphasis-positive);
+  --color-data-viz-axis-default: var(--color-data-viz-axis-default);
+  --color-data-viz-grid-default: var(--color-data-viz-grid-default);
+  --color-data-viz-heatmap-empty: var(--color-data-viz-heatmap-empty);
+  --color-data-viz-heatmap-low: var(--color-data-viz-heatmap-low);
+  --color-data-viz-heatmap-medium: var(--color-data-viz-heatmap-medium);
+  --color-data-viz-heatmap-high: var(--color-data-viz-heatmap-high);
+  --color-data-viz-heatmap-max: var(--color-data-viz-heatmap-max);
 
   /* ── Font Family ────────────────────────────────────── */
   --font-heading: var(--primitive-font-family-heading);
   --font-body: var(--primitive-font-family-body);
+  /* 桁を揃える数値用。DM Sans は tnum 非対応のため heading を使わないこと */
+  --font-numeric: var(--primitive-font-family-numeric);
   --font-mono: var(--primitive-font-family-mono);
 
   /* ── Font Size ──────────────────────────────────────── */

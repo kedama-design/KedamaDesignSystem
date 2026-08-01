@@ -9,8 +9,10 @@ dist/
 .env.local
 .env.*.local
 
-# Generated files
+# Generated files（pnpm generate:tokens が出力。各ファイルのヘッダに生成物である旨を持つ）
 src/styles/tokens.css
+src/styles/alias-ibuki.css
+src/styles/alias-shadcn.css
 
 # OS
 .DS_Store

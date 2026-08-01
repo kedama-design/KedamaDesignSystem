@@ -1,162 +1,86 @@
 /**
- * WCAG コントラスト比 自動検証テスト
+ * WCAG コントラスト比 自動検証テスト（表駆動）
  *
- * セマンティックカラーの主要なテキスト×背景の組み合わせを
- * WCAG 2.2 AA 基準で検証する。
+ * case の表そのものは tests/contrastCases.ts に置いてある。
+ * vitest のハーネス無しでも同じ表を検証できるようにするための分離
+ * （scripts から tsx で直接読める）。
  *
- * AA基準:
- *   - 通常テキスト: 4.5:1 以上
- *   - 大テキスト（18px bold / 24px regular 以上）: 3:1 以上
- *   - 非テキスト要素（UI部品、グラフ等）: 3:1 以上
+ * 報告書 docs/codex-investigation-report.md Q7 の方針:
+ *   - case は { theme, role, fg, bg, threshold, rationale }
+ *   - 3テーマ全ペアを通す（比較用の dark surface バリアントも含む）
+ *   - 例外は token 名の allowlist ではなく、具体的なペアと用途と WCAG 基準で持つ
  */
 
 import { describe, it, expect } from 'vitest';
-import { fg, bg, border, accent, status } from '@/tokens/semantic/colors';
+import { CASES, WAIVERS, THEME_VARIANTS, pick, contrastRatio } from './contrastCases';
+import type { SemanticColorTheme } from '@/tokens/semantic/themeTypes';
 
-// ─── Relative Luminance Calculation ─────────────────────
-
-function hexToRgb(hex: string): [number, number, number] {
-  const cleaned = hex.replace('#', '');
-  return [
-    parseInt(cleaned.slice(0, 2), 16) / 255,
-    parseInt(cleaned.slice(2, 4), 16) / 255,
-    parseInt(cleaned.slice(4, 6), 16) / 255,
-  ];
-}
-
-function linearize(channel: number): number {
-  return channel <= 0.04045
-    ? channel / 12.92
-    : Math.pow((channel + 0.055) / 1.055, 2.4);
-}
-
-function relativeLuminance(hex: string): number {
-  const [r, g, b] = hexToRgb(hex).map(linearize);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-function contrastRatio(fg: string, bg: string): number {
-  const lFg = relativeLuminance(fg);
-  const lBg = relativeLuminance(bg);
-  const lighter = Math.max(lFg, lBg);
-  const darker = Math.min(lFg, lBg);
-  return (lighter + 0.05) / (darker + 0.05);
-}
-
-// ─── Helper ─────────────────────────────────────────────
-
-function isHex(value: string): boolean {
-  return /^#[0-9A-Fa-f]{6}$/.test(value);
-}
-
-// ─── Tests ──────────────────────────────────────────────
-
-describe('WCAG AA Contrast Ratios', () => {
-  describe('Normal text (4.5:1)', () => {
-    const normalTextPairs: [string, string, string][] = [
-      // [label, foreground, background]
-      ['fg.default on bg.surface', fg.default, bg.surface],
-      ['fg.default on bg.page', fg.default, bg.page],
-      ['fg.default on bg.subtle', fg.default, bg.subtle],
-      ['fg.muted on bg.surface', fg.muted, bg.surface],
-      ['fg.muted on bg.page', fg.muted, bg.page],
-      ['fg.inverse on bg.inverse', fg.inverse, bg.inverse],
-      ['fg.link on bg.surface', fg.link, bg.surface],
-      ['fg.link on bg.page', fg.link, bg.page],
-    ];
-
-    it.each(normalTextPairs)('%s ≥ 4.5:1', (label, fgColor, bgColor) => {
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
-      expect(
-        ratio,
-        `${label}: ${ratio.toFixed(2)}:1 (need 4.5:1). FG=${fgColor}, BG=${bgColor}`,
-      ).toBeGreaterThanOrEqual(4.5);
-    });
+describe('WCAG contrast (table-driven, 3 themes + dark surface variant)', () => {
+  it('全4変種を検証する', () => {
+    expect(Object.keys(THEME_VARIANTS)).toEqual(['light', 'dark', 'dark-alt', 'deep-dark']);
   });
 
-  describe('Large text (3:1)', () => {
-    const largeTextPairs: [string, string, string][] = [
-      ['fg.link-hover on bg.surface', fg['link-hover'], bg.surface],
-      ['fg.link-hover on bg.page', fg['link-hover'], bg.page],
-    ];
-
-    it.each(largeTextPairs)('%s ≥ 3:1', (label, fgColor, bgColor) => {
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
-      expect(
-        ratio,
-        `${label}: ${ratio.toFixed(2)}:1 (need 3:1). FG=${fgColor}, BG=${bgColor}`,
-      ).toBeGreaterThanOrEqual(3);
-    });
+  it('3テーマのキー集合が一致する', () => {
+    const shape = (t: SemanticColorTheme) =>
+      Object.entries(t)
+        .map(([group, values]) => `${group}:${Object.keys(values).sort().join(',')}`)
+        .sort()
+        .join('|');
+    const [first, ...rest] = Object.values(THEME_VARIANTS).map(shape);
+    for (const other of rest) expect(other).toBe(first);
   });
 
-  describe('Non-text UI elements (3:1)', () => {
-    const uiPairs: [string, string, string][] = [
-      ['fg.placeholder on bg.surface (WCAG 3:1 for placeholders)', fg.placeholder, bg.surface],
-      ['border.strong on bg.surface', border.strong, bg.surface],
-      // border.default は意図的に控えめ（subtle divider）。3:1が必要な場面では border.strong を使用。
-      ['accent.primary on bg.surface', accent.primary, bg.surface],
-      ['border.active on bg.surface', border.active, bg.surface],
-      ['border.error on bg.surface', border.error, bg.surface],
-    ];
+  it.each(CASES.map((c) => [`[${c.theme}] ${c.role}`, c] as const))('%s', (_label, c) => {
+    const fgHex = pick(THEME_VARIANTS[c.theme], c.fg);
+    const bgHex = pick(THEME_VARIANTS[c.theme], c.bg);
+    const ratio = contrastRatio(fgHex, bgHex);
 
-    it.each(uiPairs)('%s ≥ 3:1', (label, fgColor, bgColor) => {
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
+    if (c.waiver) {
       expect(
         ratio,
-        `${label}: ${ratio.toFixed(2)}:1 (need 3:1). FG=${fgColor}, BG=${bgColor}`,
-      ).toBeGreaterThanOrEqual(3);
-    });
+        `[${c.theme}] ${c.role}: ${ratio.toFixed(2)}:1 が免除下限 ${c.waiver.floor}:1 を下回った。\n` +
+          `免除理由: ${c.waiver.reason}\n` +
+          `FG=${c.fg}(${fgHex}) BG=${c.bg}(${bgHex})`,
+      ).toBeGreaterThanOrEqual(c.waiver.floor);
+      return;
+    }
+
+    expect(
+      ratio,
+      `[${c.theme}] ${c.role}: ${ratio.toFixed(2)}:1 (WCAG ${c.wcag} は ${c.threshold}:1 を要求)\n` +
+        `根拠: ${c.rationale}\n` +
+        `FG=${c.fg}(${fgHex}) BG=${c.bg}(${bgHex})`,
+    ).toBeGreaterThanOrEqual(c.threshold);
+  });
+});
+
+describe('コントラスト表そのものの健全性', () => {
+  it('すべての case が用途と WCAG 達成基準を持つ', () => {
+    for (const c of CASES) {
+      expect(c.rationale.length, `${c.role} に rationale がない`).toBeGreaterThan(0);
+      expect(['1.4.3', '1.4.11']).toContain(c.wcag);
+    }
   });
 
-  describe('Accent button text on accent backgrounds (4.5:1)', () => {
-    const accentPairs: [string, string, string][] = [
-      ['accent.primary-fg on accent.primary', accent['primary-fg'], accent.primary],
-      ['accent.primary-fg on accent.primary-hover', accent['primary-fg'], accent['primary-hover']],
-      ['accent.primary-fg on accent.primary-active', accent['primary-fg'], accent['primary-active']],
-      ['accent.tertiary-fg on accent.tertiary', accent['tertiary-fg'], accent.tertiary],
-      ['accent.tertiary-fg on accent.tertiary-hover', accent['tertiary-fg'], accent['tertiary-hover']],
-    ];
-
-    it.each(accentPairs)('%s ≥ 4.5:1', (label, fgColor, bgColor) => {
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
-      expect(
-        ratio,
-        `${label}: ${ratio.toFixed(2)}:1 (need 4.5:1). FG=${fgColor}, BG=${bgColor}`,
-      ).toBeGreaterThanOrEqual(4.5);
-    });
+  it('すべての免除が理由と実測下限を持つ', () => {
+    for (const [key, w] of Object.entries(WAIVERS)) {
+      expect(w.reason.length, `${key} の免除に理由がない`).toBeGreaterThan(40);
+      expect(w.floor, `${key} の免除に下限がない`).toBeGreaterThan(0);
+    }
   });
 
-  describe('Status text on status backgrounds (4.5:1)', () => {
-    const statuses = ['success', 'warning', 'danger', 'info'] as const;
-
-    it.each(statuses)('%s text on %s-bg ≥ 4.5:1', (s) => {
-      const fgColor = status[s];
-      const bgColor = status[`${s}-bg`];
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
-      expect(
-        ratio,
-        `status.${s} on status.${s}-bg: ${ratio.toFixed(2)}:1 (need 4.5:1)`,
-      ).toBeGreaterThanOrEqual(4.5);
-    });
+  it('免除が実在する case だけを指している（stale な免除を残さない）', () => {
+    const known = new Set(CASES.map((c) => `${c.theme}::${c.role}`));
+    for (const key of Object.keys(WAIVERS)) {
+      expect(known.has(key), `免除 ${key} に対応する case がない`).toBe(true);
+    }
   });
 
-  describe('Status solid-fg on status solid backgrounds (4.5:1)', () => {
-    const statuses = ['success', 'warning', 'danger', 'info'] as const;
-
-    it.each(statuses)('%s-fg on %s-solid ≥ 4.5:1', (s) => {
-      const fgColor = status[`${s}-fg`];
-      const bgColor = status[`${s}-solid`];
-      if (!isHex(fgColor) || !isHex(bgColor)) return;
-      const ratio = contrastRatio(fgColor, bgColor);
-      expect(
-        ratio,
-        `status.${s}-fg on status.${s}-solid: ${ratio.toFixed(2)}:1 (need 4.5:1)`,
-      ).toBeGreaterThanOrEqual(4.5);
-    });
+  it('fg.decorative の case は「意味のある文字に使用禁止」を明記している', () => {
+    const decorative = CASES.filter((c) => c.fg === 'fg.decorative');
+    expect(decorative.length).toBeGreaterThan(0);
+    for (const c of decorative) {
+      expect(c.rationale).toContain('使用禁止');
+    }
   });
 });
