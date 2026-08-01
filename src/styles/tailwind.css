@@ -221,4 +221,26 @@
   --transition-timing-function-default: var(--primitive-easing-default);
   --transition-timing-function-enter: var(--primitive-easing-enter);
   --transition-timing-function-exit: var(--primitive-easing-exit);
+
+  /* ── Animation ──────────────────────────────────────── */
+
+  /*
+   * スケルトンの明滅。
+   *
+   * Tailwind 既定の `animate-pulse` は不透明度 1 → 0.5 と振れ幅が大きく、
+   * 一覧に多数並べると画面がちらつく。Calm UI の穏やかさを保つため
+   * 1 → 0.7 に抑え、周期も 2s と遅くしている。
+   * 使う側は必ず `motion-safe:` を付けること。
+   */
+  --animate-skeleton-pulse: skeleton-pulse 2s var(--primitive-easing-default) infinite;
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
 }
