@@ -58,6 +58,7 @@ pnpm generate:tokens  # CSS 変数再生成
 ## Figma
 
 ファイルキー: `lwAJuBLldLYwHdsy1MXeEe`
+
 - Primitives コレクション: 88 Variables
 - Semantics コレクション: 35 Variables
 - 10 Text Styles

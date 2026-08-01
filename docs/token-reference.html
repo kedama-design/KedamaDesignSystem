@@ -1,456 +1,1386 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kedama Design System — Token Reference</title>
-<style>
-  :root { --bg: #F0EEE9; --surface: #fff; --fg: #040302; --muted: #676358; --border: #C1BDB5; --primary: #315039; --radius: 8px; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Noto Sans JP", "DM Sans", system-ui, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; padding: 48px 24px; }
-  .container { max-width: 1200px; margin: 0 auto; }
-  h1 { font-family: "DM Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
-  .subtitle { color: var(--muted); margin-bottom: 48px; font-size: 0.88889rem; }
-  h2 { font-family: "DM Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 1.33333rem; font-weight: 700; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); }
-  h3 { font-size: 1.14286rem; font-weight: 500; margin: 32px 0 12px; color: var(--primary); }
-  .card { background: var(--surface); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 8px 0 rgba(0,0,0,0.04); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88889rem; }
-  th { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border); font-weight: 500; color: var(--muted); }
-  td { padding: 8px 12px; border-bottom: 1px solid #E0DED7; vertical-align: middle; }
-  .token-name { font-family: "Noto Sans Mono", monospace; font-weight: 500; white-space: nowrap; }
-  .token-value { font-family: "Noto Sans Mono", monospace; color: var(--muted); font-size: 0.8rem; }
-  .swatch { width: 32px; height: 32px; border-radius: 4px; display: inline-block; vertical-align: middle; border: 1px solid rgba(0,0,0,0.08); }
-  .swatch-row { display: flex; gap: 4px; align-items: center; }
-  .swatch-sm { width: 24px; height: 24px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
-  .color-scale { display: flex; gap: 2px; margin-bottom: 12px; }
-  .color-scale-item { flex: 1; text-align: center; border-radius: 4px; padding: 16px 4px 8px; font-size: 0.66667rem; font-family: "Noto Sans Mono", monospace; min-height: 64px; display: flex; flex-direction: column; justify-content: flex-end; }
-  .color-label { font-weight: 700; font-size: 0.88889rem; margin-bottom: 8px; }
-  .shadow-demo { padding: 24px; border-radius: 8px; background: #fff; text-align: center; font-size: 0.8rem; color: var(--muted); }
-  .radius-demo { width: 64px; height: 64px; background: var(--primary); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.72727rem; font-family: "Noto Sans Mono", monospace; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72727rem; font-weight: 500; }
-  .section-intro { color: var(--muted); margin-bottom: 16px; font-size: 0.88889rem; }
-  .typo-sample { margin: 4px 0; }
-  .arrow { color: var(--muted); margin: 0 4px; }
-  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-<div class="container">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kedama Design System — Token Reference</title>
+    <style>
+      :root {
+        --bg: #f0eee9;
+        --surface: #fff;
+        --fg: #040302;
+        --muted: #676358;
+        --border: #c1bdb5;
+        --primary: #315039;
+        --radius: 8px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Noto Sans JP', 'DM Sans', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.6;
+        padding: 48px 24px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-family: 'DM Sans', 'Noto Sans JP', system-ui, sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+      .subtitle {
+        color: var(--muted);
+        margin-bottom: 48px;
+        font-size: 0.88889rem;
+      }
+      h2 {
+        font-family: 'DM Sans', 'Noto Sans JP', system-ui, sans-serif;
+        font-size: 1.33333rem;
+        font-weight: 700;
+        margin: 48px 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--primary);
+      }
+      h3 {
+        font-size: 1.14286rem;
+        font-weight: 500;
+        margin: 32px 0 12px;
+        color: var(--primary);
+      }
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.04);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88889rem;
+      }
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 2px solid var(--border);
+        font-weight: 500;
+        color: var(--muted);
+      }
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #e0ded7;
+        vertical-align: middle;
+      }
+      .token-name {
+        font-family: 'Noto Sans Mono', monospace;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .token-value {
+        font-family: 'Noto Sans Mono', monospace;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .swatch {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        display: inline-block;
+        vertical-align: middle;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .swatch-row {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .swatch-sm {
+        width: 24px;
+        height: 24px;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
+      }
+      .color-scale {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 12px;
+      }
+      .color-scale-item {
+        flex: 1;
+        text-align: center;
+        border-radius: 4px;
+        padding: 16px 4px 8px;
+        font-size: 0.66667rem;
+        font-family: 'Noto Sans Mono', monospace;
+        min-height: 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+      .color-label {
+        font-weight: 700;
+        font-size: 0.88889rem;
+        margin-bottom: 8px;
+      }
+      .shadow-demo {
+        padding: 24px;
+        border-radius: 8px;
+        background: #fff;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .radius-demo {
+        width: 64px;
+        height: 64px;
+        background: var(--primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 0.72727rem;
+        font-family: 'Noto Sans Mono', monospace;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.72727rem;
+        font-weight: 500;
+      }
+      .section-intro {
+        color: var(--muted);
+        margin-bottom: 16px;
+        font-size: 0.88889rem;
+      }
+      .typo-sample {
+        margin: 4px 0;
+      }
+      .arrow {
+        color: var(--muted);
+        margin: 0 4px;
+      }
+      @media (max-width: 768px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Kedama Design System</h1>
+      <p class="subtitle">Token Reference — 2026-04-15 時点のトークン一覧</p>
 
-<h1>Kedama Design System</h1>
-<p class="subtitle">Token Reference — 2026-04-15 時点のトークン一覧</p>
+      <!-- ============================================================ -->
+      <h2>1. Primitive Colors</h2>
+      <p class="section-intro">
+        OKLCH 色空間ベース。Atmos で生成。彩度を抑えた Calm UI トーン。スケール 50（最明）〜
+        900（最暗）。
+      </p>
 
-<!-- ============================================================ -->
-<h2>1. Primitive Colors</h2>
-<p class="section-intro">OKLCH 色空間ベース。Atmos で生成。彩度を抑えた Calm UI トーン。スケール 50（最明）〜 900（最暗）。</p>
+      <div class="card">
+        <div class="color-label">Primary（苔色 — ブランド・主要アクション）hue 152</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #dff6e4; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #b9edc6; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #8ed09f; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #6db07f; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #539065; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #416f4e; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #315039; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #213325; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #0f1912; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #020402; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Primary（苔色 — ブランド・主要アクション）hue 152</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#DFF6E4;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#B9EDC6;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#8ED09F;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#6DB07F;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#539065;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#416F4E;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#315039;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#213325;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#0F1912;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#020402;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Birch（白樺 — 暖色ニュートラル）hue 90</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #f0eee9; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #e0ded7; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #c1bdb5; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #a29e93; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #858073; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #676358; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #4b473d; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #302e27; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #181611; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #040302; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Birch（白樺 — 暖色ニュートラル）hue 90</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#F0EEE9;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#E0DED7;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#C1BDB5;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#A29E93;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#858073;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#676358;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#4B473D;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#302E27;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#181611;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#040302;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Amber（琥珀 — Tertiary・装飾アクセント）hue 80–83</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #ffecc9; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #f6daa8; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #deb870; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #c09749; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #a07927; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #7f5c0e; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #5e4201; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #3e2a00; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #201400; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #060300; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Amber（琥珀 — Tertiary・装飾アクセント）hue 80–83</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#FFECC9;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#F6DAA8;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#DEB870;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#C09749;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#A07927;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#7F5C0E;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#5E4201;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#3E2A00;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#201400;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#060300;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Warning（警告 — オレンジ）hue 55</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #faebe2; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #ffd4b8; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #ebaf87; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #cf8d60; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #af6f41; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #8c532a; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #693a16; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #462409; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #251002; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #080200; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Warning（警告 — オレンジ）hue 55</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#FAEBE2;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#FFD4B8;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#EBAF87;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#CF8D60;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#AF6F41;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#8C532A;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#693A16;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#462409;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#251002;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#080200;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Danger（エラー — 赤）hue 7–11</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #fee8ea; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #ffd0d6; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #f5a3b0; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #e07b8e; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #c4576f; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #a23954; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #7b223c; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #540f25; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #2e0310; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #0c0002; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Danger（エラー — 赤）hue 7–11</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#FEE8EA;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#FFD0D6;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#F5A3B0;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#E07B8E;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#C4576F;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#A23954;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#7B223C;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#540F25;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#2E0310;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#0C0002;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Success（成功 — 黄緑）hue 115</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #edf2d5; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #dce4ac; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #bbc581; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #9ca65f; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #7e8745; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #62692e; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #474c1c; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #2d310e; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #161803; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #030400; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Success（成功 — 黄緑）hue 115</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#EDF2D5;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#DCE4AC;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#BBC581;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#9CA65F;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#7E8745;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#62692E;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#474C1C;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#2D310E;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#161803;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#030400;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">Info（情報 — 青）hue 231</div>
+        <div class="color-scale">
+          <div class="color-scale-item" style="background: #e2f1fa; color: #040302">50</div>
+          <div class="color-scale-item" style="background: #b7e6ff; color: #040302">100</div>
+          <div class="color-scale-item" style="background: #84c8ea; color: #040302">200</div>
+          <div class="color-scale-item" style="background: #5aa9d0; color: #040302">300</div>
+          <div class="color-scale-item" style="background: #398aaf; color: #fff">400</div>
+          <div class="color-scale-item" style="background: #206c8c; color: #fff">500</div>
+          <div class="color-scale-item" style="background: #0f4e68; color: #fff">600</div>
+          <div class="color-scale-item" style="background: #063245; color: #fff">700</div>
+          <div class="color-scale-item" style="background: #031923; color: #fff">800</div>
+          <div class="color-scale-item" style="background: #010407; color: #fff">900</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">Info（情報 — 青）hue 231</div>
-<div class="color-scale">
-  <div class="color-scale-item" style="background:#E2F1FA;color:#040302">50</div>
-  <div class="color-scale-item" style="background:#B7E6FF;color:#040302">100</div>
-  <div class="color-scale-item" style="background:#84C8EA;color:#040302">200</div>
-  <div class="color-scale-item" style="background:#5AA9D0;color:#040302">300</div>
-  <div class="color-scale-item" style="background:#398AAF;color:#fff">400</div>
-  <div class="color-scale-item" style="background:#206C8C;color:#fff">500</div>
-  <div class="color-scale-item" style="background:#0F4E68;color:#fff">600</div>
-  <div class="color-scale-item" style="background:#063245;color:#fff">700</div>
-  <div class="color-scale-item" style="background:#031923;color:#fff">800</div>
-  <div class="color-scale-item" style="background:#010407;color:#fff">900</div>
-</div>
-</div>
+      <div class="card">
+        <div class="color-label">共通定数</div>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div>
+            <span class="swatch" style="background: #ffffff"></span>
+            <span class="token-name">white</span> <span class="token-value">#FFFFFF</span>
+          </div>
+          <div>
+            <span class="swatch" style="background: #000000"></span>
+            <span class="token-name">black</span> <span class="token-value">#000000</span>
+          </div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="color-label">共通定数</div>
-<div style="display:flex;gap:16px;align-items:center">
-  <div><span class="swatch" style="background:#FFFFFF"></span> <span class="token-name">white</span> <span class="token-value">#FFFFFF</span></div>
-  <div><span class="swatch" style="background:#000000"></span> <span class="token-name">black</span> <span class="token-value">#000000</span></div>
-</div>
-</div>
+      <!-- ============================================================ -->
+      <h2>2. Semantic Colors</h2>
+      <p class="section-intro">
+        用途ベースの色指定。コンポーネントは必ずセマンティック経由で参照する。Light テーマ。
+      </p>
 
-<!-- ============================================================ -->
-<h2>2. Semantic Colors</h2>
-<p class="section-intro">用途ベースの色指定。コンポーネントは必ずセマンティック経由で参照する。Light テーマ。</p>
+      <div class="card">
+        <h3>Foreground（テキスト・アイコン）</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>参照先</th>
+            <th>値</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">fg.default</td>
+            <td>birch/900</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #040302"></span>
+                <span class="token-value">#040302</span></span
+              >
+            </td>
+            <td>メインテキスト</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.muted</td>
+            <td>birch/500</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #676358"></span>
+                <span class="token-value">#676358</span></span
+              >
+            </td>
+            <td>補助テキスト</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.placeholder</td>
+            <td>birch/400</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #858073"></span>
+                <span class="token-value">#858073</span></span
+              >
+            </td>
+            <td>プレースホルダー</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.disabled</td>
+            <td>birch/300</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #a29e93"></span>
+                <span class="token-value">#A29E93</span></span
+              >
+            </td>
+            <td>無効状態</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.inverse</td>
+            <td>white</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffffff"></span>
+                <span class="token-value">#FFFFFF</span></span
+              >
+            </td>
+            <td>濃色背景上の白文字</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.link</td>
+            <td>primary/600</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #315039"></span>
+                <span class="token-value">#315039</span></span
+              >
+            </td>
+            <td>リンク</td>
+          </tr>
+          <tr>
+            <td class="token-name">fg.link-hover</td>
+            <td>primary/700</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #213325"></span>
+                <span class="token-value">#213325</span></span
+              >
+            </td>
+            <td>リンクホバー</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Foreground（テキスト・アイコン）</h3>
-<table>
-<tr><th>トークン</th><th>参照先</th><th>値</th><th>用途</th></tr>
-<tr><td class="token-name">fg.default</td><td>birch/900</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#040302"></span> <span class="token-value">#040302</span></span></td><td>メインテキスト</td></tr>
-<tr><td class="token-name">fg.muted</td><td>birch/500</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#676358"></span> <span class="token-value">#676358</span></span></td><td>補助テキスト</td></tr>
-<tr><td class="token-name">fg.placeholder</td><td>birch/400</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#858073"></span> <span class="token-value">#858073</span></span></td><td>プレースホルダー</td></tr>
-<tr><td class="token-name">fg.disabled</td><td>birch/300</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#A29E93"></span> <span class="token-value">#A29E93</span></span></td><td>無効状態</td></tr>
-<tr><td class="token-name">fg.inverse</td><td>white</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFFFFF"></span> <span class="token-value">#FFFFFF</span></span></td><td>濃色背景上の白文字</td></tr>
-<tr><td class="token-name">fg.link</td><td>primary/600</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#315039"></span> <span class="token-value">#315039</span></span></td><td>リンク</td></tr>
-<tr><td class="token-name">fg.link-hover</td><td>primary/700</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#213325"></span> <span class="token-value">#213325</span></span></td><td>リンクホバー</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Background（背景）</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>参照先</th>
+            <th>値</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">bg.page</td>
+            <td>birch/50</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #f0eee9"></span>
+                <span class="token-value">#F0EEE9</span></span
+              >
+            </td>
+            <td>ページ背景</td>
+          </tr>
+          <tr>
+            <td class="token-name">bg.surface</td>
+            <td>white</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffffff"></span>
+                <span class="token-value">#FFFFFF</span></span
+              >
+            </td>
+            <td>カード・セクション</td>
+          </tr>
+          <tr>
+            <td class="token-name">bg.surface-raised</td>
+            <td>white</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffffff"></span>
+                <span class="token-value">#FFFFFF</span></span
+              >
+            </td>
+            <td>モーダル等</td>
+          </tr>
+          <tr>
+            <td class="token-name">bg.subtle</td>
+            <td>birch/100</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #e0ded7"></span>
+                <span class="token-value">#E0DED7</span></span
+              >
+            </td>
+            <td>テーブル偶数行等</td>
+          </tr>
+          <tr>
+            <td class="token-name">bg.inverse</td>
+            <td>birch/900</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #040302"></span>
+                <span class="token-value">#040302</span></span
+              >
+            </td>
+            <td>反転背景</td>
+          </tr>
+          <tr>
+            <td class="token-name">bg.disabled</td>
+            <td>birch/100</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #e0ded7"></span>
+                <span class="token-value">#E0DED7</span></span
+              >
+            </td>
+            <td>無効状態</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Background（背景）</h3>
-<table>
-<tr><th>トークン</th><th>参照先</th><th>値</th><th>用途</th></tr>
-<tr><td class="token-name">bg.page</td><td>birch/50</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#F0EEE9"></span> <span class="token-value">#F0EEE9</span></span></td><td>ページ背景</td></tr>
-<tr><td class="token-name">bg.surface</td><td>white</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFFFFF"></span> <span class="token-value">#FFFFFF</span></span></td><td>カード・セクション</td></tr>
-<tr><td class="token-name">bg.surface-raised</td><td>white</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFFFFF"></span> <span class="token-value">#FFFFFF</span></span></td><td>モーダル等</td></tr>
-<tr><td class="token-name">bg.subtle</td><td>birch/100</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#E0DED7"></span> <span class="token-value">#E0DED7</span></span></td><td>テーブル偶数行等</td></tr>
-<tr><td class="token-name">bg.inverse</td><td>birch/900</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#040302"></span> <span class="token-value">#040302</span></span></td><td>反転背景</td></tr>
-<tr><td class="token-name">bg.disabled</td><td>birch/100</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#E0DED7"></span> <span class="token-value">#E0DED7</span></span></td><td>無効状態</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Border（境界線）</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>参照先</th>
+            <th>値</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">border.default</td>
+            <td>birch/300</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #a29e93"></span>
+                <span class="token-value">#A29E93</span></span
+              >
+            </td>
+            <td>標準ボーダー</td>
+          </tr>
+          <tr>
+            <td class="token-name">border.strong</td>
+            <td>birch/400</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #858073"></span>
+                <span class="token-value">#858073</span></span
+              >
+            </td>
+            <td>強調（WCAG 3:1）</td>
+          </tr>
+          <tr>
+            <td class="token-name">border.muted</td>
+            <td>birch/200</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #c1bdb5"></span>
+                <span class="token-value">#C1BDB5</span></span
+              >
+            </td>
+            <td>ディバイダー</td>
+          </tr>
+          <tr>
+            <td class="token-name">border.focus</td>
+            <td>primary/400</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #539065"></span>
+                <span class="token-value">#539065</span></span
+              >
+            </td>
+            <td>フォーカスリング</td>
+          </tr>
+          <tr>
+            <td class="token-name">border.error</td>
+            <td>danger/500</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #a23954"></span>
+                <span class="token-value">#A23954</span></span
+              >
+            </td>
+            <td>エラー状態</td>
+          </tr>
+          <tr>
+            <td class="token-name">border.disabled</td>
+            <td>birch/200</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #c1bdb5"></span>
+                <span class="token-value">#C1BDB5</span></span
+              >
+            </td>
+            <td>無効状態</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Border（境界線）</h3>
-<table>
-<tr><th>トークン</th><th>参照先</th><th>値</th><th>用途</th></tr>
-<tr><td class="token-name">border.default</td><td>birch/300</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#A29E93"></span> <span class="token-value">#A29E93</span></span></td><td>標準ボーダー</td></tr>
-<tr><td class="token-name">border.strong</td><td>birch/400</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#858073"></span> <span class="token-value">#858073</span></span></td><td>強調（WCAG 3:1）</td></tr>
-<tr><td class="token-name">border.muted</td><td>birch/200</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#C1BDB5"></span> <span class="token-value">#C1BDB5</span></span></td><td>ディバイダー</td></tr>
-<tr><td class="token-name">border.focus</td><td>primary/400</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#539065"></span> <span class="token-value">#539065</span></span></td><td>フォーカスリング</td></tr>
-<tr><td class="token-name">border.error</td><td>danger/500</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#A23954"></span> <span class="token-value">#A23954</span></span></td><td>エラー状態</td></tr>
-<tr><td class="token-name">border.disabled</td><td>birch/200</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#C1BDB5"></span> <span class="token-value">#C1BDB5</span></span></td><td>無効状態</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Accent（アクション・ブランド）</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>参照先</th>
+            <th>値</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">accent.primary</td>
+            <td>primary/600</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #315039"></span>
+                <span class="token-value">#315039</span></span
+              >
+            </td>
+            <td>プライマリボタン</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.primary-hover</td>
+            <td>primary/700</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #213325"></span>
+                <span class="token-value">#213325</span></span
+              >
+            </td>
+            <td>ホバー</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.primary-active</td>
+            <td>primary/800</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #0f1912"></span>
+                <span class="token-value">#0F1912</span></span
+              >
+            </td>
+            <td>アクティブ</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.primary-subtle</td>
+            <td>primary/50</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #dff6e4"></span>
+                <span class="token-value">#DFF6E4</span></span
+              >
+            </td>
+            <td>バッジ・選択行</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.primary-fg</td>
+            <td>white</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffffff"></span>
+                <span class="token-value">#FFFFFF</span></span
+              >
+            </td>
+            <td>ボタン上テキスト</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.tertiary</td>
+            <td>amber/600</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #5e4201"></span>
+                <span class="token-value">#5E4201</span></span
+              >
+            </td>
+            <td>ターシャリ</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.tertiary-hover</td>
+            <td>amber/700</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #3e2a00"></span>
+                <span class="token-value">#3E2A00</span></span
+              >
+            </td>
+            <td>ターシャリホバー</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.tertiary-subtle</td>
+            <td>amber/50</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffecc9"></span>
+                <span class="token-value">#FFECC9</span></span
+              >
+            </td>
+            <td>ターシャリ背景</td>
+          </tr>
+          <tr>
+            <td class="token-name">accent.tertiary-fg</td>
+            <td>white</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ffffff"></span>
+                <span class="token-value">#FFFFFF</span></span
+              >
+            </td>
+            <td>ターシャリ上テキスト</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Accent（アクション・ブランド）</h3>
-<table>
-<tr><th>トークン</th><th>参照先</th><th>値</th><th>用途</th></tr>
-<tr><td class="token-name">accent.primary</td><td>primary/600</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#315039"></span> <span class="token-value">#315039</span></span></td><td>プライマリボタン</td></tr>
-<tr><td class="token-name">accent.primary-hover</td><td>primary/700</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#213325"></span> <span class="token-value">#213325</span></span></td><td>ホバー</td></tr>
-<tr><td class="token-name">accent.primary-active</td><td>primary/800</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#0F1912"></span> <span class="token-value">#0F1912</span></span></td><td>アクティブ</td></tr>
-<tr><td class="token-name">accent.primary-subtle</td><td>primary/50</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#DFF6E4"></span> <span class="token-value">#DFF6E4</span></span></td><td>バッジ・選択行</td></tr>
-<tr><td class="token-name">accent.primary-fg</td><td>white</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFFFFF"></span> <span class="token-value">#FFFFFF</span></span></td><td>ボタン上テキスト</td></tr>
-<tr><td class="token-name">accent.tertiary</td><td>amber/600</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#5E4201"></span> <span class="token-value">#5E4201</span></span></td><td>ターシャリ</td></tr>
-<tr><td class="token-name">accent.tertiary-hover</td><td>amber/700</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#3E2A00"></span> <span class="token-value">#3E2A00</span></span></td><td>ターシャリホバー</td></tr>
-<tr><td class="token-name">accent.tertiary-subtle</td><td>amber/50</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFECC9"></span> <span class="token-value">#FFECC9</span></span></td><td>ターシャリ背景</td></tr>
-<tr><td class="token-name">accent.tertiary-fg</td><td>white</td><td><span class="swatch-row"><span class="swatch-sm" style="background:#FFFFFF"></span> <span class="token-value">#FFFFFF</span></span></td><td>ターシャリ上テキスト</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Status（状態表示）</h3>
+        <table>
+          <tr>
+            <th>状態</th>
+            <th>テキスト/アイコン</th>
+            <th>背景</th>
+            <th>ボーダー</th>
+          </tr>
+          <tr>
+            <td style="font-weight: 500">Success</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #2d310e"></span>
+                <span class="token-value">success/700</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #edf2d5"></span>
+                <span class="token-value">success/50</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #bbc581"></span>
+                <span class="token-value">success/200</span></span
+              >
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight: 500">Warning</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #462409"></span>
+                <span class="token-value">warning/700</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #faebe2"></span>
+                <span class="token-value">warning/50</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #ebaf87"></span>
+                <span class="token-value">warning/200</span></span
+              >
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight: 500">Danger</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #540f25"></span>
+                <span class="token-value">danger/700</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #fee8ea"></span>
+                <span class="token-value">danger/50</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #f5a3b0"></span>
+                <span class="token-value">danger/200</span></span
+              >
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight: 500">Info</td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #063245"></span>
+                <span class="token-value">info/700</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #e2f1fa"></span>
+                <span class="token-value">info/50</span></span
+              >
+            </td>
+            <td>
+              <span class="swatch-row"
+                ><span class="swatch-sm" style="background: #84c8ea"></span>
+                <span class="token-value">info/200</span></span
+              >
+            </td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Status（状態表示）</h3>
-<table>
-<tr><th>状態</th><th>テキスト/アイコン</th><th>背景</th><th>ボーダー</th></tr>
-<tr><td style="font-weight:500">Success</td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#2D310E"></span> <span class="token-value">success/700</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#EDF2D5"></span> <span class="token-value">success/50</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#BBC581"></span> <span class="token-value">success/200</span></span></td></tr>
-<tr><td style="font-weight:500">Warning</td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#462409"></span> <span class="token-value">warning/700</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#FAEBE2"></span> <span class="token-value">warning/50</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#EBAF87"></span> <span class="token-value">warning/200</span></span></td></tr>
-<tr><td style="font-weight:500">Danger</td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#540F25"></span> <span class="token-value">danger/700</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#FEE8EA"></span> <span class="token-value">danger/50</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#F5A3B0"></span> <span class="token-value">danger/200</span></span></td></tr>
-<tr><td style="font-weight:500">Info</td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#063245"></span> <span class="token-value">info/700</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#E2F1FA"></span> <span class="token-value">info/50</span></span></td>
-  <td><span class="swatch-row"><span class="swatch-sm" style="background:#84C8EA"></span> <span class="token-value">info/200</span></span></td></tr>
-</table>
-</div>
+      <!-- ============================================================ -->
+      <h2>3. Typography</h2>
 
-<!-- ============================================================ -->
-<h2>3. Typography</h2>
+      <div class="card">
+        <h3>Font Family</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>スタック</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">fontFamily.heading</td>
+            <td class="token-value">"DM Sans", "Noto Sans JP", system-ui, sans-serif</td>
+            <td>見出し・UI英語テキスト</td>
+          </tr>
+          <tr>
+            <td class="token-name">fontFamily.body</td>
+            <td class="token-value">"Noto Sans JP", "DM Sans", system-ui, sans-serif</td>
+            <td>日本語全般（本文・UI）</td>
+          </tr>
+          <tr>
+            <td class="token-name">fontFamily.mono</td>
+            <td class="token-value">"Noto Sans Mono", "JetBrains Mono", monospace</td>
+            <td>数値・ログ・コード</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Font Family</h3>
-<table>
-<tr><th>トークン</th><th>スタック</th><th>用途</th></tr>
-<tr><td class="token-name">fontFamily.heading</td><td class="token-value">"DM Sans", "Noto Sans JP", system-ui, sans-serif</td><td>見出し・UI英語テキスト</td></tr>
-<tr><td class="token-name">fontFamily.body</td><td class="token-value">"Noto Sans JP", "DM Sans", system-ui, sans-serif</td><td>日本語全般（本文・UI）</td></tr>
-<tr><td class="token-name">fontFamily.mono</td><td class="token-value">"Noto Sans Mono", "JetBrains Mono", monospace</td><td>数値・ログ・コード</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Font Size — 調和数列スケール（分子8、基準 1rem = 16px）</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>計算</th>
+            <th>rem</th>
+            <th>px</th>
+            <th>セマンティック用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">5xl</td>
+            <td>8/3</td>
+            <td>2.66667</td>
+            <td>42.67</td>
+            <td>heading-2xl（ページタイトル）</td>
+          </tr>
+          <tr>
+            <td class="token-name">4xl</td>
+            <td>8/4</td>
+            <td>2</td>
+            <td>32</td>
+            <td>heading-xl</td>
+          </tr>
+          <tr>
+            <td class="token-name">3xl</td>
+            <td>8/5</td>
+            <td>1.6</td>
+            <td>25.6</td>
+            <td>heading-lg</td>
+          </tr>
+          <tr>
+            <td class="token-name">2xl</td>
+            <td>8/6</td>
+            <td>1.33333</td>
+            <td>21.33</td>
+            <td>heading-md</td>
+          </tr>
+          <tr>
+            <td class="token-name">xl</td>
+            <td>8/7</td>
+            <td>1.14286</td>
+            <td>18.29</td>
+            <td>heading-sm</td>
+          </tr>
+          <tr style="background: #f5f3ee">
+            <td class="token-name">lg ★</td>
+            <td>8/8</td>
+            <td><strong>1</strong></td>
+            <td><strong>16</strong></td>
+            <td>body-lg（デフォルト本文）</td>
+          </tr>
+          <tr>
+            <td class="token-name">md</td>
+            <td>8/9</td>
+            <td>0.88889</td>
+            <td>14.22</td>
+            <td>body-md（補助テキスト）</td>
+          </tr>
+          <tr>
+            <td class="token-name">sm</td>
+            <td>8/10</td>
+            <td>0.8</td>
+            <td>12.8</td>
+            <td>body-sm（注釈）</td>
+          </tr>
+          <tr>
+            <td class="token-name">xs</td>
+            <td>8/11</td>
+            <td>0.72727</td>
+            <td>11.64</td>
+            <td>caption</td>
+          </tr>
+          <tr>
+            <td class="token-name">2xs</td>
+            <td>8/12</td>
+            <td>0.66667</td>
+            <td>10.67</td>
+            <td>overline</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Font Size — 調和数列スケール（分子8、基準 1rem = 16px）</h3>
-<table>
-<tr><th>トークン</th><th>計算</th><th>rem</th><th>px</th><th>セマンティック用途</th></tr>
-<tr><td class="token-name">5xl</td><td>8/3</td><td>2.66667</td><td>42.67</td><td>heading-2xl（ページタイトル）</td></tr>
-<tr><td class="token-name">4xl</td><td>8/4</td><td>2</td><td>32</td><td>heading-xl</td></tr>
-<tr><td class="token-name">3xl</td><td>8/5</td><td>1.6</td><td>25.6</td><td>heading-lg</td></tr>
-<tr><td class="token-name">2xl</td><td>8/6</td><td>1.33333</td><td>21.33</td><td>heading-md</td></tr>
-<tr><td class="token-name">xl</td><td>8/7</td><td>1.14286</td><td>18.29</td><td>heading-sm</td></tr>
-<tr style="background:#f5f3ee"><td class="token-name">lg ★</td><td>8/8</td><td><strong>1</strong></td><td><strong>16</strong></td><td>body-lg（デフォルト本文）</td></tr>
-<tr><td class="token-name">md</td><td>8/9</td><td>0.88889</td><td>14.22</td><td>body-md（補助テキスト）</td></tr>
-<tr><td class="token-name">sm</td><td>8/10</td><td>0.8</td><td>12.8</td><td>body-sm（注釈）</td></tr>
-<tr><td class="token-name">xs</td><td>8/11</td><td>0.72727</td><td>11.64</td><td>caption</td></tr>
-<tr><td class="token-name">2xs</td><td>8/12</td><td>0.66667</td><td>10.67</td><td>overline</td></tr>
-</table>
-</div>
+      <div class="card">
+        <h3>Font Weight / Line Height / Letter Spacing</h3>
+        <div class="grid-3">
+          <div>
+            <table>
+              <tr>
+                <th>Weight</th>
+                <th>値</th>
+              </tr>
+              <tr>
+                <td class="token-name">regular</td>
+                <td>400</td>
+              </tr>
+              <tr>
+                <td class="token-name">medium</td>
+                <td>500</td>
+              </tr>
+              <tr>
+                <td class="token-name">bold</td>
+                <td>700</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <table>
+              <tr>
+                <th>Line Height</th>
+                <th>値</th>
+              </tr>
+              <tr>
+                <td class="token-name">tight</td>
+                <td>1.3</td>
+              </tr>
+              <tr>
+                <td class="token-name">normal</td>
+                <td>1.6</td>
+              </tr>
+              <tr>
+                <td class="token-name">relaxed</td>
+                <td>1.8</td>
+              </tr>
+              <tr>
+                <td class="token-name">none</td>
+                <td>1</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <table>
+              <tr>
+                <th>Letter Spacing</th>
+                <th>値</th>
+              </tr>
+              <tr>
+                <td class="token-name">tight</td>
+                <td>-0.025em</td>
+              </tr>
+              <tr>
+                <td class="token-name">normal</td>
+                <td>0em</td>
+              </tr>
+              <tr>
+                <td class="token-name">wide</td>
+                <td>0.05em</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
 
-<div class="card">
-<h3>Font Weight / Line Height / Letter Spacing</h3>
-<div class="grid-3">
-<div>
-<table>
-<tr><th>Weight</th><th>値</th></tr>
-<tr><td class="token-name">regular</td><td>400</td></tr>
-<tr><td class="token-name">medium</td><td>500</td></tr>
-<tr><td class="token-name">bold</td><td>700</td></tr>
-</table>
-</div>
-<div>
-<table>
-<tr><th>Line Height</th><th>値</th></tr>
-<tr><td class="token-name">tight</td><td>1.3</td></tr>
-<tr><td class="token-name">normal</td><td>1.6</td></tr>
-<tr><td class="token-name">relaxed</td><td>1.8</td></tr>
-<tr><td class="token-name">none</td><td>1</td></tr>
-</table>
-</div>
-<div>
-<table>
-<tr><th>Letter Spacing</th><th>値</th></tr>
-<tr><td class="token-name">tight</td><td>-0.025em</td></tr>
-<tr><td class="token-name">normal</td><td>0em</td></tr>
-<tr><td class="token-name">wide</td><td>0.05em</td></tr>
-</table>
-</div>
-</div>
-</div>
+      <div class="card">
+        <h3>Semantic Typography — 10スタイル</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>Font</th>
+            <th>Size</th>
+            <th>Weight</th>
+            <th>LH</th>
+            <th>LS</th>
+          </tr>
+          <tr>
+            <td class="token-name">heading-2xl</td>
+            <td>heading</td>
+            <td>5xl (42.67px)</td>
+            <td>bold</td>
+            <td>1.3</td>
+            <td>tight</td>
+          </tr>
+          <tr>
+            <td class="token-name">heading-xl</td>
+            <td>heading</td>
+            <td>4xl (32px)</td>
+            <td>bold</td>
+            <td>1.3</td>
+            <td>tight</td>
+          </tr>
+          <tr>
+            <td class="token-name">heading-lg</td>
+            <td>heading</td>
+            <td>3xl (25.6px)</td>
+            <td>medium</td>
+            <td>1.3</td>
+            <td>tight</td>
+          </tr>
+          <tr>
+            <td class="token-name">heading-md</td>
+            <td>heading</td>
+            <td>2xl (21.33px)</td>
+            <td>medium</td>
+            <td>1.3</td>
+            <td>normal</td>
+          </tr>
+          <tr>
+            <td class="token-name">heading-sm</td>
+            <td>heading</td>
+            <td>xl (18.29px)</td>
+            <td>medium</td>
+            <td>1.3</td>
+            <td>normal</td>
+          </tr>
+          <tr style="background: #f5f3ee">
+            <td class="token-name">body-lg ★</td>
+            <td>body</td>
+            <td>lg (16px)</td>
+            <td>regular</td>
+            <td>1.6</td>
+            <td>normal</td>
+          </tr>
+          <tr>
+            <td class="token-name">body-md</td>
+            <td>body</td>
+            <td>md (14.22px)</td>
+            <td>regular</td>
+            <td>1.6</td>
+            <td>normal</td>
+          </tr>
+          <tr>
+            <td class="token-name">body-sm</td>
+            <td>body</td>
+            <td>sm (12.8px)</td>
+            <td>regular</td>
+            <td>1.6</td>
+            <td>normal</td>
+          </tr>
+          <tr>
+            <td class="token-name">caption</td>
+            <td>body</td>
+            <td>xs (11.64px)</td>
+            <td>regular</td>
+            <td>1.8</td>
+            <td>normal</td>
+          </tr>
+          <tr>
+            <td class="token-name">overline</td>
+            <td>body</td>
+            <td>2xs (10.67px)</td>
+            <td>medium</td>
+            <td>1.8</td>
+            <td>wide</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<h3>Semantic Typography — 10スタイル</h3>
-<table>
-<tr><th>トークン</th><th>Font</th><th>Size</th><th>Weight</th><th>LH</th><th>LS</th></tr>
-<tr><td class="token-name">heading-2xl</td><td>heading</td><td>5xl (42.67px)</td><td>bold</td><td>1.3</td><td>tight</td></tr>
-<tr><td class="token-name">heading-xl</td><td>heading</td><td>4xl (32px)</td><td>bold</td><td>1.3</td><td>tight</td></tr>
-<tr><td class="token-name">heading-lg</td><td>heading</td><td>3xl (25.6px)</td><td>medium</td><td>1.3</td><td>tight</td></tr>
-<tr><td class="token-name">heading-md</td><td>heading</td><td>2xl (21.33px)</td><td>medium</td><td>1.3</td><td>normal</td></tr>
-<tr><td class="token-name">heading-sm</td><td>heading</td><td>xl (18.29px)</td><td>medium</td><td>1.3</td><td>normal</td></tr>
-<tr style="background:#f5f3ee"><td class="token-name">body-lg ★</td><td>body</td><td>lg (16px)</td><td>regular</td><td>1.6</td><td>normal</td></tr>
-<tr><td class="token-name">body-md</td><td>body</td><td>md (14.22px)</td><td>regular</td><td>1.6</td><td>normal</td></tr>
-<tr><td class="token-name">body-sm</td><td>body</td><td>sm (12.8px)</td><td>regular</td><td>1.6</td><td>normal</td></tr>
-<tr><td class="token-name">caption</td><td>body</td><td>xs (11.64px)</td><td>regular</td><td>1.8</td><td>normal</td></tr>
-<tr><td class="token-name">overline</td><td>body</td><td>2xs (10.67px)</td><td>medium</td><td>1.8</td><td>wide</td></tr>
-</table>
-</div>
+      <!-- ============================================================ -->
+      <h2>4. Spacing</h2>
+      <p class="section-intro">4px 基準（2px 始まり）。実値ベース命名: spacing[16] → 16px。</p>
 
-<!-- ============================================================ -->
-<h2>4. Spacing</h2>
-<p class="section-intro">4px 基準（2px 始まり）。実値ベース命名: spacing[16] → 16px。</p>
+      <div class="card">
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>値</th>
+            <th style="width: 50%">視覚サイズ</th>
+            <th>用途</th>
+          </tr>
+          <tr>
+            <td class="token-name">0</td>
+            <td>0px</td>
+            <td></td>
+            <td>なし</td>
+          </tr>
+          <tr>
+            <td class="token-name">2</td>
+            <td>2px</td>
+            <td>
+              <div
+                style="width: 2px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>微調整</td>
+          </tr>
+          <tr>
+            <td class="token-name">4</td>
+            <td>4px</td>
+            <td>
+              <div
+                style="width: 4px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>最小余白</td>
+          </tr>
+          <tr>
+            <td class="token-name">8</td>
+            <td>8px</td>
+            <td>
+              <div
+                style="width: 8px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>コンパクトな要素間</td>
+          </tr>
+          <tr>
+            <td class="token-name">12</td>
+            <td>12px</td>
+            <td>
+              <div
+                style="width: 12px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>フォーム要素内</td>
+          </tr>
+          <tr>
+            <td class="token-name">16</td>
+            <td>16px</td>
+            <td>
+              <div
+                style="width: 16px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>標準の要素間</td>
+          </tr>
+          <tr>
+            <td class="token-name">24</td>
+            <td>24px</td>
+            <td>
+              <div
+                style="width: 24px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>セクション内</td>
+          </tr>
+          <tr>
+            <td class="token-name">32</td>
+            <td>32px</td>
+            <td>
+              <div
+                style="width: 32px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>カード内余白</td>
+          </tr>
+          <tr>
+            <td class="token-name">40</td>
+            <td>40px</td>
+            <td>
+              <div
+                style="width: 40px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>セクション間</td>
+          </tr>
+          <tr>
+            <td class="token-name">48</td>
+            <td>48px</td>
+            <td>
+              <div
+                style="width: 48px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>大きなセクション間</td>
+          </tr>
+          <tr>
+            <td class="token-name">64</td>
+            <td>64px</td>
+            <td>
+              <div
+                style="width: 64px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>ページセクション間</td>
+          </tr>
+          <tr>
+            <td class="token-name">80</td>
+            <td>80px</td>
+            <td>
+              <div
+                style="width: 80px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>ヒーロー領域</td>
+          </tr>
+          <tr>
+            <td class="token-name">96</td>
+            <td>96px</td>
+            <td>
+              <div
+                style="width: 96px; height: 12px; background: var(--primary); border-radius: 1px"
+              ></div>
+            </td>
+            <td>最大</td>
+          </tr>
+        </table>
+      </div>
 
-<div class="card">
-<table>
-<tr><th>トークン</th><th>値</th><th style="width:50%">視覚サイズ</th><th>用途</th></tr>
-<tr><td class="token-name">0</td><td>0px</td><td></td><td>なし</td></tr>
-<tr><td class="token-name">2</td><td>2px</td><td><div style="width:2px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>微調整</td></tr>
-<tr><td class="token-name">4</td><td>4px</td><td><div style="width:4px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>最小余白</td></tr>
-<tr><td class="token-name">8</td><td>8px</td><td><div style="width:8px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>コンパクトな要素間</td></tr>
-<tr><td class="token-name">12</td><td>12px</td><td><div style="width:12px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>フォーム要素内</td></tr>
-<tr><td class="token-name">16</td><td>16px</td><td><div style="width:16px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>標準の要素間</td></tr>
-<tr><td class="token-name">24</td><td>24px</td><td><div style="width:24px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>セクション内</td></tr>
-<tr><td class="token-name">32</td><td>32px</td><td><div style="width:32px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>カード内余白</td></tr>
-<tr><td class="token-name">40</td><td>40px</td><td><div style="width:40px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>セクション間</td></tr>
-<tr><td class="token-name">48</td><td>48px</td><td><div style="width:48px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>大きなセクション間</td></tr>
-<tr><td class="token-name">64</td><td>64px</td><td><div style="width:64px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>ページセクション間</td></tr>
-<tr><td class="token-name">80</td><td>80px</td><td><div style="width:80px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>ヒーロー領域</td></tr>
-<tr><td class="token-name">96</td><td>96px</td><td><div style="width:96px;height:12px;background:var(--primary);border-radius:1px"></div></td><td>最大</td></tr>
-</table>
-</div>
+      <!-- ============================================================ -->
+      <h2>5. Border Radius</h2>
+      <p class="section-intro">
+        Calm UI: 視覚的な角を落とし目への刺激を減らす。md (8px) がメイン。
+      </p>
 
-<!-- ============================================================ -->
-<h2>5. Border Radius</h2>
-<p class="section-intro">Calm UI: 視覚的な角を落とし目への刺激を減らす。md (8px) がメイン。</p>
+      <div class="card">
+        <div style="display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap">
+          <div style="text-align: center">
+            <div class="radius-demo" style="border-radius: 0px">0px</div>
+            <div class="token-name" style="margin-top: 8px">none</div>
+            <div class="token-value">限定用途</div>
+          </div>
+          <div style="text-align: center">
+            <div class="radius-demo" style="border-radius: 4px">4px</div>
+            <div class="token-name" style="margin-top: 8px">sm</div>
+            <div class="token-value">ボタン・入力</div>
+          </div>
+          <div style="text-align: center">
+            <div class="radius-demo" style="border-radius: 8px">8px</div>
+            <div class="token-name" style="margin-top: 8px">md ★</div>
+            <div class="token-value">メインの角丸</div>
+          </div>
+          <div style="text-align: center">
+            <div class="radius-demo" style="border-radius: 16px">16px</div>
+            <div class="token-name" style="margin-top: 8px">lg</div>
+            <div class="token-value">セクション・バナー</div>
+          </div>
+          <div style="text-align: center">
+            <div class="radius-demo" style="border-radius: 9999px; width: 64px; height: 64px">
+              full
+            </div>
+            <div class="token-name" style="margin-top: 8px">full</div>
+            <div class="token-value">ピル・アバター</div>
+          </div>
+        </div>
+      </div>
 
-<div class="card">
-<div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap">
-  <div style="text-align:center">
-    <div class="radius-demo" style="border-radius:0px">0px</div>
-    <div class="token-name" style="margin-top:8px">none</div>
-    <div class="token-value">限定用途</div>
-  </div>
-  <div style="text-align:center">
-    <div class="radius-demo" style="border-radius:4px">4px</div>
-    <div class="token-name" style="margin-top:8px">sm</div>
-    <div class="token-value">ボタン・入力</div>
-  </div>
-  <div style="text-align:center">
-    <div class="radius-demo" style="border-radius:8px">8px</div>
-    <div class="token-name" style="margin-top:8px">md ★</div>
-    <div class="token-value">メインの角丸</div>
-  </div>
-  <div style="text-align:center">
-    <div class="radius-demo" style="border-radius:16px">16px</div>
-    <div class="token-name" style="margin-top:8px">lg</div>
-    <div class="token-value">セクション・バナー</div>
-  </div>
-  <div style="text-align:center">
-    <div class="radius-demo" style="border-radius:9999px;width:64px;height:64px">full</div>
-    <div class="token-name" style="margin-top:8px">full</div>
-    <div class="token-value">ピル・アバター</div>
-  </div>
-</div>
-</div>
+      <!-- ============================================================ -->
+      <h2>6. Shadow</h2>
+      <p class="section-intro">
+        Calm UI の「空気感」。blur 大・opacity 低。lg にはブランドカラー混合。
+      </p>
 
-<!-- ============================================================ -->
-<h2>6. Shadow</h2>
-<p class="section-intro">Calm UI の「空気感」。blur 大・opacity 低。lg にはブランドカラー混合。</p>
+      <div class="card">
+        <div class="grid-3">
+          <div>
+            <div class="shadow-demo" style="box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.04)">
+              <div style="font-weight: 500; margin-bottom: 4px">sm</div>
+              blur 8px / 4%<br />紙がそっと置かれた感覚
+            </div>
+          </div>
+          <div>
+            <div
+              class="shadow-demo"
+              style="
+                box-shadow:
+                  0 4px 16px -2px rgba(0, 0, 0, 0.06),
+                  0 2px 6px -1px rgba(0, 0, 0, 0.03);
+              "
+            >
+              <div style="font-weight: 500; margin-bottom: 4px">md</div>
+              blur 16px+6px / 6%+3%<br />フローティング要素
+            </div>
+          </div>
+          <div>
+            <div
+              class="shadow-demo"
+              style="
+                box-shadow:
+                  0 8px 32px -4px rgba(49, 80, 57, 0.12),
+                  0 4px 12px -2px rgba(0, 0, 0, 0.03);
+              "
+            >
+              <div style="font-weight: 500; margin-bottom: 4px">lg</div>
+              blur 32px+12px / 苔色12%<br />上質な奥行き
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="grid-3">
-  <div>
-    <div class="shadow-demo" style="box-shadow:0 1px 8px 0 rgba(0,0,0,0.04)">
-      <div style="font-weight:500;margin-bottom:4px">sm</div>
-      blur 8px / 4%<br>紙がそっと置かれた感覚
+      <!-- ============================================================ -->
+      <h2>7. Breakpoints & Layout</h2>
+
+      <div class="card">
+        <h3>Breakpoints</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>値</th>
+            <th>対象</th>
+          </tr>
+          <tr>
+            <td class="token-name">sm</td>
+            <td>640px</td>
+            <td>モバイル（左右 16〜24px 余裕）</td>
+          </tr>
+          <tr>
+            <td class="token-name">md</td>
+            <td>768px</td>
+            <td>タブレット</td>
+          </tr>
+          <tr>
+            <td class="token-name">lg</td>
+            <td>1024px</td>
+            <td>デスクトップ</td>
+          </tr>
+          <tr>
+            <td class="token-name">xl</td>
+            <td>1280px</td>
+            <td>ワイドデスクトップ</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Content Width</h3>
+        <table>
+          <tr>
+            <th>トークン</th>
+            <th>値</th>
+            <th>役割</th>
+          </tr>
+          <tr>
+            <td class="token-name">narrow</td>
+            <td>768px</td>
+            <td>集中と没入（記事・フォーム、1行40〜60文字）</td>
+          </tr>
+          <tr>
+            <td class="token-name">default</td>
+            <td>1200px</td>
+            <td>安定とバランス（LP・メインフィード・カード型）</td>
+          </tr>
+          <tr>
+            <td class="token-name">wide</td>
+            <td>1440px</td>
+            <td>俯瞰と余裕（ダッシュボード・管理画面）</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Container Padding（余白のグラデーション）</h3>
+        <table>
+          <tr>
+            <th>ブレイクポイント</th>
+            <th>左右パディング</th>
+          </tr>
+          <tr>
+            <td class="token-name">sm</td>
+            <td>16px</td>
+          </tr>
+          <tr>
+            <td class="token-name">md</td>
+            <td>24px</td>
+          </tr>
+          <tr>
+            <td class="token-name">lg</td>
+            <td>32px</td>
+          </tr>
+          <tr>
+            <td class="token-name">xl</td>
+            <td>48px</td>
+          </tr>
+        </table>
+      </div>
+
+      <div
+        style="
+          margin-top: 64px;
+          padding-top: 24px;
+          border-top: 1px solid var(--border);
+          color: var(--muted);
+          font-size: 0.8rem;
+          text-align: center;
+        "
+      >
+        Kedama Design System — Token Reference<br />
+        Generated 2026-04-15 | Phase 2 完了時点
+      </div>
     </div>
-  </div>
-  <div>
-    <div class="shadow-demo" style="box-shadow:0 4px 16px -2px rgba(0,0,0,0.06),0 2px 6px -1px rgba(0,0,0,0.03)">
-      <div style="font-weight:500;margin-bottom:4px">md</div>
-      blur 16px+6px / 6%+3%<br>フローティング要素
-    </div>
-  </div>
-  <div>
-    <div class="shadow-demo" style="box-shadow:0 8px 32px -4px rgba(49,80,57,0.12),0 4px 12px -2px rgba(0,0,0,0.03)">
-      <div style="font-weight:500;margin-bottom:4px">lg</div>
-      blur 32px+12px / 苔色12%<br>上質な奥行き
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ============================================================ -->
-<h2>7. Breakpoints & Layout</h2>
-
-<div class="card">
-<h3>Breakpoints</h3>
-<table>
-<tr><th>トークン</th><th>値</th><th>対象</th></tr>
-<tr><td class="token-name">sm</td><td>640px</td><td>モバイル（左右 16〜24px 余裕）</td></tr>
-<tr><td class="token-name">md</td><td>768px</td><td>タブレット</td></tr>
-<tr><td class="token-name">lg</td><td>1024px</td><td>デスクトップ</td></tr>
-<tr><td class="token-name">xl</td><td>1280px</td><td>ワイドデスクトップ</td></tr>
-</table>
-</div>
-
-<div class="card">
-<h3>Content Width</h3>
-<table>
-<tr><th>トークン</th><th>値</th><th>役割</th></tr>
-<tr><td class="token-name">narrow</td><td>768px</td><td>集中と没入（記事・フォーム、1行40〜60文字）</td></tr>
-<tr><td class="token-name">default</td><td>1200px</td><td>安定とバランス（LP・メインフィード・カード型）</td></tr>
-<tr><td class="token-name">wide</td><td>1440px</td><td>俯瞰と余裕（ダッシュボード・管理画面）</td></tr>
-</table>
-</div>
-
-<div class="card">
-<h3>Container Padding（余白のグラデーション）</h3>
-<table>
-<tr><th>ブレイクポイント</th><th>左右パディング</th></tr>
-<tr><td class="token-name">sm</td><td>16px</td></tr>
-<tr><td class="token-name">md</td><td>24px</td></tr>
-<tr><td class="token-name">lg</td><td>32px</td></tr>
-<tr><td class="token-name">xl</td><td>48px</td></tr>
-</table>
-</div>
-
-<div style="margin-top:64px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:0.8rem;text-align:center">
-  Kedama Design System — Token Reference<br>
-  Generated 2026-04-15 | Phase 2 完了時点
-</div>
-
-</div>
-</body>
+  </body>
 </html>

@@ -22,13 +22,13 @@ Phase Aへ進む前に固定すべき結論は次のとおりである。
 
 ### 調査結果
 
-| 対象 | Kedama | Ibuki | 差分 |
-|---|---|---|---|
-| Button variants | `primary/secondary/ghost/danger` | `brand/default/ghost/outline/destructive` | `outline`はIbukiのみ。名称と既定値が異なる |
-| Button sizes | `sm/md/lg` = 32/40/48px | `sm/default/lg/icon` = 32/36/40px | 同名`lg`も寸法が異なる |
-| Button機能 | `loading`、`iconLeft/right`、ref、`aria-disabled` | `loading`、`asChild`、ref、`inert` | KedamaはアイコンAPI、Ibukiはpolymorphic renderを持つ |
-| Badge | `status` 5種 × `appearance` 2種、`icon` | `variant` 4種のみ | Kedamaが上位集合。Ibuki `brand` の意味だけ未対応 |
-| Card | compound API `Card.Header/Body/Footer`、`noPadding` | named exports、`CardTitle/Content` | API形状が非互換。Ibukiはrefと見出し要素を持つ |
+| 対象            | Kedama                                              | Ibuki                                     | 差分                                                 |
+| --------------- | --------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------- |
+| Button variants | `primary/secondary/ghost/danger`                    | `brand/default/ghost/outline/destructive` | `outline`はIbukiのみ。名称と既定値が異なる           |
+| Button sizes    | `sm/md/lg` = 32/40/48px                             | `sm/default/lg/icon` = 32/36/40px         | 同名`lg`も寸法が異なる                               |
+| Button機能      | `loading`、`iconLeft/right`、ref、`aria-disabled`   | `loading`、`asChild`、ref、`inert`        | KedamaはアイコンAPI、Ibukiはpolymorphic renderを持つ |
+| Badge           | `status` 5種 × `appearance` 2種、`icon`             | `variant` 4種のみ                         | Kedamaが上位集合。Ibuki `brand` の意味だけ未対応     |
+| Card            | compound API `Card.Header/Body/Footer`、`noPadding` | named exports、`CardTitle/Content`        | API形状が非互換。Ibukiはrefと見出し要素を持つ        |
 
 根拠:
 
@@ -60,21 +60,21 @@ Phase Aへ進む前に固定すべき結論は次のとおりである。
 
 Kedamaはsemanticがprimitiveを参照し、コンポーネントはsemanticのみを使う契約である（`src/tokens/semantic/colors.ts:1-19`、`docs/design-rules.md:13-37`）。現在の主要対応は次のとおり。
 
-| Ibuki | Kedama semantic | 判定 |
-|---|---|---|
-| `--text` | `fg.default` | 1:1 |
-| `--text-light` | `fg.muted`候補 | 非1:1。Kedamaにはsecondary textが1段しかない |
-| `--text-muted` | `fg.muted` | 用途が重複。階調追加が必要 |
-| `--text-faint` | `fg.placeholder/disabled` | 非1:1。用途混在 |
-| `--bg` | `bg.page` | 1:1 |
-| `--surface` | `bg.surface` | 1:1 |
-| `--surface-200/300` | `bg.subtle/hover` | 非1:1。状態と階層が混在 |
-| `--border/-muted/-strong` | `border.default/muted/strong` | 1:1 |
-| `--brand` | `accent.primary` | 1:1 |
-| `--brand-600` | `accent.primary-hover`または`border.active` | 非1:1 |
-| `--on-primary` | `accent.primary-fg` | 1:1だが現値はIbukiがnear-black、Kedamaは暖白 |
-| warning/destructive + bg | `status.warning/danger` + `-bg` | ほぼ1:1 |
-| `--chart-1..3`、`--heatmap-0..4` | なし | data-vizカテゴリ新設が必要 |
+| Ibuki                            | Kedama semantic                             | 判定                                         |
+| -------------------------------- | ------------------------------------------- | -------------------------------------------- |
+| `--text`                         | `fg.default`                                | 1:1                                          |
+| `--text-light`                   | `fg.muted`候補                              | 非1:1。Kedamaにはsecondary textが1段しかない |
+| `--text-muted`                   | `fg.muted`                                  | 用途が重複。階調追加が必要                   |
+| `--text-faint`                   | `fg.placeholder/disabled`                   | 非1:1。用途混在                              |
+| `--bg`                           | `bg.page`                                   | 1:1                                          |
+| `--surface`                      | `bg.surface`                                | 1:1                                          |
+| `--surface-200/300`              | `bg.subtle/hover`                           | 非1:1。状態と階層が混在                      |
+| `--border/-muted/-strong`        | `border.default/muted/strong`               | 1:1                                          |
+| `--brand`                        | `accent.primary`                            | 1:1                                          |
+| `--brand-600`                    | `accent.primary-hover`または`border.active` | 非1:1                                        |
+| `--on-primary`                   | `accent.primary-fg`                         | 1:1だが現値はIbukiがnear-black、Kedamaは暖白 |
+| warning/destructive + bg         | `status.warning/danger` + `-bg`             | ほぼ1:1                                      |
+| `--chart-1..3`、`--heatmap-0..4` | なし                                        | data-vizカテゴリ新設が必要                   |
 
 Kedama自身にもsemantic違反が残る。`bg.scrim`はrgba直値（`semantic/colors.ts:53-56`）であり、Buttonのdanger hoverはprimitive Tailwind名を直接使用している（`Button.tsx:46-49`）。これらもPhase A-1で解消対象に含めるべきである。
 
@@ -136,12 +136,12 @@ primitive:
 
 ```ts
 motionSpring = {
-  fast:   { type: 'spring', stiffness: 400, damping: 34, mass: 0.8 },
+  fast: { type: 'spring', stiffness: 400, damping: 34, mass: 0.8 },
   settle: { type: 'spring', stiffness: 260, damping: 30, mass: 1 },
-  press:  { type: 'spring', stiffness: 500, damping: 38, mass: 0.8 },
+  press: { type: 'spring', stiffness: 500, damping: 38, mass: 0.8 },
   directRelease: { type: 'spring', stiffness: 300, damping: 24, mass: 1 },
-}
-motionInertia = { directRelease: { type: 'inertia', power: 0.25, timeConstant: 250 } }
+};
+motionInertia = { directRelease: { type: 'inertia', power: 0.25, timeConstant: 250 } };
 ```
 
 semantic:
@@ -226,14 +226,14 @@ Kedama Modalはnative dialogの`showModal/close`に依存（`Modal.tsx:72-109`�
 
 ### 推奨方針
 
-| Tier 0 | 方針 |
-|---|---|
-| Button | Base UI Buttonの`render`を利用 |
-| Badge/Card/Skeleton/Spinner/IconSwap/RollingText | 自作/移植 |
-| ThemeProvider/Toggle | 自作維持 |
-| Drawer | Base UI Drawer推奨 |
-| Accordion | Base UI Accordion推奨 |
-| Toast | Base UI Toast推奨 |
+| Tier 0                                           | 方針                           |
+| ------------------------------------------------ | ------------------------------ |
+| Button                                           | Base UI Buttonの`render`を利用 |
+| Badge/Card/Skeleton/Spinner/IconSwap/RollingText | 自作/移植                      |
+| ThemeProvider/Toggle                             | 自作維持                       |
+| Drawer                                           | Base UI Drawer推奨             |
+| Accordion                                        | Base UI Accordion推奨          |
+| Toast                                            | Base UI Toast推奨              |
 
 横スワイプ、mount lifecycle、他要素inertまでModalへ自作追加するよりBase UI Drawerを使う方が低リスクである。したがって親仕様書§4を残し、§2.2のnative Drawer候補を削除する。Modalはnativeのまま別用途として維持する。
 
@@ -283,10 +283,10 @@ GitHubは旧URLをredirectしclone/fetch/pushも動くが、remote更新を推�
 
 **(a) `kedama` Organizationを作成して移管**を推奨する。ブランド名を維持でき、将来のregistry/APIを同一organization配下に置けるため、外販時の再改名コストが最小である。
 
-| 案 | 評価 |
-|---|---|
-| (a) org移管 | 初期設定は必要だが長期的に最良 |
-| (b) rename | 最短。ただし全consumer importと将来ブランドを個人名へ固定 |
+| 案          | 評価                                                               |
+| ----------- | ------------------------------------------------------------------ |
+| (a) org移管 | 初期設定は必要だが長期的に最良                                     |
+| (b) rename  | 最短。ただし全consumer importと将来ブランドを個人名へ固定          |
 | (c) git依存 | version/lock/配布CSS/認証/リリース管理が弱く、本番正式配布には不適 |
 
 ### 未確定

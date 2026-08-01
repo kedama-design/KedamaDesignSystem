@@ -51,11 +51,21 @@ export const AllSubtle: Story = {
   name: 'Subtle（全ステータス）',
   render: () => (
     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      <Badge status="default" appearance="subtle">デフォルト</Badge>
-      <Badge status="success" appearance="subtle">完了</Badge>
-      <Badge status="warning" appearance="subtle">注意</Badge>
-      <Badge status="danger" appearance="subtle">エラー</Badge>
-      <Badge status="info" appearance="subtle">情報</Badge>
+      <Badge status="default" appearance="subtle">
+        デフォルト
+      </Badge>
+      <Badge status="success" appearance="subtle">
+        完了
+      </Badge>
+      <Badge status="warning" appearance="subtle">
+        注意
+      </Badge>
+      <Badge status="danger" appearance="subtle">
+        エラー
+      </Badge>
+      <Badge status="info" appearance="subtle">
+        情報
+      </Badge>
     </div>
   ),
 };
@@ -66,11 +76,21 @@ export const AllSolid: Story = {
   name: 'Solid（全ステータス）',
   render: () => (
     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      <Badge status="default" appearance="solid">デフォルト</Badge>
-      <Badge status="success" appearance="solid">完了</Badge>
-      <Badge status="warning" appearance="solid">注意</Badge>
-      <Badge status="danger" appearance="solid">エラー</Badge>
-      <Badge status="info" appearance="solid">情報</Badge>
+      <Badge status="default" appearance="solid">
+        デフォルト
+      </Badge>
+      <Badge status="success" appearance="solid">
+        完了
+      </Badge>
+      <Badge status="warning" appearance="solid">
+        注意
+      </Badge>
+      <Badge status="danger" appearance="solid">
+        エラー
+      </Badge>
+      <Badge status="info" appearance="solid">
+        情報
+      </Badge>
     </div>
   ),
 };
@@ -127,10 +147,24 @@ export const UsageExample: Story = {
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid var(--color-border-default)' }}>
-            <th style={{ textAlign: 'left', padding: '8px 12px', fontSize: '12px', color: 'var(--color-fg-muted)' }}>
+            <th
+              style={{
+                textAlign: 'left',
+                padding: '8px 12px',
+                fontSize: '12px',
+                color: 'var(--color-fg-muted)',
+              }}
+            >
               タスク名
             </th>
-            <th style={{ textAlign: 'left', padding: '8px 12px', fontSize: '12px', color: 'var(--color-fg-muted)' }}>
+            <th
+              style={{
+                textAlign: 'left',
+                padding: '8px 12px',
+                fontSize: '12px',
+                color: 'var(--color-fg-muted)',
+              }}
+            >
               ステータス
             </th>
           </tr>
@@ -143,7 +177,9 @@ export const UsageExample: Story = {
             { name: 'ドキュメント更新', status: 'info' as const, label: '予定' },
           ].map((row) => (
             <tr key={row.name} style={{ borderBottom: '1px solid var(--color-border-muted)' }}>
-              <td style={{ padding: '10px 12px', fontSize: '14px', color: 'var(--color-fg-default)' }}>
+              <td
+                style={{ padding: '10px 12px', fontSize: '14px', color: 'var(--color-fg-default)' }}
+              >
                 {row.name}
               </td>
               <td style={{ padding: '10px 12px' }}>

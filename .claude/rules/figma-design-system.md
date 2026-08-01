@@ -25,18 +25,19 @@ Figma のデザインで使われている変数名とコード側の CSS 変数
 
 ### カラー
 
-| Figma 変数パス | CSS 変数 | Tailwind クラス例 |
-|---|---|---|
-| `Primitives/primary/600` | `--primitive-color-primary-600` | `bg-primary-600` |
-| `Primitives/birch/25` | `--primitive-color-birch-25` | `bg-birch-25` |
-| `Semantics/fg/default` | `--color-fg-default` | `text-fg-default` |
-| `Semantics/bg/surface` | `--color-bg-surface` | `bg-surface` |
-| `Semantics/bg/page` | `--color-bg-page` | `bg-page` |
-| `Semantics/border/default` | `--color-border-default` | `border-border-default` |
-| `Semantics/accent/primary` | `--color-accent-primary` | `bg-accent-primary` |
-| `Semantics/status/danger` | `--color-status-danger` | `text-status-danger` |
+| Figma 変数パス             | CSS 変数                        | Tailwind クラス例       |
+| -------------------------- | ------------------------------- | ----------------------- |
+| `Primitives/primary/600`   | `--primitive-color-primary-600` | `bg-primary-600`        |
+| `Primitives/birch/25`      | `--primitive-color-birch-25`    | `bg-birch-25`           |
+| `Semantics/fg/default`     | `--color-fg-default`            | `text-fg-default`       |
+| `Semantics/bg/surface`     | `--color-bg-surface`            | `bg-surface`            |
+| `Semantics/bg/page`        | `--color-bg-page`               | `bg-page`               |
+| `Semantics/border/default` | `--color-border-default`        | `border-border-default` |
+| `Semantics/accent/primary` | `--color-accent-primary`        | `bg-accent-primary`     |
+| `Semantics/status/danger`  | `--color-status-danger`         | `text-status-danger`    |
 
 **変換ルール:**
+
 - `Primitives/{palette}/{shade}` → CSS: `--primitive-color-{palette}-{shade}` → Tailwind: `{palette}-{shade}`
 - `Semantics/{category}/{name}` → CSS: `--color-{category}-{name}` → Tailwind: セマンティック名参照（下記一覧）
 
@@ -52,46 +53,46 @@ Figma のデザインで使われている変数名とコード側の CSS 変数
 
 ### タイポグラフィ
 
-| Figma テキストスタイル | Tailwind クラス |
-|---|---|
-| `heading-2xl` | `font-heading text-5xl font-bold leading-tight tracking-tight` |
-| `heading-xl` | `font-heading text-4xl font-bold leading-tight tracking-tight` |
-| `heading-lg` | `font-heading text-3xl font-medium leading-tight tracking-tight` |
-| `heading-md` | `font-heading text-2xl font-medium leading-tight` |
-| `heading-sm` | `font-heading text-xl font-medium leading-tight` |
-| `body-lg` | `font-body text-lg` |
-| `body-md` | `font-body text-md` |
-| `body-sm` | `font-body text-sm` |
-| `caption` | `font-body text-xs leading-relaxed` |
-| `overline` | `font-body text-2xs font-medium leading-relaxed tracking-wide uppercase` |
+| Figma テキストスタイル | Tailwind クラス                                                          |
+| ---------------------- | ------------------------------------------------------------------------ |
+| `heading-2xl`          | `font-heading text-5xl font-bold leading-tight tracking-tight`           |
+| `heading-xl`           | `font-heading text-4xl font-bold leading-tight tracking-tight`           |
+| `heading-lg`           | `font-heading text-3xl font-medium leading-tight tracking-tight`         |
+| `heading-md`           | `font-heading text-2xl font-medium leading-tight`                        |
+| `heading-sm`           | `font-heading text-xl font-medium leading-tight`                         |
+| `body-lg`              | `font-body text-lg`                                                      |
+| `body-md`              | `font-body text-md`                                                      |
+| `body-sm`              | `font-body text-sm`                                                      |
+| `caption`              | `font-body text-xs leading-relaxed`                                      |
+| `overline`             | `font-body text-2xs font-medium leading-relaxed tracking-wide uppercase` |
 
 ### スペーシング
 
-| Figma 値 | Tailwind クラス |
-|---|---|
-| `0` | `p-0`, `gap-0` |
-| `2` | `p-0.5`, `gap-0.5` |
-| `4` | `p-1`, `gap-1` |
-| `8` | `p-2`, `gap-2` |
-| `12` | `p-3`, `gap-3` |
-| `16` | `p-4`, `gap-4` |
-| `24` | `p-6`, `gap-6` |
-| `32` | `p-8`, `gap-8` |
-| `40` | `p-10`, `gap-10` |
-| `48` | `p-12`, `gap-12` |
+| Figma 値 | Tailwind クラス    |
+| -------- | ------------------ |
+| `0`      | `p-0`, `gap-0`     |
+| `2`      | `p-0.5`, `gap-0.5` |
+| `4`      | `p-1`, `gap-1`     |
+| `8`      | `p-2`, `gap-2`     |
+| `12`     | `p-3`, `gap-3`     |
+| `16`     | `p-4`, `gap-4`     |
+| `24`     | `p-6`, `gap-6`     |
+| `32`     | `p-8`, `gap-8`     |
+| `40`     | `p-10`, `gap-10`   |
+| `48`     | `p-12`, `gap-12`   |
 
 ### 角丸・シャドウ
 
-| Figma | Tailwind |
-|---|---|
-| `radius/none` | `rounded-none` |
-| `radius/sm` (4px) | `rounded-sm` |
-| `radius/md` (8px) | `rounded-md` |
-| `radius/lg` (16px) | `rounded-lg` |
-| `radius/full` | `rounded-full` |
-| `shadow/sm` | `shadow-sm` |
-| `shadow/md` | `shadow-md` |
-| `shadow/lg` | `shadow-lg` |
+| Figma              | Tailwind       |
+| ------------------ | -------------- |
+| `radius/none`      | `rounded-none` |
+| `radius/sm` (4px)  | `rounded-sm`   |
+| `radius/md` (8px)  | `rounded-md`   |
+| `radius/lg` (16px) | `rounded-lg`   |
+| `radius/full`      | `rounded-full` |
+| `shadow/sm`        | `shadow-sm`    |
+| `shadow/md`        | `shadow-md`    |
+| `shadow/lg`        | `shadow-lg`    |
 
 ## 実装ルール
 
@@ -105,5 +106,6 @@ Figma のデザインで使われている変数名とコード側の CSS 変数
 ## Storybook 検証
 
 実装後に Storybook (`pnpm dev` → localhost:6006) で検証する:
+
 - サイズ、色、フォント、角丸、gap、テキスト内容を Figma と比較
 - iframe URL: `http://localhost:6006/iframe.html?id={storyId}` で個別確認可能

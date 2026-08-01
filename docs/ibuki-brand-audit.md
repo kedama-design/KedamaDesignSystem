@@ -12,10 +12,10 @@ Kedama 側でトークンを分離しても**消費側が brand を流用し続�
 - 調査日: 2026-07-31
 - 検出件数
 
-| 対象 | `--brand` | `--brand-600` | `--brand-soft` | `--text-brand` | 計 |
-|---|---|---|---|---|---|
-| プロトタイプ | 74 | 3 | 23 | 98 | **198** |
-| 本番コード（apps/web ＋ packages/ui） | — | — | — | — | **70** |
+| 対象                                  | `--brand` | `--brand-600` | `--brand-soft` | `--text-brand` | 計      |
+| ------------------------------------- | --------- | ------------- | -------------- | -------------- | ------- |
+| プロトタイプ                          | 74        | 3             | 23             | 98             | **198** |
+| 本番コード（apps/web ＋ packages/ui） | —         | —             | —              | —              | **70**  |
 
 > **機械置換はしない。** 同じ `--brand` でも、ブランドを指すのか成功状態を指すのかで
 > 移行先が変わる。判定には文脈が要る。
@@ -27,12 +27,12 @@ Kedama 側でトークンを分離しても**消費側が brand を流用し続�
 新パレット適用後にプロトタイプの「改善タスク」画面を実測したところ、
 **描画されている有彩色に success の緑が1つも無かった**。
 
-| 実際に描画されていた色 | 正体 | 出現 |
-|---|---|---|
-| `#0E5537` | brand（primary/600） | bg 9 / fg 7 |
-| `#54140E` | danger/700 | fg 8 / bg 4 |
-| `#3C2B00` | warning/700 | bg 4 / fg 2 |
-| success の緑 | — | **0** |
+| 実際に描画されていた色 | 正体                 | 出現        |
+| ---------------------- | -------------------- | ----------- |
+| `#0E5537`              | brand（primary/600） | bg 9 / fg 7 |
+| `#54140E`              | danger/700           | fg 8 / bg 4 |
+| `#3C2B00`              | warning/700          | bg 4 / fg 2 |
+| success の緑           | —                    | **0**       |
 
 画面上で「対応中」が緑に見えていたのは、ブランド緑をそのまま使っていたため。
 
@@ -43,11 +43,11 @@ Kedama 側でトークンを分離しても**消費側が brand を流用し続�
 
 ## 1. 移行先の3分類
 
-| 分類 | 移行先 | 判定基準 |
-|---|---|---|
-| **A. ステータス** | `--success` 系（新設） | 「成功した」「完了した」「正常である」を伝えている。値や状態に応じて色が変わる |
-| **B. ブランド／アクセント** | `--brand` のまま | 主要アクション、リンク、選択状態、ロゴ、アバター。状態ではなく「主役」を示す |
-| **C. データ可視化** | `--chart-*` / `dataViz.emphasis-positive` | チャートの系列色。凡例・軸とセットで意味が決まる |
+| 分類                        | 移行先                                    | 判定基準                                                                       |
+| --------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
+| **A. ステータス**           | `--success` 系（新設）                    | 「成功した」「完了した」「正常である」を伝えている。値や状態に応じて色が変わる |
+| **B. ブランド／アクセント** | `--brand` のまま                          | 主要アクション、リンク、選択状態、ロゴ、アバター。状態ではなく「主役」を示す   |
+| **C. データ可視化**         | `--chart-*` / `dataViz.emphasis-positive` | チャートの系列色。凡例・軸とセットで意味が決まる                               |
 
 **判定に迷ったときの順序**
 
@@ -62,10 +62,10 @@ Kedama 側でトークンを分離しても**消費側が brand を流用し続�
 `src/styles/alias-ibuki.css`（generator 出力）に追加済み。
 
 ```css
---success:        var(--color-status-success);
---success-bg:     var(--color-status-success-bg);
+--success: var(--color-status-success);
+--success-bg: var(--color-status-success-bg);
 --success-border: var(--color-status-success-border);
---success-solid:  var(--color-status-success-solid);
+--success-solid: var(--color-status-success-solid);
 ```
 
 Light では `--success` = `success/700`、`--success-solid` = `success/400`。
@@ -78,27 +78,27 @@ Light では `--success` = `success/700`、`--success-solid` = `success/400`。
 
 ### 3.1 本番コード：決定的な箇所
 
-| ファイル:行 | 現在のコード | なぜ A か |
-|---|---|---|
-| `apps/web/.../tasks/tasks-board.tsx:74` | `progress >= 100 ? "var(--brand)" : progress > 0 ? "var(--warning)" : "transparent"` | **進捗100%＝brand、進行中＝warning。** 値によって色が切り替わる完全なステータス表現。最も明確な証拠 |
-| `apps/web/.../tasks/tasks-board.tsx:63` | `delta > 0 ? "text-text-brand" : "text-text-muted"` | 改善（プラス）を brand で表現。増減という**状態**に応じて切り替わる |
-| `apps/web/.../tasks/tasks-board.tsx:377` | `<i className="… bg-brand" />`（凡例） | 上記の凡例。本体を移すなら凡例も揃える |
-| `apps/web/.../settings/api-keys/api-keys-view.tsx:105` | `swap={<Check className="size-4 text-text-brand" />}` | **チェックマーク＝完了**。コピー成功のフィードバック |
-| `apps/web/.../sites/[siteId]/share-settings.tsx:269` | 同上 | 同上 |
-| `apps/web/.../sites/[siteId]/improve-tab.tsx:466` | 同上 | 同上 |
+| ファイル:行                                            | 現在のコード                                                                         | なぜ A か                                                                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `apps/web/.../tasks/tasks-board.tsx:74`                | `progress >= 100 ? "var(--brand)" : progress > 0 ? "var(--warning)" : "transparent"` | **進捗100%＝brand、進行中＝warning。** 値によって色が切り替わる完全なステータス表現。最も明確な証拠 |
+| `apps/web/.../tasks/tasks-board.tsx:63`                | `delta > 0 ? "text-text-brand" : "text-text-muted"`                                  | 改善（プラス）を brand で表現。増減という**状態**に応じて切り替わる                                 |
+| `apps/web/.../tasks/tasks-board.tsx:377`               | `<i className="… bg-brand" />`（凡例）                                               | 上記の凡例。本体を移すなら凡例も揃える                                                              |
+| `apps/web/.../settings/api-keys/api-keys-view.tsx:105` | `swap={<Check className="size-4 text-text-brand" />}`                                | **チェックマーク＝完了**。コピー成功のフィードバック                                                |
+| `apps/web/.../sites/[siteId]/share-settings.tsx:269`   | 同上                                                                                 | 同上                                                                                                |
+| `apps/web/.../sites/[siteId]/improve-tab.tsx:466`      | 同上                                                                                 | 同上                                                                                                |
 
 Check アイコンへの brand 着色は **4 箇所**、progress/完了判定は **3 箇所**。
 
 ### 3.2 プロトタイプ：クラス名が用途を明示している箇所
 
-| 行 | セレクタ | なぜ A か |
-|---|---|---|
-| 149 | `.track > i.good{background:var(--brand)}` | **クラス名が `good`**。良好状態 |
-| 293 | `.ob-dot.done{background:var(--brand)}` | **`done` ＝ 完了** |
-| 1282 | `<i style="background:var(--brand)"></i>着手/完了` | **凡例テキストに「着手/完了」と明記** |
-| 217 | `.statusbar .sb-dot{background:var(--brand)}` | ステータスバーの状態ドット |
-| 228 | `.toast .tdot{background:var(--brand)}` | トーストの種別ドット。成功トーストなら A |
-| 243 | `.progress > i{background:var(--brand)}` | 進捗バー。3.1 の `tasks-board.tsx:74` と同じ用途 |
+| 行   | セレクタ                                           | なぜ A か                                        |
+| ---- | -------------------------------------------------- | ------------------------------------------------ |
+| 149  | `.track > i.good{background:var(--brand)}`         | **クラス名が `good`**。良好状態                  |
+| 293  | `.ob-dot.done{background:var(--brand)}`            | **`done` ＝ 完了**                               |
+| 1282 | `<i style="background:var(--brand)"></i>着手/完了` | **凡例テキストに「着手/完了」と明記**            |
+| 217  | `.statusbar .sb-dot{background:var(--brand)}`      | ステータスバーの状態ドット                       |
+| 228  | `.toast .tdot{background:var(--brand)}`            | トーストの種別ドット。成功トーストなら A         |
+| 243  | `.progress > i{background:var(--brand)}`           | 進捗バー。3.1 の `tasks-board.tsx:74` と同じ用途 |
 
 > **294 行 `.ob-dot.cur` は要確認**：オンボーディングの「現在のステップ」を示す。
 > 「成功」ではなく「いまここ」なので **B（選択状態）** が妥当だが、`.done` と並ぶため
@@ -110,18 +110,18 @@ Check アイコンへの brand 着色は **4 箇所**、progress/完了判定は
 
 移行不要。ただし一部は**より適切なトークンがある**。
 
-| 箇所 | 現在 | 推奨 |
-|---|---|---|
-| `improve-tab.tsx:114` / `site-diagnosis.tsx:269` ほか **11 箇所** | `text-text-brand hover:underline` | `--text-brand`（＝ `fg.link`）のままで正しい |
+| 箇所                                                              | 現在                                                              | 推奨                                                                               |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `improve-tab.tsx:114` / `site-diagnosis.tsx:269` ほか **11 箇所** | `text-text-brand hover:underline`                                 | `--text-brand`（＝ `fg.link`）のままで正しい                                       |
 | `audit-logs-view.tsx:28` / `api-keys-view.tsx:22` ほか **4 箇所** | `focus:outline-[color-mix(in srgb,var(--brand) 30%,transparent)]` | **`--border-focus` へ。** フォーカスリング専用トークンがあり、色を混ぜる必要もない |
-| プロトタイプ 66 | `.pb-logo` | ロゴ |
-| プロトタイプ 86 / 88 | `.proto-nav a.on` | ナビの選択状態（`bg.selected` 相当） |
-| プロトタイプ 98 / 99 | `.btn.brand` | プライマリボタン |
-| プロトタイプ 123 | `.badge.brand` | ブランドバッジ |
-| プロトタイプ 185 | `.side .org .av` | アバター |
-| プロトタイプ 284 | `.step .num` | ステップ番号 |
-| プロトタイプ 601 / 1385 | トグル ON | shadcn / Ibuki とも accent で表現 |
-| `site-diagnosis.tsx:299` | `bg-brand-soft text-text-brand` | スコアバッジ |
+| プロトタイプ 66                                                   | `.pb-logo`                                                        | ロゴ                                                                               |
+| プロトタイプ 86 / 88                                              | `.proto-nav a.on`                                                 | ナビの選択状態（`bg.selected` 相当）                                               |
+| プロトタイプ 98 / 99                                              | `.btn.brand`                                                      | プライマリボタン                                                                   |
+| プロトタイプ 123                                                  | `.badge.brand`                                                    | ブランドバッジ                                                                     |
+| プロトタイプ 185                                                  | `.side .org .av`                                                  | アバター                                                                           |
+| プロトタイプ 284                                                  | `.step .num`                                                      | ステップ番号                                                                       |
+| プロトタイプ 601 / 1385                                           | トグル ON                                                         | shadcn / Ibuki とも accent で表現                                                  |
+| `site-diagnosis.tsx:299`                                          | `bg-brand-soft text-text-brand`                                   | スコアバッジ                                                                       |
 
 ---
 
@@ -130,11 +130,11 @@ Check アイコンへの brand 着色は **4 箇所**、progress/完了判定は
 **プロトタイプの `--brand` 74 箇所のうち最も多いのがこの用途。**
 `packages/ui/src/charts/` 配下だけで **29 箇所**が brand を参照している。
 
-| ファイル | 内容 |
-|---|---|
-| `packages/ui/src/charts/trend-line.tsx:45,46,60` | エリアのグラデーションと線に `chartColors.brand` |
-| `packages/ui/src/charts/timeline-row.tsx:83` | `state === "active" ? "bg-brand" : "bg-chart-1"` |
-| `packages/ui/src/charts/palette.ts:5` | コメント「only the latest / highlighted / positive value takes the single brand green」 |
+| ファイル                                         | 内容                                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `packages/ui/src/charts/trend-line.tsx:45,46,60` | エリアのグラデーションと線に `chartColors.brand`                                        |
+| `packages/ui/src/charts/timeline-row.tsx:83`     | `state === "active" ? "bg-brand" : "bg-chart-1"`                                        |
+| `packages/ui/src/charts/palette.ts:5`            | コメント「only the latest / highlighted / positive value takes the single brand green」 |
 
 プロトタイプ側の該当行（抜粋）: 137（スパークライン）／396・869・1001（レーダー塗り）／
 629・1821（エリアのグラデーション）／633・711・722・734・1434・1826（点）／
@@ -189,8 +189,8 @@ grep -rnE '(>=|>|===)[^)]*var\(--brand\)|\?[^:]*"var\(--brand\)"' apps/web packa
 **`--success` の行が無い**。Ibuki に存在しないトークンだったためだが、
 このままでは移行時に見落とされる。次の行を追加すべき。
 
-| Ibuki CSS変数 | 旧値 | 新値（Kedama由来） | 出典 |
-|---|---|---|---|
-| （新規）`--success` | なし（`--brand` で代用） | `#143717` | success/700 |
-| （新規）`--success-bg` | なし | `#D3FBD4` | success/50 |
-| （新規）`--success-solid` | なし | `#0E9B2F` | success/400 |
+| Ibuki CSS変数             | 旧値                     | 新値（Kedama由来） | 出典        |
+| ------------------------- | ------------------------ | ------------------ | ----------- |
+| （新規）`--success`       | なし（`--brand` で代用） | `#143717`          | success/700 |
+| （新規）`--success-bg`    | なし                     | `#D3FBD4`          | success/50  |
+| （新規）`--success-solid` | なし                     | `#0E9B2F`          | success/400 |

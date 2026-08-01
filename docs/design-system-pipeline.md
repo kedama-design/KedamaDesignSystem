@@ -14,13 +14,13 @@
 > **したがって現時点の single source of truth は Figma ではなくコード（`src/tokens/`）である。**
 > 自動同期が動くまで「Figma が SoT」と表現しない。
 
-| 層 | 状態 |
-|---|---|
-| `src/tokens/`（TypeScript） | **稼働中。現在の SoT** |
-| `scripts/generate-css-tokens.ts` → `src/styles/*.css` | **稼働中**（`pnpm generate:tokens`） |
-| Figma Variables | 存在するが**構造が古い**（§2 のギャップ参照） |
-| Tokens Studio / Style Dictionary / GitHub Actions | **未導入** |
-| Chromatic | 未導入（仕様書 §6：複数プロダクトが消費し始めてから再検討） |
+| 層                                                    | 状態                                                        |
+| ----------------------------------------------------- | ----------------------------------------------------------- |
+| `src/tokens/`（TypeScript）                           | **稼働中。現在の SoT**                                      |
+| `scripts/generate-css-tokens.ts` → `src/styles/*.css` | **稼働中**（`pnpm generate:tokens`）                        |
+| Figma Variables                                       | 存在するが**構造が古い**（§2 のギャップ参照）               |
+| Tokens Studio / Style Dictionary / GitHub Actions     | **未導入**                                                  |
+| Chromatic                                             | 未導入（仕様書 §6：複数プロダクトが消費し始めてから再検討） |
 
 ---
 
@@ -51,11 +51,11 @@
 
 ### 2.1 規模のギャップ
 
-| | Figma 現状（CLAUDE.md 記載） | A-1 完了後のコード | 差 |
-|---|---|---|---|
-| Primitives（Variables） | 88 | 色 77 ＋ 非色（spacing / radius / shadow / z-index / border-width / focus-ring / opacity / breakpoints / duration / easing / data-viz 非色） | 要拡張 |
-| Semantics（Variables） | 35 | **71 変数 × 3 モード** | **約2倍、かつモードが 1 → 3** |
-| Text Styles | 10 | **13** | ＋3（`numeric-sm` / `-md` / `-xl`） |
+|                         | Figma 現状（CLAUDE.md 記載） | A-1 完了後のコード                                                                                                                           | 差                                  |
+| ----------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Primitives（Variables） | 88                           | 色 77 ＋ 非色（spacing / radius / shadow / z-index / border-width / focus-ring / opacity / breakpoints / duration / easing / data-viz 非色） | 要拡張                              |
+| Semantics（Variables）  | 35                           | **71 変数 × 3 モード**                                                                                                                       | **約2倍、かつモードが 1 → 3**       |
+| Text Styles             | 10                           | **13**                                                                                                                                       | ＋3（`numeric-sm` / `-md` / `-xl`） |
 
 セマンティック 71 の内訳: `fg` 9 / `bg` 11 / `border` 7 / `accent` 13 / `status` 20 / `dataViz` 11。
 
@@ -74,13 +74,13 @@
 
 コード側の CSS 変数名がそのまま Figma のパスに対応する。
 
-| コード | Figma |
-|---|---|
-| `--primitive-color-birch-700` | `Primitives` / `color/birch/700` |
-| `--color-fg-default` | `Semantics` / `color/fg/default` |
-| `--color-bg-surface` | `Semantics` / `color/bg/surface` |
+| コード                         | Figma                                      |
+| ------------------------------ | ------------------------------------------ |
+| `--primitive-color-birch-700`  | `Primitives` / `color/birch/700`           |
+| `--color-fg-default`           | `Semantics` / `color/fg/default`           |
+| `--color-bg-surface`           | `Semantics` / `color/bg/surface`           |
 | `--color-data-viz-heatmap-max` | `Semantics` / `color/data-viz/heatmap/max` |
-| `--typography-numeric-md-*` | Text Style `numeric/md` |
+| `--typography-numeric-md-*`    | Text Style `numeric/md`                    |
 
 **エイリアス層（`--text` / `--foreground` 等）は Figma に持ち込まない。**
 あれは消費側プロダクトのための互換層であって、デザインの語彙ではない。
@@ -90,12 +90,12 @@
 反映方針として最も重要なのはここ。**これらはコード側にしか存在できない**ため、
 将来「Figma が SoT」を名乗る場合でも、この範囲は永久にコードが正になる。
 
-| 対象 | 件数 | 理由 | 扱い |
-|---|---|---|---|
-| `spring` / `inertia`（primitive） | 5 | 物理演算のパラメータ組（`stiffness` / `damping` / `mass` / `power` / `timeConstant`）。Figma Variables に対応する型が無い | コードが正。Figma には注記のみ |
-| `semanticMotion`（semantic） | 7 | 同上 | コードが正 |
-| `bg.scrim` の `ColorMix` | 3テーマ分 | 「プリミティブ参照 ＋ アルファ合成」という**合成**は Variable Alias で表現できない。Figma に載せると実値（alpha 付き color）になり、プリミティブへの参照が切れる | Figma には実値で置き、**コードが正**と注記 |
-| `fontVariantNumeric`（`tabular-nums`） | 3 | Figma の Text Style は OpenType feature を設定できるが、Variables としては表現できない | Text Style 側で再現し、コードが正 |
+| 対象                                   | 件数      | 理由                                                                                                                                                             | 扱い                                       |
+| -------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `spring` / `inertia`（primitive）      | 5         | 物理演算のパラメータ組（`stiffness` / `damping` / `mass` / `power` / `timeConstant`）。Figma Variables に対応する型が無い                                        | コードが正。Figma には注記のみ             |
+| `semanticMotion`（semantic）           | 7         | 同上                                                                                                                                                             | コードが正                                 |
+| `bg.scrim` の `ColorMix`               | 3テーマ分 | 「プリミティブ参照 ＋ アルファ合成」という**合成**は Variable Alias で表現できない。Figma に載せると実値（alpha 付き color）になり、プリミティブへの参照が切れる | Figma には実値で置き、**コードが正**と注記 |
+| `fontVariantNumeric`（`tabular-nums`） | 3         | Figma の Text Style は OpenType feature を設定できるが、Variables としては表現できない                                                                           | Text Style 側で再現し、コードが正          |
 
 `duration` / `easing` は Figma Variables の number / string として持てるため反映対象に含める。
 

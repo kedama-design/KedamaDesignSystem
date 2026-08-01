@@ -51,6 +51,7 @@ status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり�
 このリポジトリを土台にする**。
 
 **すでにあるもの**
+
 - パッケージ名確定済み：`@kedama/design-system`（§8の「パッケージ名」論点はこれで解消）
 - デザイン哲学が言語化済み：**Calm UI**（Amber Case の Calm Technology 8原則 + 2026年の
   Calm Design ミニマリズムを理論的支柱に、社内業務システム・toB SaaS 向けに設計）。優先順位
@@ -71,6 +72,7 @@ status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり�
   CLAUDE.md にそのまま貼れる導入文）
 
 **未整備・要判断のもの**
+
 - ダークモード未実装（`semantic/colors.ts` は Light のみ。設計上は同キーで `dark/colors.ts` を
   追加する想定はコメント済み）
 - Drawer・Accordion・Skeleton・Spinner・ThemeToggle・Toast・チャート系（Tier 1）・複合ブロック
@@ -104,12 +106,12 @@ status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり�
 >
 > **以後の既定ルール（迷ったらこれで決める）**
 >
-> | 領域 | 正 |
-> |---|---|
-> | 見た目・構造・スペーシング・エレベーション・角丸 | **shadcn** |
-> | トークンの値（色・タイポ・モーション） | **Kedama**（Calm UI の OKLCH パレット） |
-> | API 命名（variant 名・Props 名） | **Kedama**（Figma Variables と紐づくため） |
-> | 判断がつかないとき | **shadcn に寄せる** |
+> | 領域                                             | 正                                         |
+> | ------------------------------------------------ | ------------------------------------------ |
+> | 見た目・構造・スペーシング・エレベーション・角丸 | **shadcn**                                 |
+> | トークンの値（色・タイポ・モーション）           | **Kedama**（Calm UI の OKLCH パレット）    |
+> | API 命名（variant 名・Props 名）                 | **Kedama**（Figma Variables と紐づくため） |
+> | 判断がつかないとき                               | **shadcn に寄せる**                        |
 >
 > **細部はプロトタイプを作りながら調整する。** 事前に完璧な仕様を決めきろうとしない。
 >
@@ -153,36 +155,36 @@ text / semantic / data-viz` というカテゴリ構成・命名（CSS変数名�
 
 ### 再配色マッピング（Light テーマ）
 
-| Ibuki CSS変数 | 旧値（doc25） | 新値（Kedama由来） | 出典 |
-|---|---|---|---|
-| `--brand` | `#3ecf8e` | `#315039` | primary/600 |
-| `--brand-600`（hover/pressed） | `#24b47e` | `#213325` | primary/700 |
-| `--text-brand` | `#007a4d` | `#315039` | primary/600（Kedamaは1色で bg/text 兼用できる濃さ） |
-| `--brand-soft` | `#e6f6ee` | `#EEFBF1` | primary/25 |
-| `--on-primary` | `#0c3b27` | `#F8F7F4` | birch/25（判断1・反転） |
-| `--bg`（canvas） | `#f8f8f8` | `#F0EEE9` | birch/50 |
-| `--bg-sidebar` | `#fbfbfb` | `#F8F7F4` | birch/25 |
-| `--surface` | `#ffffff` | `#F8F7F4` | birch/25 |
-| `--surface-200` | `#f3f3f3` | `#E0DED7` | birch/100 |
-| `--surface-300` | `#ededed` | `#C1BDB5` | birch/200 |
-| `--bg-alt` | `#f4f4f4` | `#E0DED7` | birch/100 |
-| `--border-muted` | `#ededed` | `#E0DED7` | birch/100（判断3） |
-| `--border` | `#e6e6e6` | `#C1BDB5` | birch/200（判断3） |
-| `--border-strong` | `#dcdcdc` | `#858073` | birch/400（判断3の例外・§0.7参照） |
-| `--text` | `#1f1f1f` | `#040302` | birch/900 |
-| `--text-light` | `#525252` | `#302E27` | birch/700 |
-| `--text-muted` | `#8a8a8a` | `#676358` | birch/500 |
-| `--text-faint` | `#b0b0b0` | `#858073` | birch/400 |
-| （新規）`--success` | なし（`--brand` で代用していた） | `#143717` | success/700（下記注記） |
-| （新規）`--success-bg` | なし | `#D3FBD4` | success/50 |
-| （新規）`--success-solid` | なし | `#0E9B2F` | success/400（バッジ等のベタ塗り） |
-| `--warning` | `#cf8a1f` | `#462409` | warning/700（Kedamaの status.warning） |
-| `--warning-bg` | `#fbf3e2` | `#FAEBE2` | warning/50（Kedama既存値を維持。下記注記） |
-| `--destructive` | `#cf4b4b` | `#540F25` | danger/700（Kedamaの status.danger） |
-| `--destructive-bg` | `#fbeae8` | `#FEE8EA` | danger/50（Kedama既存値を維持。下記注記） |
-| （新規）`--info` | なし | `#063245` | info/700（Kedamaにあり Ibukiになかった状態色。追加を推奨） |
-| `--chart-1/2/3` | 冷グレー3段階 | birch/100・200・300 | 中立色のグラフ用3段階 |
-| `--hm0..hm4`（草ヒートマップ5段階） | 独自緑5段階 | primary/25・100・300・500・700 | brand色スケールから5段階選定 |
+| Ibuki CSS変数                       | 旧値（doc25）                    | 新値（Kedama由来）             | 出典                                                       |
+| ----------------------------------- | -------------------------------- | ------------------------------ | ---------------------------------------------------------- |
+| `--brand`                           | `#3ecf8e`                        | `#315039`                      | primary/600                                                |
+| `--brand-600`（hover/pressed）      | `#24b47e`                        | `#213325`                      | primary/700                                                |
+| `--text-brand`                      | `#007a4d`                        | `#315039`                      | primary/600（Kedamaは1色で bg/text 兼用できる濃さ）        |
+| `--brand-soft`                      | `#e6f6ee`                        | `#EEFBF1`                      | primary/25                                                 |
+| `--on-primary`                      | `#0c3b27`                        | `#F8F7F4`                      | birch/25（判断1・反転）                                    |
+| `--bg`（canvas）                    | `#f8f8f8`                        | `#F0EEE9`                      | birch/50                                                   |
+| `--bg-sidebar`                      | `#fbfbfb`                        | `#F8F7F4`                      | birch/25                                                   |
+| `--surface`                         | `#ffffff`                        | `#F8F7F4`                      | birch/25                                                   |
+| `--surface-200`                     | `#f3f3f3`                        | `#E0DED7`                      | birch/100                                                  |
+| `--surface-300`                     | `#ededed`                        | `#C1BDB5`                      | birch/200                                                  |
+| `--bg-alt`                          | `#f4f4f4`                        | `#E0DED7`                      | birch/100                                                  |
+| `--border-muted`                    | `#ededed`                        | `#E0DED7`                      | birch/100（判断3）                                         |
+| `--border`                          | `#e6e6e6`                        | `#C1BDB5`                      | birch/200（判断3）                                         |
+| `--border-strong`                   | `#dcdcdc`                        | `#858073`                      | birch/400（判断3の例外・§0.7参照）                         |
+| `--text`                            | `#1f1f1f`                        | `#040302`                      | birch/900                                                  |
+| `--text-light`                      | `#525252`                        | `#302E27`                      | birch/700                                                  |
+| `--text-muted`                      | `#8a8a8a`                        | `#676358`                      | birch/500                                                  |
+| `--text-faint`                      | `#b0b0b0`                        | `#858073`                      | birch/400                                                  |
+| （新規）`--success`                 | なし（`--brand` で代用していた） | `#143717`                      | success/700（下記注記）                                    |
+| （新規）`--success-bg`              | なし                             | `#D3FBD4`                      | success/50                                                 |
+| （新規）`--success-solid`           | なし                             | `#0E9B2F`                      | success/400（バッジ等のベタ塗り）                          |
+| `--warning`                         | `#cf8a1f`                        | `#462409`                      | warning/700（Kedamaの status.warning）                     |
+| `--warning-bg`                      | `#fbf3e2`                        | `#FAEBE2`                      | warning/50（Kedama既存値を維持。下記注記）                 |
+| `--destructive`                     | `#cf4b4b`                        | `#540F25`                      | danger/700（Kedamaの status.danger）                       |
+| `--destructive-bg`                  | `#fbeae8`                        | `#FEE8EA`                      | danger/50（Kedama既存値を維持。下記注記）                  |
+| （新規）`--info`                    | なし                             | `#063245`                      | info/700（Kedamaにあり Ibukiになかった状態色。追加を推奨） |
+| `--chart-1/2/3`                     | 冷グレー3段階                    | birch/100・200・300            | 中立色のグラフ用3段階                                      |
+| `--hm0..hm4`（草ヒートマップ5段階） | 独自緑5段階                      | primary/25・100・300・500・700 | brand色スケールから5段階選定                               |
 
 **Light テーマの3判断は「推奨の方向で進める」で確定**（2026-07-28）。実際に Ibuki の
 プロトタイプへ適用した際に違和感があれば、該当行だけ後から調整する運用とする。
@@ -223,6 +225,7 @@ Kedama側の作業が別途必要になる。ここでは **Kedamaの既存プ�
 将来 Kedama 側で正式な Dark トークンが OKLCH生成されたら、この仮表は差し替える前提。
 
 **再マッピングの考え方（4つのルール）**
+
 1. **surface は bg より1段階明るい**（birchの数値が1段小さい）：Ibuki実測のDark/Deep-dark双方で
    確認できる唯一の確定パターンなので、これを軸にする。
 2. **ボーダー・サブサーフェス系は、キャンバスが暗くなるほど「明るい」方向へシフト**：白地では
@@ -241,38 +244,38 @@ Kedama側の作業が別途必要になる。ここでは **Kedamaの既存プ�
    > （Phase A-1 実装時に発覚。本文表は修正済み）。サーフェスとボーダーは
    > **逆方向に動く**——キャンバスが暗くなるほど、面はさらに沈み、境界線はより浮く。
    >
-   > | 系統 | Light → Dark → Deep-dark | 理由 |
-   > |---|---|---|
-   > | サーフェス（`--bg` / `--surface` / `--surface-200` / `--surface-300` / `--bg-alt`） | **暗い方向へ**（birch の数値が大きくなる） | 面が沈むほど、その上に載る文字の階調に余地が生まれる |
-   > | ボーダー（`--border-muted` / `--border` / `--border-strong`） | **明るい方向へ**（birch の数値が小さくなる） | ルール2 のとおり、暗地では明るい線でないと視認できない |
+   > | 系統                                                                                | Light → Dark → Deep-dark                     | 理由                                                   |
+   > | ----------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------ |
+   > | サーフェス（`--bg` / `--surface` / `--surface-200` / `--surface-300` / `--bg-alt`） | **暗い方向へ**（birch の数値が大きくなる）   | 面が沈むほど、その上に載る文字の階調に余地が生まれる   |
+   > | ボーダー（`--border-muted` / `--border` / `--border-strong`）                       | **明るい方向へ**（birch の数値が小さくなる） | ルール2 のとおり、暗地では明るい線でないと視認できない |
 
-| Ibuki CSS変数 | Dark（仮） | 出典 | Deep-dark（仮） | 出典 |
-|---|---|---|---|---|
-| `--bg`（canvas） | `#181611` | birch/800 | `#040302` | birch/900 |
-| `--bg-sidebar` | `#040302` | birch/900 | `#040302` | birch/900（Dark同様。OLED的に canvas と同色にし、`border-muted`のヘアラインのみで区切る） |
-| `--surface` | `#302E27` | birch/700 | `#181611` | birch/800（bgより1段階明るい、ルール1） |
-| `--surface-200` | `#4B473D` | birch/600 | `#302E27` | birch/700（ルール4: サーフェスは1段暗く） |
-| `--surface-300` | `#676358` | birch/500 | `#4B473D` | birch/600（ルール4: サーフェスは1段暗く） |
-| `--bg-alt` | `#4B473D` | birch/600 | `#302E27` | birch/700（surface-200と同ティア、Lightと同じ対応関係） |
-| `--border-muted` | `#4B473D` | birch/600 | `#676358` | birch/500 |
-| `--border` | `#676358` | birch/500 | `#858073` | birch/400 |
-| `--border-strong` | `#858073` | birch/400 | `#A29E93` | birch/300 |
-| `--text` | `#F0EEE9` | birch/50 | 同左 | 変更なし |
-| `--text-light` | `#C1BDB5` | birch/200 | 同左 | 変更なし |
-| `--text-muted` | `#A29E93` | birch/300 | 同左 | 変更なし |
-| `--text-faint` | `#858073` | birch/400 | 同左 | 変更なし |
-| `--brand` | `#539065` | primary/400 | 同左 | 変更なし（ルール3・4） |
-| `--brand-600`（hover/pressed） | `#6DB07F` | primary/300 | 同左 | 変更なし |
-| `--text-brand` | `#6DB07F` | primary/300 | 同左 | 変更なし |
-| `--brand-soft` | `#0F1912` | primary/800（暗地用の極薄ティント） | 同左 | 変更なし |
-| `--on-primary` | `#040302` | birch/900（明るいbrand背景の上なので文字は暗色に反転） | 同左 | 変更なし |
-| `--warning` | `#CF8D60` | warning/300 | 同左 | 変更なし |
-| `--warning-bg` | `#251002` | warning/800 | `#080200` | warning/900（surface系と同様、Deep-darkでさらに一段暗く） |
-| `--destructive` | `#E07B8E` | danger/300 | 同左 | 変更なし |
-| `--destructive-bg` | `#2E0310` | danger/800 | `#0C0002` | danger/900 |
-| `--info` | `#5AA9D0` | info/300 | 同左 | 変更なし |
-| `--chart-1/2/3` | birch/600・500・400 | — | birch/500・400・300 | Deep-darkはやや明るい側へ |
-| `--hm0..hm4`（草ヒートマップ5段階） | primary/900・800・600・400・300 | 活動量ゼロ＝背景に溶け込む極暗、活動量最大＝明るく彩度のある緑 | 同左 | 変更なし |
+| Ibuki CSS変数                       | Dark（仮）                      | 出典                                                           | Deep-dark（仮）     | 出典                                                                                      |
+| ----------------------------------- | ------------------------------- | -------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
+| `--bg`（canvas）                    | `#181611`                       | birch/800                                                      | `#040302`           | birch/900                                                                                 |
+| `--bg-sidebar`                      | `#040302`                       | birch/900                                                      | `#040302`           | birch/900（Dark同様。OLED的に canvas と同色にし、`border-muted`のヘアラインのみで区切る） |
+| `--surface`                         | `#302E27`                       | birch/700                                                      | `#181611`           | birch/800（bgより1段階明るい、ルール1）                                                   |
+| `--surface-200`                     | `#4B473D`                       | birch/600                                                      | `#302E27`           | birch/700（ルール4: サーフェスは1段暗く）                                                 |
+| `--surface-300`                     | `#676358`                       | birch/500                                                      | `#4B473D`           | birch/600（ルール4: サーフェスは1段暗く）                                                 |
+| `--bg-alt`                          | `#4B473D`                       | birch/600                                                      | `#302E27`           | birch/700（surface-200と同ティア、Lightと同じ対応関係）                                   |
+| `--border-muted`                    | `#4B473D`                       | birch/600                                                      | `#676358`           | birch/500                                                                                 |
+| `--border`                          | `#676358`                       | birch/500                                                      | `#858073`           | birch/400                                                                                 |
+| `--border-strong`                   | `#858073`                       | birch/400                                                      | `#A29E93`           | birch/300                                                                                 |
+| `--text`                            | `#F0EEE9`                       | birch/50                                                       | 同左                | 変更なし                                                                                  |
+| `--text-light`                      | `#C1BDB5`                       | birch/200                                                      | 同左                | 変更なし                                                                                  |
+| `--text-muted`                      | `#A29E93`                       | birch/300                                                      | 同左                | 変更なし                                                                                  |
+| `--text-faint`                      | `#858073`                       | birch/400                                                      | 同左                | 変更なし                                                                                  |
+| `--brand`                           | `#539065`                       | primary/400                                                    | 同左                | 変更なし（ルール3・4）                                                                    |
+| `--brand-600`（hover/pressed）      | `#6DB07F`                       | primary/300                                                    | 同左                | 変更なし                                                                                  |
+| `--text-brand`                      | `#6DB07F`                       | primary/300                                                    | 同左                | 変更なし                                                                                  |
+| `--brand-soft`                      | `#0F1912`                       | primary/800（暗地用の極薄ティント）                            | 同左                | 変更なし                                                                                  |
+| `--on-primary`                      | `#040302`                       | birch/900（明るいbrand背景の上なので文字は暗色に反転）         | 同左                | 変更なし                                                                                  |
+| `--warning`                         | `#CF8D60`                       | warning/300                                                    | 同左                | 変更なし                                                                                  |
+| `--warning-bg`                      | `#251002`                       | warning/800                                                    | `#080200`           | warning/900（surface系と同様、Deep-darkでさらに一段暗く）                                 |
+| `--destructive`                     | `#E07B8E`                       | danger/300                                                     | 同左                | 変更なし                                                                                  |
+| `--destructive-bg`                  | `#2E0310`                       | danger/800                                                     | `#0C0002`           | danger/900                                                                                |
+| `--info`                            | `#5AA9D0`                       | info/300                                                       | 同左                | 変更なし                                                                                  |
+| `--chart-1/2/3`                     | birch/600・500・400             | —                                                              | birch/500・400・300 | Deep-darkはやや明るい側へ                                                                 |
+| `--hm0..hm4`（草ヒートマップ5段階） | primary/900・800・600・400・300 | 活動量ゼロ＝背景に溶け込む極暗、活動量最大＝明るく彩度のある緑 | 同左                | 変更なし                                                                                  |
 
 **この表の位置づけ**：あくまで「Kedamaの既存プリミティブの中から選び直しただけ」の仮置きであり、
 Kedama自身がAtmosでDark用プリミティブを正式生成した際は、そちらに差し替える。上表の値は
@@ -291,12 +294,12 @@ Kedama自身がAtmosでDark用プリミティブを正式生成した際は、�
 §0.6 の3テーマ全ペアについて WCAG 2.x の相対輝度式で実測したところ、**当初案では4箇所が
 基準未達**だった。§0.6 の表は以下の修正を反映済みである。
 
-| 箇所 | 当初案 | 実測 | 修正後 | 修正後の実測 |
-|---|---|---|---|---|
-| Light `--border-strong` | birch/300 | 2.50:1 | **birch/400** | 3.68:1 |
-| Dark `--text-muted` | birch/400 | 3.45:1 | **birch/300** | 5.08:1 |
-| Dark `--text-faint` | birch/600 | 1.47:1 | **birch/400** | 3.45:1 |
-| Deep-dark `--text-faint` | birch/600 | 1.95:1 | **birch/400** | 4.59:1 |
+| 箇所                     | 当初案    | 実測   | 修正後        | 修正後の実測 |
+| ------------------------ | --------- | ------ | ------------- | ------------ |
+| Light `--border-strong`  | birch/300 | 2.50:1 | **birch/400** | 3.68:1       |
+| Dark `--text-muted`      | birch/400 | 3.45:1 | **birch/300** | 5.08:1       |
+| Dark `--text-faint`      | birch/600 | 1.47:1 | **birch/400** | 3.45:1       |
+| Deep-dark `--text-faint` | birch/600 | 1.95:1 | **birch/400** | 4.59:1       |
 
 **Light `--border-strong` について（判断3の例外）**：§0.6 の判断3は「Kedama自身の割り当てより
 1段階薄いbirchを使う」だったが、`border-strong` にこれを適用すると、Kedama の
@@ -321,6 +324,7 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 
    **Phase A-1 に追加作業**：Ibuki の既存 `--text-faint` 使用箇所を全て監査し、上記4つの
    どれに該当するか振り分ける。単純な機械置換はできない
+
 2. **入力コントロールの枠線は `--border`（Light で 1.75:1）ではなく `--border-strong` を使う**。
    枠線がコントロールの境界を伝える要素は WCAG 上 3:1 が必要なため。単なるディバイダーは
    `--border` / `--border-muted` で構わない
@@ -347,6 +351,7 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 中間マイルストーンにすぎない）。
 
 ### 含む
+
 - デザイントークンの型（色・タイポ・スペーシング・エレベーション・角丸・モーション方針）
 - プロダクト非依存の UI プリミティブ（Tier 0）
 - プロダクト非依存のチャート・可視化プリミティブ（Tier 1）
@@ -355,6 +360,7 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 - 「プロトタイプの簡易実装を写経しないための実装規律」（製品非依存版）
 
 ### 含まない（各プロダクト側に残す）
+
 - ブランドカラー等トークンの実値（プロダクトごとに theme.css で上書き）
 - 業務ドメイン固有のコンポーネント（例：Ibuki の 18 観点レーダー、サイトアバター）
 - API・データ取得層（oRPC 等）
@@ -364,17 +370,17 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 
 ## 2. 技術スタック
 
-| 領域 | 採用 | 備考 |
-|---|---|---|
-| プリミティブ | **Base UI**（`@base-ui-components/react`） | 2026-07 に shadcn/ui の新規プロジェクト既定になった。開発が活発（v1.6.0・週6,000万DL）。Radix は非推奨ではないが更新ペースが鈍化 |
-| コンポーネント配布 | **npm パッケージ＋shadcnレジストリのハイブリッド**（§2.1） | Tier 0/1 は npm 依存として共有、Tier 2「ブロック」は shadcn レジストリ形式でコピー配布 |
-| スタイル | Tailwind CSS（CSS変数テーマ） | doc25 のトークン構造を踏襲。値だけプロダクト差し替え |
-| チャート | Recharts＋自前SVG（Grassなど） | Ibuki の実装をほぼそのまま移植（Base UI 非依存＝移行リスクなし） |
-| モーション | slot-text | Ibuki の RollingText 実装（reduced-motion・アンチフラッシュ・a11y 対応込み）をそのまま移植 |
-| 開発環境 | Storybook | 各コンポーネントに variants/states の story を用意し、**そのまま prototype 兼カタログ**にする |
-| テスト | Vitest（+ Testing Library） | packages/ui の既存テスト方針を踏襲 |
-| 型 | TypeScript strict | `any` 禁止（Ibuki の規約を継続） |
-| ライセンス | MIT のみ | Base UI・Radix ともに MIT。AGPL/GPL は追加禁止 |
+| 領域               | 採用                                                       | 備考                                                                                                                             |
+| ------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| プリミティブ       | **Base UI**（`@base-ui-components/react`）                 | 2026-07 に shadcn/ui の新規プロジェクト既定になった。開発が活発（v1.6.0・週6,000万DL）。Radix は非推奨ではないが更新ペースが鈍化 |
+| コンポーネント配布 | **npm パッケージ＋shadcnレジストリのハイブリッド**（§2.1） | Tier 0/1 は npm 依存として共有、Tier 2「ブロック」は shadcn レジストリ形式でコピー配布                                           |
+| スタイル           | Tailwind CSS（CSS変数テーマ）                              | doc25 のトークン構造を踏襲。値だけプロダクト差し替え                                                                             |
+| チャート           | Recharts＋自前SVG（Grassなど）                             | Ibuki の実装をほぼそのまま移植（Base UI 非依存＝移行リスクなし）                                                                 |
+| モーション         | slot-text                                                  | Ibuki の RollingText 実装（reduced-motion・アンチフラッシュ・a11y 対応込み）をそのまま移植                                       |
+| 開発環境           | Storybook                                                  | 各コンポーネントに variants/states の story を用意し、**そのまま prototype 兼カタログ**にする                                    |
+| テスト             | Vitest（+ Testing Library）                                | packages/ui の既存テスト方針を踏襲                                                                                               |
+| 型                 | TypeScript strict                                          | `any` 禁止（Ibuki の規約を継続）                                                                                                 |
+| ライセンス         | MIT のみ                                                   | Base UI・Radix ともに MIT。AGPL/GPL は追加禁止                                                                                   |
 
 ### 2.1 配布モデル：npm パッケージ ＋ shadcn レジストリのハイブリッド
 
@@ -383,12 +389,13 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 「コピー後に各プロダクトでハンドエディットされ、また ずれる」というリスクを再導入してしまうため、
 Tier によって配布方式を分ける。
 
-| Tier | 配布方式 | 理由 |
-|---|---|---|
-| Tier 0（基礎プリミティブ）／Tier 1（チャート） | **npm パッケージ**（`@kedama/ui-core` 案） | どのプロダクトでも挙動が完全に同一であるべき部分。コピー配布にすると各プロダクトで独自にいじられ、今回解決したい「ずれ」がここで再発する。バージョン管理で一元的に更新を配る |
+| Tier                                                               | 配布方式                                              | 理由                                                                                                                                                                                                |
+| ------------------------------------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tier 0（基礎プリミティブ）／Tier 1（チャート）                     | **npm パッケージ**（`@kedama/ui-core` 案）            | どのプロダクトでも挙動が完全に同一であるべき部分。コピー配布にすると各プロダクトで独自にいじられ、今回解決したい「ずれ」がここで再発する。バージョン管理で一元的に更新を配る                        |
 | Tier 2（複合ブロック：DashboardShell・MetricCard・FindingCard 等） | **shadcn レジストリ**（`npx shadcn add @kedama/xxx`） | ブロックは元々「コピーしてプロダクトごとに手を入れる」ことを前提にした単位（shadcn/ui 本来の思想、shadcndashboard.dev もこの層を売っている）。Tier 0/1 に依存する形で書き、コピー後の改変は許容する |
 
 **registry.json の設計（Tier 2 用）**
+
 - ルートに `registry.json`、各ブロックに `registry-item.json` 相当（name / type / files / Tier0-1への依存関係）
 - `npx shadcn build` で `public/r/[name].json` を静的生成
 - ホスティングは軽量な Next.js サイト1つで良い（後述のショーケースサイトと兼用可）
@@ -450,11 +457,11 @@ shadcn/ui (Base UI variant) のブロック
 > 消費側（すらすらスタジオ）は現在 `@kedama/design-system` を import しているため置換が必要
 > だが、Phase C で presentational 層を作り直す際に一緒に処理すればよい。
 
-| 方式 | 費用 | セットアップの手間 | 備考 |
-|---|---|---|---|
-| **GitHub Packages（推奨）** | 無料（privateリポジトリのGitHub Packagesは無料枠内で収まる規模） | 低い。既にGitHubで管理しているリポジトリにそのまま追加できる（`.npmrc` に registry 指定＋ `GITHUB_TOKEN` を1回設定するだけ） | 認証はGitHubのPersonal Access Token（read:packages権限）で行う。社内の数プロダクトが同じGitHub組織/アカウント配下にあるなら最も摩擦が少ない |
-| 他のprivate registry（例：npm Pro、Verdaccioの自前ホスティング等） | npm Proは有料（月額）、Verdaccioは無料だがサーバー運用が要る | 中〜高。npmは課金設定、Verdaccioは自分でホストして可用性を保つ必要がある | チームが1-3人規模で、かつ既にGitHubを使っているなら、これらを選ぶ理由が薄い |
-| **git依存（レジストリ不要）** | 無料 | 最も低い（`package.json` の依存に `"@kedama/design-system": "github:Kedama-Yuuki/KedamaDesignSystem#main"` と書くだけ） | ビルド成果物（dist）をリポジトリにコミットするか、`prepare` スクリプトで各消費側インストール時にビルドさせる必要がある。バージョニング（タグ管理）がやや曖昧になりやすい |
+| 方式                                                               | 費用                                                             | セットアップの手間                                                                                                           | 備考                                                                                                                                                                     |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **GitHub Packages（推奨）**                                        | 無料（privateリポジトリのGitHub Packagesは無料枠内で収まる規模） | 低い。既にGitHubで管理しているリポジトリにそのまま追加できる（`.npmrc` に registry 指定＋ `GITHUB_TOKEN` を1回設定するだけ） | 認証はGitHubのPersonal Access Token（read:packages権限）で行う。社内の数プロダクトが同じGitHub組織/アカウント配下にあるなら最も摩擦が少ない                              |
+| 他のprivate registry（例：npm Pro、Verdaccioの自前ホスティング等） | npm Proは有料（月額）、Verdaccioは無料だがサーバー運用が要る     | 中〜高。npmは課金設定、Verdaccioは自分でホストして可用性を保つ必要がある                                                     | チームが1-3人規模で、かつ既にGitHubを使っているなら、これらを選ぶ理由が薄い                                                                                              |
+| **git依存（レジストリ不要）**                                      | 無料                                                             | 最も低い（`package.json` の依存に `"@kedama/design-system": "github:Kedama-Yuuki/KedamaDesignSystem#main"` と書くだけ）      | ビルド成果物（dist）をリポジトリにコミットするか、`prepare` スクリプトで各消費側インストール時にビルドさせる必要がある。バージョニング（タグ管理）がやや曖昧になりやすい |
 
 **推奨の理由**：GitHub Packagesは追加費用なし・追加インフラなしで「npmパッケージとして
 バージョン管理された配布」が実現でき、git依存方式より依存関係の解決やキャッシュの挙動が
@@ -462,6 +469,7 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
 外部販売（Phase F）を見据えるなら尚更、正式なnpm配布の形に最初から寄せておく方が移行コストが低い。
 
 セットアップ手順の概要（実装フェーズで詳細化）：
+
 1. `package.json` に `"publishConfig": {"registry": "https://npm.pkg.github.com"}` を追加
 2. リポジトリ側でGitHub Actions（既存の `docs/design-system-pipeline.md` のCI基盤に相乗り）から
    `npm publish` を実行するワークフローを追加
@@ -469,6 +477,7 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
    CI/開発者ローカルの両方で読み取り用トークンを用意
 
 **将来の外部販売に備えた拡張ポイント（今は実装しない）**
+
 - shadcn のレジストリ設定は URL を Bearer ヘッダー付きの API ルート（例：`/api/registry/[name]`）に
   差し替えるだけで認証ゲートに切り替えられる。今回は `public/r/[name].json` の静的配信のみを実装し、
   将来 Pro/Team 層を作る際は **同じ namespace 構造のまま** エンドポイントを認証付きAPIに置き換える
@@ -483,12 +492,12 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
 
 これは別のメカニズムであり、混同しないよう整理する。
 
-| | デザイントークンパイプライン（`docs/design-system-pipeline.md`） | Tier 2ブロックの再同期 |
-|---|---|---|
-| 対象 | **値**（色・タイポ・スペーシング等のトークン） | **コンポーネントのソースコード**そのもの（`.tsx`ファイル） |
-| 流通経路 | Figma → Tokens Studio → Style Dictionary → `variables.css`/`tokens.ts` → **npmパッケージ経由でimport**（Tier 0/1） | `npx shadcn add` で**コピー**されて消費側リポジトリに物理的に複製される（Tier 2） |
-| 更新の伝播 | npmパッケージのバージョンを上げれば、消費側は`npm update`するだけで自動追従する（コード変更不要） | コピー後は消費側の管理下になるため、元のTier 2コンポーネントが後から改善されても**自動では反映されない**。消費側が独自に手を入れている可能性もあり、単純上書きは危険 |
-| 今回の課題 | 解決済み（パイプライン設計がそのまま使える） | 追従の運用ルールを別途決める必要がある（本節のテーマ） |
+|            | デザイントークンパイプライン（`docs/design-system-pipeline.md`）                                                   | Tier 2ブロックの再同期                                                                                                                                               |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 対象       | **値**（色・タイポ・スペーシング等のトークン）                                                                     | **コンポーネントのソースコード**そのもの（`.tsx`ファイル）                                                                                                           |
+| 流通経路   | Figma → Tokens Studio → Style Dictionary → `variables.css`/`tokens.ts` → **npmパッケージ経由でimport**（Tier 0/1） | `npx shadcn add` で**コピー**されて消費側リポジトリに物理的に複製される（Tier 2）                                                                                    |
+| 更新の伝播 | npmパッケージのバージョンを上げれば、消費側は`npm update`するだけで自動追従する（コード変更不要）                  | コピー後は消費側の管理下になるため、元のTier 2コンポーネントが後から改善されても**自動では反映されない**。消費側が独自に手を入れている可能性もあり、単純上書きは危険 |
+| 今回の課題 | 解決済み（パイプライン設計がそのまま使える）                                                                       | 追従の運用ルールを別途決める必要がある（本節のテーマ）                                                                                                               |
 
 **Tier 2再同期の運用方針（推奨）**：自動化はせず、**手動・不定期の棚卸しにとどめる**。
 
@@ -503,6 +512,7 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
   回らなくなった段階で改めて検討すればよい。
 
 ### Radix → Base UI の移行方針
+
 - Ibuki-Code-v2 の `packages/ui`（Radix ベース）は**無理に今すぐ移行しない**。本番で動いている
   資産であり、Radix は非推奨ではない。
 - 本パッケージ（新規）は最初から Base UI で作る。
@@ -523,7 +533,7 @@ Radix にも Base UI にも依存していない。既存資産がゼロ依存�
 
 - **ネイティブ要素で十分なもの**：Modal（実装済み）。Drawer も `<dialog>` を横からスライドさせる
   形で拡張できる可能性がある（要検証）
-- **Base UI 導入が現実的なもの**：Accordion（フォーカス管理・aria-* 込みで自作するコストが高い）、
+- **Base UI 導入が現実的なもの**：Accordion（フォーカス管理・aria-\* 込みで自作するコストが高い）、
   将来的な Combobox/Autocomplete（ネイティブ要素で代替しにくい）
 - 方針：**必要になったコンポーネントから都度 Base UI を追加**し、依存を先取りしない
   （KedamaDesignSystemの「Simple」原則＝YAGNIとも整合する）
@@ -575,13 +585,13 @@ physics and fluid interactions」）。**ただしNexvynはRadixベースであ�
 Motion のアニメーション型は `tween` / `spring` / `inertia` の3種。物理演算に相当するのは
 **spring と inertia の2つだけ**であり、「弾性・バウンス・減衰・重力」は独立した4種類ではない。
 
-| 概念 | 実体 | Motion での表現 |
-|---|---|---|
-| 弾性（Elastic） | spring のパラメータ違い | `stiffness` 高め・`damping` 低めで overshoot が出る |
-| バウンス（Bounce） | 同上（弾性と別物ではない） | duration ベースなら `bounce`（0〜1） |
-| 減衰（Damping） | spring のパラメータ | `damping`。`stiffness` / `mass` と3点セット |
-| 減衰（Decay） | **別ソルバー**。上の damping とは無関係 | `type: "inertia"`。`power` / `timeConstant` / `modifyTarget` / `min` / `max` |
-| 重力（Gravity） | **Motion に存在しない** | 非対称なイージングでの疑似表現にとどめる。物理エンジン併用は業務システム向けとして過剰であり採用しない |
+| 概念               | 実体                                    | Motion での表現                                                                                        |
+| ------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 弾性（Elastic）    | spring のパラメータ違い                 | `stiffness` 高め・`damping` 低めで overshoot が出る                                                    |
+| バウンス（Bounce） | 同上（弾性と別物ではない）              | duration ベースなら `bounce`（0〜1）                                                                   |
+| 減衰（Damping）    | spring のパラメータ                     | `damping`。`stiffness` / `mass` と3点セット                                                            |
+| 減衰（Decay）      | **別ソルバー**。上の damping とは無関係 | `type: "inertia"`。`power` / `timeConstant` / `modifyTarget` / `min` / `max`                           |
+| 重力（Gravity）    | **Motion に存在しない**                 | 非対称なイージングでの疑似表現にとどめる。物理エンジン併用は業務システム向けとして過剰であり採用しない |
 
 したがって実装は「4種類を作る」のではなく、**springのプリセットを数種類定義する＋
 inertiaを直接操作系に使う**という形になる。
@@ -599,10 +609,10 @@ legible」という位置づけが解になる。**springの本質的価値は�
 「余韻」としてのみ overshoot を使う。それ以外はすべて damped（overshootなし）。**
 境界は「ユーザーが操作したか」ではなく「**自分の指が対象に触れて連続的に動かしているか**」。
 
-| | 例 | 使うもの |
-|---|---|---|
-| overshoot 可（指が触れている） | ドロワーをスワイプで閉じて指を離す／ドラッグ並べ替えの着地／スライダーつまみのスナップ／引っ張って更新 | `inertia`、および overshoot ありの `spring` |
-| overshoot 不可（指が触れていない） | ボタン押下でモーダル/ドロワーが開く／データ更新で数値が変わる（RollingText）／トースト出現／画面遷移／スケルトン→実データ | damped `spring`（`bounce: 0` 相当） |
+|                                    | 例                                                                                                                        | 使うもの                                    |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| overshoot 可（指が触れている）     | ドロワーをスワイプで閉じて指を離す／ドラッグ並べ替えの着地／スライダーつまみのスナップ／引っ張って更新                    | `inertia`、および overshoot ありの `spring` |
+| overshoot 不可（指が触れていない） | ボタン押下でモーダル/ドロワーが開く／データ更新で数値が変わる（RollingText）／トースト出現／画面遷移／スケルトン→実データ | damped `spring`（`bounce: 0` 相当）         |
 
 **`prefers-reduced-motion` の担保は必須**（優先順位が Calm > Accessible である以上、選択肢ではない）。
 Motion の `MotionConfig reducedMotion="user"` をプロバイダ層で一括適用し、
@@ -628,21 +638,22 @@ Motion の `MotionConfig reducedMotion="user"` をプロバイダ層で一括適
 ## 4. コンポーネント在庫（Tier 分類）
 
 ### Tier 0 — 基礎プリミティブ（Base UI ラップ／プロダクト非依存）
+
 Ibuki `packages/ui` から移植・Base UI 化。
 
-| コンポーネント | 移植元 | 備考 |
-|---|---|---|
-| Button | button.tsx | asChild→render、loading/aria-busy はそのまま踏襲 |
-| Badge | badge.tsx | そのまま |
-| Card / CardHeader / CardTitle / CardContent / CardFooter | card.tsx | そのまま |
-| Skeleton | skeleton.tsx | そのまま |
-| Spinner | spinner.tsx | そのまま |
-| Drawer（右パネル） | drawer.tsx | Base UI Dialog に置換。doc32 §6.5-3 の「共通Drawer1つ」原則を継続 |
-| ThemeProvider / ThemeToggle | theme-provider.tsx / theme-toggle.tsx | 3テーマ+自動の仕組みは汎用。ラベル文言だけ i18n 化を検討 |
-| IconSwap | icon-swap.tsx | そのまま |
-| RollingText | rolling-text.tsx | slot-text 統合・reduced-motion対応をそのまま踏襲（最も作り込まれた資産の一つ） |
-| Accordion | 新規（プロトタイプ `.acc`） | Base UI の Accordion primitive に載せ替え、`32_screen_spec.md` の観点アコーディオンを汎用化 |
-| Toast | components/index.ts（sonner再export） | 現状は素通しなので、doc25トークンでスタイルするラッパーを正式に作る（Ibuki側のTODOコメントに対応） |
+| コンポーネント                                           | 移植元                                | 備考                                                                                               |
+| -------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Button                                                   | button.tsx                            | asChild→render、loading/aria-busy はそのまま踏襲                                                   |
+| Badge                                                    | badge.tsx                             | そのまま                                                                                           |
+| Card / CardHeader / CardTitle / CardContent / CardFooter | card.tsx                              | そのまま                                                                                           |
+| Skeleton                                                 | skeleton.tsx                          | そのまま                                                                                           |
+| Spinner                                                  | spinner.tsx                           | そのまま                                                                                           |
+| Drawer（右パネル）                                       | drawer.tsx                            | Base UI Dialog に置換。doc32 §6.5-3 の「共通Drawer1つ」原則を継続                                  |
+| ThemeProvider / ThemeToggle                              | theme-provider.tsx / theme-toggle.tsx | 3テーマ+自動の仕組みは汎用。ラベル文言だけ i18n 化を検討                                           |
+| IconSwap                                                 | icon-swap.tsx                         | そのまま                                                                                           |
+| RollingText                                              | rolling-text.tsx                      | slot-text 統合・reduced-motion対応をそのまま踏襲（最も作り込まれた資産の一つ）                     |
+| Accordion                                                | 新規（プロトタイプ `.acc`）           | Base UI の Accordion primitive に載せ替え、`32_screen_spec.md` の観点アコーディオンを汎用化        |
+| Toast                                                    | components/index.ts（sonner再export） | 現状は素通しなので、doc25トークンでスタイルするラッパーを正式に作る（Ibuki側のTODOコメントに対応） |
 
 > **要解消の内部矛盾**：上表の Drawer 行「Base UI Dialog に置換」・Accordion 行「Base UI の
 > Accordion primitive に載せ替え」は、後から追記した §2.2「必要になったコンポーネントから都度
@@ -662,35 +673,36 @@ Ibuki の9ファミリーを移植して不足分を新造するより大幅に�
 置く**ことで達成する。チャートの実装コードが分岐しても、色・軸・グリッド・ヒートマップ階調は
 全プロダクトで揃う。
 
-| 移行後の置き場所 | 対象 |
-|---|---|
-| **Tier 0（npm）** | data-viz セマンティックトークン（`dataViz.categorical.*` / `.emphasis.*` / `.axis` / `.grid` / `.heatmap.*`） |
-| **Tier 2（レジストリ）** | チャート本体すべて |
+| 移行後の置き場所         | 対象                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Tier 0（npm）**        | data-viz セマンティックトークン（`dataViz.categorical.*` / `.emphasis.*` / `.axis` / `.grid` / `.heatmap.*`） |
+| **Tier 2（レジストリ）** | チャート本体すべて                                                                                            |
 
 **Recharts への依存は消えない**点に注意。上流（bklit-ui・evilcharts）も Recharts ベースであり、
 変わるのは「依存を持つ主体」が npm パッケージから消費側プロダクトへ移ることだけ。
 結果として Codex が Q5 で提案した「optional peer + `./charts` サブパス」の仕組みは**不要**になる。
 
 ### Tier 2 — 複合パターン（新規／プロトタイプ+OpenStatus参照）
+
 プロトタイプに存在するが未コンポーネント化、または OpenStatus テンプレートの構成が参考になるもの。
 
-| コンポーネント | 出典 | 用途 |
-|---|---|---|
-| ScoreRing | プロトタイプ `.ring`（円形スコアゲージ） | 「◯◯点」を主役にする画面向け。Radar18と役割が違うので別コンポーネントとして残す |
-| ChecklistStep | プロトタイプ `.ob-item`/`.ob-dot` | オンボーディング等の done/current/todo チェックリスト |
-| FindingCard | プロトタイプ `.finding` | 「重要度／問題／なぜ／どう直す」4点形式の指摘カード。Ibuki固有に見えるが構造は診断系SaaS一般に使える |
-| StatusBar | プロトタイプ `.statusbar`（未コンポーネント化） | 下部ステータスバー。Ibukiでも実は共通化されておらず、今回が初コンポーネント化の好機 |
-| MetricCard | OpenStatusテンプレート | KpiCardの汎用版。状態バリアント（default/destructive/success/warning）を持つ点がOpenStatus流 |
-| ActionCard / FormCard / Section / EmptyState | OpenStatusテンプレート | ダッシュボードSaaS全般で使う定型カード構成 |
-| **Table プリミティブ**（Table/THead/TBody/TRow/TCell） | 新規（Tier 0 側に置く） | トークンでスタイルしただけの薄い要素群。TanStack 非依存 |
-| **DataTable** | shadcn/ui（Base UI variant）を取り込み＋再スタイル | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる** |
-| **FilterBar / SavedViewPicker（汎用部分）** | ベンチマーク §7.3 | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ |
-| **CommandPalette** | shadcn/ui `Command` を取り込み | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補） |
-| **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`npx shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する |
-| **Grass（草ヒートマップ）** | 同上 `heatmap-chart` | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
-| **TimelineRow** | Ibuki `timeline-row.tsx` | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない |
-| **TrackBar** | Ibuki `track-bar.tsx` | 上流に無い。自前維持 |
-| **Sheet** | shadcn/ui を取り込み | モバイルで RightPane を変換する先。Drawer と役割が重なるため §2.2 の結論と併せて整理 |
+| コンポーネント                                                                     | 出典                                                                 | 用途                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ScoreRing                                                                          | プロトタイプ `.ring`（円形スコアゲージ）                             | 「◯◯点」を主役にする画面向け。Radar18と役割が違うので別コンポーネントとして残す                                                                                                                                                                                       |
+| ChecklistStep                                                                      | プロトタイプ `.ob-item`/`.ob-dot`                                    | オンボーディング等の done/current/todo チェックリスト                                                                                                                                                                                                                 |
+| FindingCard                                                                        | プロトタイプ `.finding`                                              | 「重要度／問題／なぜ／どう直す」4点形式の指摘カード。Ibuki固有に見えるが構造は診断系SaaS一般に使える                                                                                                                                                                  |
+| StatusBar                                                                          | プロトタイプ `.statusbar`（未コンポーネント化）                      | 下部ステータスバー。Ibukiでも実は共通化されておらず、今回が初コンポーネント化の好機                                                                                                                                                                                   |
+| MetricCard                                                                         | OpenStatusテンプレート                                               | KpiCardの汎用版。状態バリアント（default/destructive/success/warning）を持つ点がOpenStatus流                                                                                                                                                                          |
+| ActionCard / FormCard / Section / EmptyState                                       | OpenStatusテンプレート                                               | ダッシュボードSaaS全般で使う定型カード構成                                                                                                                                                                                                                            |
+| **Table プリミティブ**（Table/THead/TBody/TRow/TCell）                             | 新規（Tier 0 側に置く）                                              | トークンでスタイルしただけの薄い要素群。TanStack 非依存                                                                                                                                                                                                               |
+| **DataTable**                                                                      | shadcn/ui（Base UI variant）を取り込み＋再スタイル                   | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる**                                                            |
+| **FilterBar / SavedViewPicker（汎用部分）**                                        | ベンチマーク §7.3                                                    | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ                                                                                                                                                                                                                |
+| **CommandPalette**                                                                 | shadcn/ui `Command` を取り込み                                       | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補）                                                                                                                                                                                                         |
+| **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`npx shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する                                                                          |
+| **Grass（草ヒートマップ）**                                                        | 同上 `heatmap-chart`                                                 | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
+| **TimelineRow**                                                                    | Ibuki `timeline-row.tsx`                                             | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない                                                                                                                                        |
+| **TrackBar**                                                                       | Ibuki `track-bar.tsx`                                                | 上流に無い。自前維持                                                                                                                                                                                                                                                  |
+| **Sheet**                                                                          | shadcn/ui を取り込み                                                 | モバイルで RightPane を変換する先。Drawer と役割が重なるため §2.2 の結論と併せて整理                                                                                                                                                                                  |
 
 ### Tier 3 — 明示的にプロダクト固有（汎用化しない）
 
@@ -718,14 +730,14 @@ VersionDiff／ApprovalBar／PublishStatus
 **すらすらスタジオのベンチマーク調査 §7.2**。両者は独立に同じ構成へ到達している。
 「構成・レイアウト・挙動は Ibuki が正」（§0.6）の原則がそのまま適用できる。
 
-| コンポーネント | 役割 | 出典 |
-|---|---|---|
-| `AppShell` | 全体の骨格。どのスロットを持つかを型で規定する | Ibuki `.app` |
-| `SidebarNav` | 左サイドバー（224〜240px）。ラベル付きナビ | Ibuki `.side` ／ ベンチ §7.2 |
-| `IconRail` | 左端のアイコンのみの細いレール（VS Code / Linear 型） | ベンチ §3.2・3.3 |
-| `AppHeader` | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー | Ibuki `.apphead` ／ ベンチ §7.2 |
-| `StatusBar` | 下部ステータスバー。接続状態・保存状態・件数等 | Ibuki `.statusbar`（未コンポーネント化） |
-| `RightPane` | 開閉可能な右ペイン（320〜400px）。モバイルでは Sheet へ変換 | ベンチ §7.2 |
+| コンポーネント | 役割                                                        | 出典                                     |
+| -------------- | ----------------------------------------------------------- | ---------------------------------------- |
+| `AppShell`     | 全体の骨格。どのスロットを持つかを型で規定する              | Ibuki `.app`                             |
+| `SidebarNav`   | 左サイドバー（224〜240px）。ラベル付きナビ                  | Ibuki `.side` ／ ベンチ §7.2             |
+| `IconRail`     | 左端のアイコンのみの細いレール（VS Code / Linear 型）       | ベンチ §3.2・3.3                         |
+| `AppHeader`    | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー             | Ibuki `.apphead` ／ ベンチ §7.2          |
+| `StatusBar`    | 下部ステータスバー。接続状態・保存状態・件数等              | Ibuki `.statusbar`（未コンポーネント化） |
+| `RightPane`    | 開閉可能な右ペイン（320〜400px）。モバイルでは Sheet へ変換 | ベンチ §7.2                              |
 
 **シェル適用ルール（最重要）**：`AppShell` は「どのルートに外枠を着せるか」を**明示的に選択させる
 API** を持つこと。ログイン・招待受諾・2段階認証など**認証前の画面にサイドバーが出てはならない**。
@@ -738,11 +750,11 @@ API** を持つこと。ログイン・招待受諾・2段階認証など**認�
 すらすらスタジオの現行UIに対する評価（「言語化しづらいがとにかく違う」）を具体化すると、
 挙がった3点はすべて**アプリシェルの問題に還元される**。
 
-| 現象 | 実体 | 対応 |
-|---|---|---|
-| ログイン画面にサイドメニューが出る | シェル適用ルールの不在 | §4.5 の `AppShell` / `AuthShell` 分離 |
-| ダッシュボードがない | 画面の欠落。ただし独立KPIダッシュボードは**作らない**のが正解 | ベンチ §2「記事一覧がホーム兼ダッシュボード」を採用 |
-| Linear/VS Code/Stripe のような下部バー・左アイコンレールがない | シェルのクロムの欠落 | §4.5 の `StatusBar` / `IconRail` |
+| 現象                                                           | 実体                                                          | 対応                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------- |
+| ログイン画面にサイドメニューが出る                             | シェル適用ルールの不在                                        | §4.5 の `AppShell` / `AuthShell` 分離               |
+| ダッシュボードがない                                           | 画面の欠落。ただし独立KPIダッシュボードは**作らない**のが正解 | ベンチ §2「記事一覧がホーム兼ダッシュボード」を採用 |
+| Linear/VS Code/Stripe のような下部バー・左アイコンレールがない | シェルのクロムの欠落                                          | §4.5 の `StatusBar` / `IconRail`                    |
 
 **検証結果（v0.9・Codex Q9）：仮説は「部分支持だが単独原因としては不十分」。**
 
@@ -777,7 +789,7 @@ API** を持つこと。ログイン・招待受諾・2段階認証など**認�
 にも共通して当てはまる。以後、新しいプロトタイプ（Storybookでの組み立てを含む）は以下を守る。
 
 1. **キーはID/モデルで持つ**。ラベルの部分文字列マッチや列の位置決め打ちで値を取り出さない。
-2. **状態の視覚表現は単一箇所で管理**する（className または aria-* のどちらか一方。inline styleとの二重管理をしない）。
+2. **状態の視覚表現は単一箇所で管理**する（className または aria-\* のどちらか一方。inline styleとの二重管理をしない）。
 3. **繰り返し出てくるレイアウト定数（幅・オフセット等）は prop 化**し、画面ごとにコピペで値だけ変えない。
 4. **同じ役割のUI（ドロワー・モーダル等）は1実装に統一**し、画面テンプレートごとに再定義しない。
 5. **プロトタイプ段階から「データはpropsで渡す」形にする**（DOMスクレイピングやグローバル変数経由で値を取り回さない）。これがTier 0/1/2をStorybookのargsでそのまま動かせる前提になる。
@@ -795,11 +807,11 @@ API** を持つこと。ログイン・招待受諾・2段階認証など**認�
 
 ### Storybookのホスティング先（確定：Vercel静的ホスティング）
 
-| 選択肢 | 費用 | 主な役割 | 備考 |
-|---|---|---|---|
-| **Vercel静的ホスティング（採用）** | 既存プランの範囲内で無料〜低コスト | Storybookビルド（`storybook build`の静的出力）をそのままデプロイ | Ibuki-Code-v2で既にVercelを使っており運用の学習コストがゼロ。`vercel.json`で出力ディレクトリを指定するだけ |
-| Chromatic | 無料枠あり、本格運用は有料（スナップショット数課金） | Storybookホスティング機能に加え、**Visual Regression Testing**（コンポーネントの見た目の意図しない変化を自動検知）が主目的 | 今回はホスティングだけが目的なら過剰。ただし複数プロダクトが本パッケージを消費するようになった後、「Tier 0/1の変更が各プロダクトの見た目にどう影響するか」を自動検知したくなったタイミングで導入価値が上がる（`docs/design-system-pipeline.md`のパイプライン図でも将来組み込み先として想定済み） |
-| GitHub Pages | 無料 | 静的ホスティングのみ | Vercelと機能的に大差はないが、Ibuki-Code-v2側の運用と合わせる利点がVercelにはある |
+| 選択肢                             | 費用                                                 | 主な役割                                                                                                                   | 備考                                                                                                                                                                                                                                                                                             |
+| ---------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Vercel静的ホスティング（採用）** | 既存プランの範囲内で無料〜低コスト                   | Storybookビルド（`storybook build`の静的出力）をそのままデプロイ                                                           | Ibuki-Code-v2で既にVercelを使っており運用の学習コストがゼロ。`vercel.json`で出力ディレクトリを指定するだけ                                                                                                                                                                                       |
+| Chromatic                          | 無料枠あり、本格運用は有料（スナップショット数課金） | Storybookホスティング機能に加え、**Visual Regression Testing**（コンポーネントの見た目の意図しない変化を自動検知）が主目的 | 今回はホスティングだけが目的なら過剰。ただし複数プロダクトが本パッケージを消費するようになった後、「Tier 0/1の変更が各プロダクトの見た目にどう影響するか」を自動検知したくなったタイミングで導入価値が上がる（`docs/design-system-pipeline.md`のパイプライン図でも将来組み込み先として想定済み） |
+| GitHub Pages                       | 無料                                                 | 静的ホスティングのみ                                                                                                       | Vercelと機能的に大差はないが、Ibuki-Code-v2側の運用と合わせる利点がVercelにはある                                                                                                                                                                                                                |
 
 **結論**：Vercel静的ホスティングで問題ない。Chromaticは「複数プロダクトがTier0/1に依存し始めて、
 変更の影響範囲をビジュアル差分で検知したくなった時点」で追加導入を検討する、という位置づけにする。
@@ -866,6 +878,7 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
    **触らない範囲**：API route・認可・Prisma のスキーマ分離・better-auth の認証フロー・
    BullMQ ワーカー・MCPサーバー。container として残すのは、ページの認可・DB取得・
    mutation/fetch・MFA/approval の業務状態・URL filter。
+
 6. **Phase D（Ibuki 変換検証）**：shadcnのAI移行スキルで `packages/ui` のRadix依存部分を
    新パッケージ相当に変換・比較検証（本番へは反映しない、検証のみ）
 7. **Phase E（Ibuki 本番置換）**：検証OKなら、Ibuki-Code-v2 の `apps/web` が `@ibuki/ui` の
@@ -889,37 +902,37 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 §4の内部矛盾／Tier 1の棚卸し／パッケージ公開方式／コントラスト修正のレビューと完了条件／
 モーショントークン設計）。それらの結論は本書 v0.7 で反映する。
 
-| 論点 | 決定 | 参照 |
-|---|---|---|
-| ゴールの定義 | すらすらスタジオの本番画面が新パッケージに載せ替わった状態（Phase C完了）をもって達成 | §1・§7 |
-| 最初の本番適用先 | Ibuki ではなく **すらすらスタジオ**。ただし新規適用ではなく既存UIの全面再構築（presentational層のみ） | §7 |
-| 不足部品の調達方針 | shadcnのBase UI variantをKedamaが取り込み・再スタイルし、Kedamaのレジストリから配る | §2.1.5 |
-| bmad-ux discovery との関係 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元） | §2.1.5 |
-| AppShell の扱い | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先** | §4.5 |
-| すらすらスタジオの独立ダッシュボード | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2） | §4.6 |
-| データテーブル | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り | §4 |
-| Mantine | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため） | §2.1.5 |
-| **パッケージ名** | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可） | §2.1 |
-| **チャートの配布層** | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保 | §4 |
-| **チャートの調達元** | bklit-ui（MIT部分のみ）を取り込み。Grass も上流の heatmap-chart でカバー済み。TimelineRow / TrackBar のみ自前維持 | §4 |
-| **evilcharts** | 構造の参考のみ。演出（animated / effects）は Calm UI と衝突するため持ち込まない | §4 |
-| **dither-kit** | 不採用（ライセンス不明・キャンバス描画がトークン適用とa11yを阻害・ディザリング表現がCalm UIと衝突） | — |
-| **`text-faint`** | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回 | §0.7 |
-| **AppShell仮説の検証結果** | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大 | §4.6・§7 |
-| Q1〜Q8の技術的結論 | Codex調査報告書に記載。本書では重複させず参照する | `docs/codex-investigation-report.md` |
-| Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外 | §0.6・§0.7 |
-| Dark／Deep-darkテーマの値 | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え） | §0.6 |
-| コントラスト未達4箇所の修正 | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う | §0.7 |
-| 物理演算アニメーションの採用 | Motion（peerDependency）。spring と inertia の2本立て。overshoot は直接操作の余韻のみ | §3.5 |
-| モーショントークン | 2層トークンに motion カテゴリを追加。Phase A-1（コンポーネントより先）で確定 | §3.5 |
-| KedamaDesignSystemの作業ツリー整理 | 重複`.git`・stale lock除去は完了。残る変更のコミットはユーザー側で実施 | §0.5 |
-| Tier 0/1 の公開方法 | GitHub Packages（無料・低摩擦）を推奨・採用 | §2.1 |
-| Tier 2 レジストリのホスティング先 | ショーケースサイトと同一デプロイ（shadcn標準構成） | §2.1 |
-| レジストリ/ショーケースサイトのリポジトリ | KedamaDesignSystemと同一（軽量monorepo化） | §2.1 |
-| Tier 2 を初期スコープに含めるか | 含める（Ibukiダッシュボード再構築で直接使うため） | §7 Phase B |
-| ダークモードの実装タイミング | 今回のスコープに含める（仮トークンで先行実装） | §0.6・§7 Phase A |
-| Storybookのホスティング先 | Vercel静的ホスティング。Chromaticは複数プロダクト消費開始後に再検討 | §6 |
-| Tier 2ブロックの再同期運用 | 自動化しない。`shadcn diff`による手動・不定期の棚卸しにとどめる | §2.1 |
+| 論点                                       | 決定                                                                                                                | 参照                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| ゴールの定義                               | すらすらスタジオの本番画面が新パッケージに載せ替わった状態（Phase C完了）をもって達成                               | §1・§7                               |
+| 最初の本番適用先                           | Ibuki ではなく **すらすらスタジオ**。ただし新規適用ではなく既存UIの全面再構築（presentational層のみ）               | §7                                   |
+| 不足部品の調達方針                         | shadcnのBase UI variantをKedamaが取り込み・再スタイルし、Kedamaのレジストリから配る                                 | §2.1.5                               |
+| bmad-ux discovery との関係                 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元）                                          | §2.1.5                               |
+| AppShell の扱い                            | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先**                                                        | §4.5                                 |
+| すらすらスタジオの独立ダッシュボード       | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2）                                                 | §4.6                                 |
+| データテーブル                             | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り                                             | §4                                   |
+| Mantine                                    | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため）                                                        | §2.1.5                               |
+| **パッケージ名**                           | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可）    | §2.1                                 |
+| **チャートの配布層**                       | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保                                  | §4                                   |
+| **チャートの調達元**                       | bklit-ui（MIT部分のみ）を取り込み。Grass も上流の heatmap-chart でカバー済み。TimelineRow / TrackBar のみ自前維持   | §4                                   |
+| **evilcharts**                             | 構造の参考のみ。演出（animated / effects）は Calm UI と衝突するため持ち込まない                                     | §4                                   |
+| **dither-kit**                             | 不採用（ライセンス不明・キャンバス描画がトークン適用とa11yを阻害・ディザリング表現がCalm UIと衝突）                 | —                                    |
+| **`text-faint`**                           | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回                      | §0.7                                 |
+| **AppShell仮説の検証結果**                 | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大 | §4.6・§7                             |
+| Q1〜Q8の技術的結論                         | Codex調査報告書に記載。本書では重複させず参照する                                                                   | `docs/codex-investigation-report.md` |
+| Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外                                                          | §0.6・§0.7                           |
+| Dark／Deep-darkテーマの値                  | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え）                                              | §0.6                                 |
+| コントラスト未達4箇所の修正                | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う                                                  | §0.7                                 |
+| 物理演算アニメーションの採用               | Motion（peerDependency）。spring と inertia の2本立て。overshoot は直接操作の余韻のみ                               | §3.5                                 |
+| モーショントークン                         | 2層トークンに motion カテゴリを追加。Phase A-1（コンポーネントより先）で確定                                        | §3.5                                 |
+| KedamaDesignSystemの作業ツリー整理         | 重複`.git`・stale lock除去は完了。残る変更のコミットはユーザー側で実施                                              | §0.5                                 |
+| Tier 0/1 の公開方法                        | GitHub Packages（無料・低摩擦）を推奨・採用                                                                         | §2.1                                 |
+| Tier 2 レジストリのホスティング先          | ショーケースサイトと同一デプロイ（shadcn標準構成）                                                                  | §2.1                                 |
+| レジストリ/ショーケースサイトのリポジトリ  | KedamaDesignSystemと同一（軽量monorepo化）                                                                          | §2.1                                 |
+| Tier 2 を初期スコープに含めるか            | 含める（Ibukiダッシュボード再構築で直接使うため）                                                                   | §7 Phase B                           |
+| ダークモードの実装タイミング               | 今回のスコープに含める（仮トークンで先行実装）                                                                      | §0.6・§7 Phase A                     |
+| Storybookのホスティング先                  | Vercel静的ホスティング。Chromaticは複数プロダクト消費開始後に再検討                                                 | §6                                   |
+| Tier 2ブロックの再同期運用                 | 自動化しない。`shadcn diff`による手動・不定期の棚卸しにとどめる                                                     | §2.1                                 |
 
 ---
 

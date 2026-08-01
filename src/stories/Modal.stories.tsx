@@ -74,8 +74,7 @@ function ConfirmDemo() {
               margin: 0,
             }}
           >
-            「Kedama Design System」を完全に削除しますか？
-            関連するすべてのデータが失われます。
+            「Kedama Design System」を完全に削除しますか？ 関連するすべてのデータが失われます。
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -103,12 +102,7 @@ function FormDemo() {
   return (
     <>
       <Button onClick={() => setOpen(true)}>新規メンバーを招待</Button>
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title="メンバーを招待"
-        size="md"
-      >
+      <Modal open={open} onClose={() => setOpen(false)} title="メンバーを招待" size="md">
         <Modal.Body>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <TextField label="メールアドレス" type="email" placeholder="user@example.com" />
@@ -156,12 +150,7 @@ function SizesDemo() {
         </Button>
       </div>
       {size && (
-        <Modal
-          open
-          onClose={() => setSize(null)}
-          title={`サイズ: ${size}`}
-          size={size}
-        >
+        <Modal open onClose={() => setSize(null)} title={`サイズ: ${size}`} size={size}>
           <Modal.Body>
             <p
               style={{

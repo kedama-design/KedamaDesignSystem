@@ -1,0 +1,12 @@
+# ビルド成果物
+dist/
+storybook-static/
+
+# ロックファイル。pnpm が管理する形式なので Prettier に触らせない
+pnpm-lock.yaml
+
+# 生成物（pnpm generate:tokens が出力）。
+# 整形しても次の生成で上書きされるため対象外にする。
+src/styles/tokens.css
+src/styles/alias-ibuki.css
+src/styles/alias-shadcn.css

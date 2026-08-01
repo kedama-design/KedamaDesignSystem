@@ -5,6 +5,7 @@
   "description": "Kedama Design System — Calm UI tokens and components for internal business systems",
   "license": "UNLICENSED",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "sideEffects": [
     "*.css"
   ],

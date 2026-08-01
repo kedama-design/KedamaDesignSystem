@@ -26,7 +26,6 @@
 
 **成果物:** `docs/design-principles.md`
 
-
 ---
 
 ## Phase 2: デザイントークンの定義
@@ -44,7 +43,6 @@
 - **ブレイクポイント**: sm, md, lg, xl
 
 **成果物:** `src/tokens/` ディレクトリ配下にTypeScriptで定義
-
 
 ---
 
@@ -84,7 +82,6 @@ kedama-design-system/
 
 **成果物:** 動作する開発環境 + Storybook
 
-
 ---
 
 ## Phase 4: 基礎コンポーネントの実装
@@ -94,15 +91,15 @@ kedama-design-system/
 
 **優先度順:**
 
-| 優先度 | コンポーネント | 説明 |
-|--------|---------------|------|
-| 1 | Button | primary / secondary / ghost / danger バリアント |
-| 2 | Input | テキスト入力、バリデーション状態対応 |
-| 3 | Typography | 見出し・本文・キャプション等のテキスト表示 |
-| 4 | Badge | ステータス表示用ラベル |
-| 5 | Card | コンテンツをグルーピングするコンテナ |
-| 6 | Modal / Dialog | オーバーレイ表示 |
-| 7 | Icon | アイコンシステム（SVGベース） |
+| 優先度 | コンポーネント | 説明                                            |
+| ------ | -------------- | ----------------------------------------------- |
+| 1      | Button         | primary / secondary / ghost / danger バリアント |
+| 2      | Input          | テキスト入力、バリデーション状態対応            |
+| 3      | Typography     | 見出し・本文・キャプション等のテキスト表示      |
+| 4      | Badge          | ステータス表示用ラベル                          |
+| 5      | Card           | コンテンツをグルーピングするコンテナ            |
+| 6      | Modal / Dialog | オーバーレイ表示                                |
+| 7      | Icon           | アイコンシステム（SVGベース）                   |
 
 **各コンポーネントに含めるもの:**
 
@@ -112,7 +109,6 @@ kedama-design-system/
 - 基本的なユニットテスト
 
 **成果物:** `src/components/` 配下に各コンポーネント
-
 
 ---
 
@@ -129,7 +125,6 @@ kedama-design-system/
 
 **成果物:** Storybookをドキュメントサイトとして活用、または別途ドキュメントサイト
 
-
 ---
 
 ## Phase 6: パッケージング・配布
@@ -145,7 +140,6 @@ kedama-design-system/
 - CHANGELOG の運用方針
 
 **成果物:** `npm install @kedama/design-system` で利用可能な状態
-
 
 ---
 

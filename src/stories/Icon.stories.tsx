@@ -52,7 +52,11 @@ type Story = StoryObj;
 
 // ─── アイコン定義 ───────────────────────────────────────
 
-const iconGroups: { title: string; titleJa: string; icons: { name: string; component: LucideIcon; label: string }[] }[] = [
+const iconGroups: {
+  title: string;
+  titleJa: string;
+  icons: { name: string; component: LucideIcon; label: string }[];
+}[] = [
   {
     title: 'Navigation',
     titleJa: 'ナビゲーション',
@@ -152,7 +156,7 @@ export const AllIcons: Story = {
         Lucide React ベースのアイコンセット。stroke ベース、24×24 viewBox。
         <br />
         <code style={{ fontFamily: 'var(--primitive-font-family-mono)', fontSize: '13px' }}>
-          {'import { Search, Plus } from \'@kedama/design-system\';'}
+          {"import { Search, Plus } from '@kedama/design-system';"}
         </code>
       </p>
 
@@ -168,7 +172,14 @@ export const AllIcons: Story = {
             }}
           >
             {group.titleJa}
-            <span style={{ color: 'var(--color-fg-muted)', fontWeight: 400, marginLeft: '8px', fontSize: '14px' }}>
+            <span
+              style={{
+                color: 'var(--color-fg-muted)',
+                fontWeight: 400,
+                marginLeft: '8px',
+                fontSize: '14px',
+              }}
+            >
               {group.title}
             </span>
           </h3>

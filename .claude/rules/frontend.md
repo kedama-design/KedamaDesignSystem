@@ -20,14 +20,14 @@ src/stories/{Name}.stories.tsx  — Storybook ストーリー
 
 再利用を優先する。新規作成前に必ず確認:
 
-| コンポーネント | 用途 |
-|---|---|
-| `Button` | ボタン（primary/secondary/ghost/danger バリアント、sm/md/lg サイズ） |
-| `Badge` | ステータスラベル |
-| `TextField` | テキスト入力 |
-| `Card` | コンテナ |
-| `Modal` | ダイアログ |
-| `Icon` | Lucide アイコンラッパー |
+| コンポーネント | 用途                                                                 |
+| -------------- | -------------------------------------------------------------------- |
+| `Button`       | ボタン（primary/secondary/ghost/danger バリアント、sm/md/lg サイズ） |
+| `Badge`        | ステータスラベル                                                     |
+| `TextField`    | テキスト入力                                                         |
+| `Card`         | コンテナ                                                             |
+| `Modal`        | ダイアログ                                                           |
+| `Icon`         | Lucide アイコンラッパー                                              |
 
 ## スタイリング
 

@@ -27,12 +27,14 @@ Claude にバナー、UI案、ビジュアル制作を依頼する際に、
 OKLCH色空間ベース。純白 #FFFFFF は使用禁止。
 
 **Primary（苔色 — ブランドカラー）:**
+
 - primary-25: #EEFBF1, primary-50: #DFF6E4, primary-100: #B9EDC6
 - primary-200: #8ED09F, primary-300: #6DB07F, primary-400: #539065
 - primary-500: #416F4E, **primary-600: #315039**（メインアクション色）, primary-700: #213325
 - primary-800: #0F1912, primary-900: #020402
 
 **Birch（白樺 — 暖色ニュートラル）:**
+
 - **birch-25: #F8F7F4**（最も明るい面の色。白の代わりに使う）
 - birch-50: #F0EEE9（ページ背景）, birch-100: #E0DED7
 - birch-200: #C1BDB5, birch-300: #A29E93, birch-400: #858073
@@ -40,6 +42,7 @@ OKLCH色空間ベース。純白 #FFFFFF は使用禁止。
 - birch-800: #181611, birch-900: #040302（最暗色。黒の代わりに使う）
 
 **その他のパレット（代表色のみ）:**
+
 - Amber（琥珀 — アクセント）: amber-600: #5E4201, amber-50: #FFECC9
 - Danger（赤）: danger-600: #7B223C, danger-50: #FEE8EA
 - Warning（オレンジ）: warning-600: #693A16, warning-50: #FAEBE2
@@ -60,6 +63,7 @@ OKLCH色空間ベース。純白 #FFFFFF は使用禁止。
 - コード: Noto Sans Mono
 
 サイズスケール（調和数列 8/n）:
+
 - heading-2xl: 42.67px, heading-xl: 32px, heading-lg: 25.6px
 - heading-md: 21.33px, heading-sm: 18.29px
 - body-lg: 16px（デフォルト）, body-md: 14.22px, body-sm: 12.8px
