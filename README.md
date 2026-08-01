@@ -68,6 +68,50 @@ const primaryColor = semanticColors.accent.primary; // '#315039'
 const gap = spacing[16]; // '16px'
 ```
 
+## フォントの扱い
+
+**このパッケージはフォントを同梱しません。読み込みも行いません。**
+フォントの調達と読み込みは**消費側プロダクトの責任**です。
+
+パッケージが提供するのは `font-family` の**スタック定義**だけです
+（`--primitive-font-family-heading` など）。実体が読み込まれていなければ、
+スタックは system フォントへフォールバックします。
+
+理由:
+
+- フォントを同梱するとパッケージサイズが数MB単位で膨らむ
+- ライセンス条件・配信方法（セルフホスト / CDN）はプロダクトごとに事情が異なる
+- 消費側が既に同じ書体を読み込んでいる場合、二重取得になる
+
+### 必要な3書体
+
+| スタック | 書体 | 用途 |
+|---|---|---|
+| `--primitive-font-family-heading` | **DM Sans** | 見出し・UI英語テキスト |
+| `--primitive-font-family-body` / `-numeric` | **Noto Sans JP** | 日本語全般・桁を揃える数値 |
+| `--primitive-font-family-mono` | **Noto Sans Mono** | ログ・コード・ID |
+
+### 読み込み例（Google Fonts）
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400&display=swap"
+/>
+```
+
+> **数値の桁揃えに関する注意**：`DM Sans` は OpenType の `tnum` フィーチャを持たず、
+> 数字がプロポーショナル幅です。`font-variant-numeric: tabular-nums` を当てても揃いません。
+> **桁を揃えたい数値を heading フォントで組まないでください。**
+> `numeric-sm` / `numeric-md` / `numeric-xl`（`fontFamily.numeric` ＝ Noto Sans JP ベース）を
+> 使ってください。Storybook の `Foundations/Numeric Alignment` で実際の差を確認できます。
+
+Storybook（`pnpm dev`）は上記3書体を preview で読み込んでいますが、これは
+**トークンを目視レビューするための Storybook 専用の措置**であり、
+パッケージの成果物には含まれません。
+
 ## コンポーネント
 
 | コンポーネント | 説明 |

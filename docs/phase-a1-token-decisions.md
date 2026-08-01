@@ -1,0 +1,285 @@
+# Phase A-1 トークン層 — 決定と仕様書からの逸脱
+
+Phase A-1（トークン層）の実装中に行った判断の記録。
+仕様書 `cross-product-ui-library-spec.md` §0.6 / §0.7 と食い違う箇所は
+**すべてここに列挙する**（黙って変えない）。
+
+- 実装日: 2026-07-29
+- 検証: `tests/contrastCases.ts` — 4変種（light / dark / dark-alt / deep-dark）×
+  66 役割 = **264 case**、ハード失敗 0 / 免除 38
+
+---
+
+## 1. 人間が決めた設計判断
+
+| 論点 | 決定 | 根拠 |
+|---|---|---|
+| Dark surface の比較方法 | **surface だけ**を birch/700 ↔ birch/800 で切り替える。page は birch/800 固定 | ユーザー判断。alt では page と surface が同色になり、面の分離は border.muted のヘアラインだけが担う。§0.6 が Deep-dark の `--bg-sidebar` で既に採っているパターンと同じ考え方 |
+| data-viz プリミティブの範囲 | 色は既存プリミティブの alias（報告書 Q5 どおり）。**加えて非色のプリミティブを新設**（`primitive/dataViz.ts`） | ユーザー判断。線幅・破線パターン・ヒートマップのセル寸法は spacing / borderWidth の意味論と別物で、既存プリミティブのどこにも無かった。値は Ibuki プロトタイプの実測（`stroke-dasharray="4 4"` 等） |
+
+---
+
+## 2. 仕様書からの逸脱（4件）
+
+いずれも**コントラスト実測にもとづく**。§0.7 自身が「§0.6 の当初案のうち4箇所が基準未達
+だったので差し替える」という節であり、同じ手続きを踏んでいる。
+
+### 逸脱1 — Light `fg.muted`：birch/500 → **birch/600**
+
+- §0.6 は `--text-muted` → birch/500
+- §0.7 運用ルール1 は「`fg.muted` は補助テキスト・軸ラベルなど**読ませる**もの。
+  **4.5:1 を満たす**」と定めた
+- 実測: birch/500 は `bg.subtle`（birch/100）上で **4.45:1** と未達
+- §0.6 の割当は surface / page 上でしか検証されていなかった。§0.7 が課した要件を優先する
+
+**影響**: Ibuki の `--text-muted` が1段濃くなる。読みやすくなる方向の変化。
+
+### 逸脱2 — Light `border.focus`：primary/400 → **primary/500**
+
+- Kedama 従来値は primary/400
+- フォーカスリングは `outline-offset` で要素の**外側**に出るため、
+  `bg.subtle`（birch/100）の上に載ることがある
+- 実測（2026-07-31 のパレット改定後に再検証・§7）: primary/400 は
+  bg.subtle 上で **2.75:1** と 3:1 未達。primary/500 なら **4.22:1** で全背景を満たす
+- フォーカス位置が見えないとキーボード操作が成立しない（Calm > Accessible）
+
+> パレット改定でこの逸脱が不要にならないか再確認したが、**依然として必要**だった。
+
+### 逸脱3 — Deep-dark `bg.subtle` / `bg.subtle-strong`：birch/500・400 → **birch/700・600**
+
+- §0.6 の表は Deep-dark の `--surface-200` / `--surface-300` を birch/500 / birch/400 としている
+- これは Dark（birch/600 / birch/500）より**明るい**方向のシフトであり、
+  **同じ §0.6 のルール4**「サーフェス／ボーダー系のみ Deep-dark でさらに一段暗く／明るく」
+  のうちサーフェス側の指示（暗く）と矛盾する
+- 実測: `fg.muted`（birch/300）が birch/500 上で **2.24:1** と本文要件を大きく割り込む
+- ルール4 を一貫適用し、Dark から1段暗い値にした
+
+**これは §0.6 の表の転記ミスの可能性が高い。** 仕様書側の修正を推奨する。
+
+### 逸脱4 — status `-bg` を §0.6 の warning/25・danger/25 ではなく既存の `/50` のまま維持
+
+- §0.6 は `--warning-bg` → warning/25、`--destructive-bg` → danger/25 としている
+- エイリアスは**値を持たず var() 参照のみ**（報告書 Q2 案(a)）なので、Ibuki 側の値は
+  Kedama の `status.warning-bg` がそのまま出る。§0.6 どおりにするには Kedama 本体を
+  `/25` へ動かすことになる
+- §0.6 が名指ししているのは warning と danger の2つだけで、success / info には言及がない。
+  2つだけ動かすと status ファミリーの階調が割れる
+- warning/25 と warning/50 の差は知覚上ごくわずかで、コントラストはどちらも 12:1 超
+
+**判断**: 一貫性を優先し4つとも `/50` を維持した。§0.6 の当該2行は alias 方式が
+確定する前（v0.8 以前）に書かれたものと理解している。**要確認事項**。
+
+---
+
+## 3. 仕様書に無く、実装上必要になった追加
+
+| 追加 | 理由 |
+|---|---|
+| `fg.secondary` | §0.6 の `--text-light`（birch/700）に対応する階調が Kedama に無かった（報告書 Q2「Kedama には secondary text が1段しかない」） |
+| `bg.sidebar` | Light では surface と同値だが Dark 系では分離する（§0.6: Dark の `--bg-sidebar` は birch/900、`--surface` は birch/700） |
+| `bg.subtle-strong` | Ibuki `--surface-300` に対応する段が無かった |
+| `border` 階調の再定義 | §0.6 判断3 に従い Light の `border.default` を birch/300 → birch/200、`border.muted` を birch/200 → birch/100 に。`border.strong` だけは §0.7 の例外どおり birch/400 を維持 |
+| `accent.danger` 一式 | Button の danger バリアントが `hover:bg-danger-700` とプリミティブを直参照していた（報告書 Q2 の指摘）。`status.danger` は「状態の表示」で hover/active を持たないため、破壊的**アクション**の面として別カテゴリを立てた |
+| `bg.scrim` の型 | `rgba(4,3,2,0.5)` の直値を廃し `{ mix: { color: birch[900], alpha: opacity.scrim } }` に変更。generator が `color-mix(in srgb, var(--primitive-color-birch-900) 50%, transparent)` を出力するため、プリミティブ参照が保たれる |
+
+---
+
+## 4. 数値の字幅揃え（2026-07-29 実機検証）
+
+「表の数値・KPI・軸ラベルを mono から本文フォント + `tabular-nums` へ変えられないか」の検証結果。
+
+**検証方法**: Google Fonts から実フォントを読み込み、`1,111` と `8,888` の描画幅を
+100px 指定で実測。ブラウザが `tnum` を適用できることを Inter で対照確認した。
+検証ページ: `src/stories/NumericAlignment.stories.tsx`
+
+| フォント | 既定の数字 | `tabular-nums` の効果 | 判定 |
+|---|---|---|---|
+| **Noto Sans JP**（body） | **等幅**（0〜9 すべて 55.5px） | 変化なし（既に揃っているため不要） | ✅ 桁が揃う |
+| **DM Sans**（heading） | プロポーショナル（`1`=31.2px / `8`=60.8px） | **効果なし**。`font-feature-settings:"tnum"` でも変わらず | ❌ 揃わない |
+| Noto Sans Mono | 等幅 | 変化なし | ✅（ただし不要） |
+| Inter（対照） | プロポーショナル（40.69 / 61.88） | **64.84 / 64.84 に揃う** | ブラウザ側は正常 |
+
+**結論**: 提案どおり mono をやめてよい。ただし理由は「tnum が効くから」ではなく
+**「Noto Sans JP の数字がもともと等幅だから」**である。DM Sans は OpenType の `tnum`
+フィーチャ自体を持たないため、`tabular-nums` を当てても桁は揃わない。
+
+**決定**
+
+1. `fontFamily.numeric` を新設（`"Noto Sans JP", system-ui, …`）。
+   **body から DM Sans を意図的に外している** — body の第2候補は DM Sans なので、
+   Noto Sans JP の読み込みに失敗すると桁揃えが崩れるため
+2. セマンティックに `numeric-sm` / `numeric-md` / `numeric-xl` を追加（軸ラベル / 表 / KPI）。
+   すべて `fontVariantNumeric: 'tabular-nums'` を持つ
+3. `tabular-nums` は Noto Sans JP 上では実質 no-op だが**必ず付ける**。
+   system-ui（SF Pro / Segoe UI）は既定がプロポーショナルかつ tnum 対応なので、
+   フォールバック時はこの宣言の有無で揃うかが決まる
+4. `fontFamily.mono` の用途コメントから「数値」を外し、ログ・コード・ID 専用にした
+5. **KPI も heading フォントで組まない。** 大きな数値は `numeric-xl`（32px, body 系）を使う
+
+**フォントサイズのスケール（調和数列・分子8）は変更していない。**
+
+---
+
+## 5. 確認事項への回答（2026-07-29 ユーザー判断・すべて反映済み）
+
+| # | 論点 | 決定 | 反映先 |
+|---|---|---|---|
+| 1 | status `-bg` を `/50` 維持するか | **承認。`/50` を維持** | 仕様書 §0.6 の該当2行を `/50` に修正し理由を注記。実装は変更なし |
+| 2 | Deep-dark サーフェスは仕様書と実装どちらが正か | **実装が正。仕様書を修正** | 下記の2箇所 |
+| 3 | `feedback-press` の割当 | **`spring.press` に変更。報告書 Q8 が誤り** | `semantic/motion.ts` を修正。報告書 Q8 に「訂正1」を追記 |
+| 4 | Web フォント読み込みの実施時期 | **A-2 ではなく A-1（今）で実施** | `.storybook/preview.ts` で Google Fonts を読込。方針を README と `primitive/typography.ts` に明記 |
+| 5 | Dark surface の最終決定 | **比較ストーリーを用意してそこで停止** | `src/stories/DarkSurfaceComparison.stories.tsx`。決定は目視比較後 |
+
+### 2 の内訳（単純な値の差し替えではなく2箇所）
+
+- **(a) 値** — §0.6 の Deep-dark 列を実装に合わせた。
+  `--surface-200` birch/500 → **birch/700**、`--surface-300` birch/400 → **birch/600**、
+  `--bg-alt` birch/500 → **birch/700**
+- **(b) ルール4 の表現** — 「さらに一段暗く／明るく」という**両方向を許す書き方**が
+  今回の食い違いの原因だったため、**「サーフェスは1段暗く、ボーダーは1段明るく」**と
+  方向を明示する記述に改め、系統ごとの方向を表で示した
+
+### 3 の根拠
+
+報告書 Q8 は `motion.feedback.press → spring.fast` としていたが、同じ推奨方針の
+primitive 側で `spring.press` を「押し込みの手応え」と用途名で定義しており、
+それを使わない理由が示されていなかった。パラメータも press（stiffness 500 / damping 38）の
+ほうが fast（400 / 34）より硬く強く減衰し、押下の手応えとして適切。
+この訂正で `spring.press` は「定義されているが未参照」の状態を脱した。
+
+### 4 の方針（フォントの責任分界）
+
+**npm パッケージはフォントを同梱せず、読み込みもしない。調達と読み込みは消費側の責任。**
+パッケージが提供するのは `font-family` のスタック定義だけで、実体が無ければ system-ui へ
+フォールバックする。Storybook だけは3書体を読み込むが、これは
+**トークンを目視レビューするための Storybook 専用の措置**であり、ビルド成果物には含まれない
+（`vite.config.ts` の entry は `src/index.ts` と `src/tokens/index.ts` のみ）。
+
+記載先: `README.md`「フォントの扱い」／`src/tokens/primitive/typography.ts` の
+Font Family セクション冒頭／`.storybook/preview.ts` の冒頭コメント。
+
+---
+
+## 6. 意図的な保留 — Dark surface の既定値
+
+**birch/700 と birch/800 のどちらを既定にするかは、プロトタイプ作成時（Storybook 上で
+本番コンポーネントを組む段階）に実画面で決める**（2026-07-29 ユーザー判断）。現状は birch/700。
+
+A-1 のブロッカーにはしない。理由は3つ。
+
+1. 両案とも実装済みで、CSS も両方出力されている（`darkSurfaceVariants`）
+2. **両案ともコントラスト検証を通過済み**（`dark` と `dark-alt` を別変種として全 case 検証）。
+   どちらを選んでもテストは緑のまま
+3. 決定は `src/tokens/semantic/themes/dark.ts` の既定を入れ替えるだけで、いつ行っても
+   コストが変わらない
+
+**期限の目安**：Visual Regression（Chromatic）導入**前**に決め切ること。導入後に surface を
+変えると全スナップショットが更新対象になる。仕様書 §6 では Chromatic は
+「複数プロダクトが消費し始めてから」の位置づけなので、当面は衝突しない。
+
+### 比較の材料（用意済み）
+
+| | 場所 |
+|---|---|
+| Storybook | `Foundations/Dark Surface Comparison`（左右に並べたミニ画面） |
+| Ibuki プロトタイプ実画面 | scratchpad の `ibuki-prototype-kedama-compare.html`。29画面が Kedama 配色で動く。右下トグルで theme / surface を切替 |
+
+Storybook の `Foundations/Dark Surface Comparison` で左右に並べて比較できる。
+見るべき点は3つ。
+
+1. カードが page から浮いて見えるか（birch/700 の利点）
+2. カード上の本文4階調（default / secondary / muted / decorative）が区別しやすいか
+   （birch/800 の利点＝報告書 Q7 の「本文階調の余地を優先」）
+3. birch/800 側でヘアライン（`border.muted`）だけの面分離が成立しているか
+
+決定後は `src/tokens/semantic/themes/dark.ts` の `darkSurfaceVariants` の既定を
+入れ替えるだけで反映できる。**両案ともコントラスト検証を通過済み**（`dark` と `dark-alt` を
+別変種として全 case 検証している）ため、どちらを選んでもテストは緑のまま。
+
+---
+
+## 7. パレット改定（2026-07-31）
+
+### 7.1 なぜ改定したか
+
+Badge に `accent`（ブランド/選択）を追加する検討中に、**`accent.primary` と
+`status.success` が判別できない**ことが実測で判明した。
+
+| ペア | ΔE | 色覚 D 型 |
+|---|---|---|
+| accent vs success（solid） | **0.042** | 0.038 |
+| accent vs success（subtle 背景） | **0.023** | 0.020 |
+
+ΔE 0.02 は「ようやく違いが分かる」水準で、実質判別不能だった。
+
+原因はブランドと success がどちらも緑だったこと（primary 151.6° / success 114.5°）。
+さらに色相環を測ると **55〜152° に4色が密集し、逆側 136° が空白**という偏りがあり、
+amber(82.1°) と birch(88.8°) は 7.8° しか離れていなかった。
+
+### 7.2 新しい色相の出典
+
+| パレット | 色相 | 出典 |
+|---|---|---|
+| primary | 159.3° | Starbucks Green Accent `#00754A` |
+| success | 145.4° | Notion green `#1aae39` |
+| warning | 84.0° | Starbucks yellow `#fbbc05` |
+| danger | 29.6° | Starbucks red `#c82014` |
+| info | 254.3° | Notion blue `#0075de` |
+| birch | 暖色 | **変更なし**（Calm UI の核） |
+
+明度カーブは現行の実測値を踏襲（`100→90, 200→80 … 900→10` の線形、`25=97.6 / 50=95`）。
+純白・純黒の混入なし。彩度は大幅に向上（primary/500 が C 0.073 → **0.114**）。
+
+**恒久的なブランド定義は安定稼働後に行う。本パレットはその暫定値**（ユーザー判断）。
+
+### 7.3 判別は色相ではなく「段の明度差」で作った
+
+新パレットにしても、**同じ段どうしでは ΔE 0.033 しか出ない**（明度カーブが段番号で
+固定されているため、色相差 13.9° では稼げない）。そこで semantic 側で参照する段をずらした。
+
+| | 段 | brand との ΔE | D型 |
+|---|---|---|---|
+| `accent.primary` | primary/600 | — | — |
+| `status.*-solid`（Light） | **/400** | **0.226** | 0.216 |
+| `status.*-solid`（Dark / Deep-dark） | **/200** | 0.212 | 0.214 |
+
+**この対応関係を崩すと判別不能に戻る。** 段を変えるときは必ずコントラストテストを再実行する。
+
+> **経過で1つ判断を誤った**：当初 Light の solid を `/300`（ΔE 0.321）に決めたが、
+> **ベタ塗りバッジが surface から識別できるか（WCAG 1.4.11）を検証に入れていなかった**。
+> 実際に回すと 4 status すべてが 2.33〜2.71:1 で 3:1 未達。`/400` に下げて解消した。
+
+### 7.4 あわせて行った変更
+
+| 変更 | 理由 |
+|---|---|
+| **`amber` パレットを廃止** | `accent.tertiary` としてしか定義がなく未使用。かつ色相 82.1° が新 warning 84.0° と 1.9° 差で衝突し両立できない。パレットは 7 → 6 に |
+| `accent.tertiary*` 4キー削除 | 上に同じ |
+| `status.*-fg` を暖白 → near-black | solid が明るい段になったため。実測 4.63〜5.64 で AA 合格 |
+| **`--success` エイリアス新設** | Ibuki に success セマンティックが存在せず `--brand` で代用していたことが実画面で判明。詳細は `docs/ibuki-brand-audit.md` |
+
+### 7.5 検証
+
+- コントラスト **256 ケース / ハード失敗 0**（合格 218・免除 38）
+- 3テーマのキー集合一致・stale な免除なし
+- `tsc --noEmit` clean、generator 冪等（MD5 一致）
+- Ibuki プロトタイプ 29 画面を新パレットで実表示し、Light / Dark とも破綻なしを目視確認
+
+### 7.6 逸脱1・2 の再検証（改定後・2026-07-31）
+
+birch は改定していないが、両方とも改定後に測り直した。**どちらも依然として必要**。
+
+| 逸脱 | 候補 | bg.surface | bg.page | bg.subtle | 判定 |
+|---|---|---|---|---|---|
+| 1 `fg.muted` | birch/500（§0.6 の値） | 5.60 | 5.17 | **4.45** ✗ | 4.5 未達 |
+| | **birch/600（採用）** | 8.64 | 7.99 | **6.88** ✓ | 合格 |
+| 2 `border.focus` | primary/400 | 3.46 | 3.20 | **2.75** ✗ | 3:1 未達 |
+| | **primary/500（採用）** | 5.31 | 4.90 | **4.22** ✓ | 合格 |
+
+どちらも `bg.subtle` の上でだけ落ちる。面が一段沈んだ領域が最も条件が厳しい。
+
+### 7.7 残る課題
+
+`dataViz.emphasis-positive` は Light で primary/600 と同値。意味は分離されたが
+**見た目は同じ**なので、チャート上でブランドと強調系列が区別できない状態は残る。
+`docs/ibuki-brand-audit.md` §5 のとおり、チャート内の brand 参照は 29 箇所ある。

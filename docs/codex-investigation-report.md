@@ -146,7 +146,7 @@ motionInertia = { directRelease: { type: 'inertia', power: 0.25, timeConstant: 2
 
 semantic:
 
-- `motion.feedback.press → spring.fast`
+- `motion.feedback.press → spring.press` ※**訂正済み**（初版は `spring.fast` と記載。下記「訂正1」参照）
 - `motion.overlay.enter/exit → spring.settle`
 - `motion.disclosure.expand/collapse → spring.settle`
 - `motion.value.change → spring.fast`
@@ -157,6 +157,23 @@ semantic:
 `motion`はpeer dependency `^12.42.1`を採用候補とし、Vite externalへ追加する。公開コンポーネントは`LazyMotion + m`を前提にせず、ライブラリ内で通常`motion`を混ぜることも避ける。推奨は`KedamaProvider`（client component）がThemeProviderと`MotionConfig reducedMotion="user"`を束ねる案(c)。個別providerもexportし、既存利用者は段階移行できるようにする。Motion公式ではreduced motion時にtransform/layoutが無効になりopacity/colorは残るため、opacityの短い遷移は許容できる。[MotionConfig](https://motion.dev/docs/react-motion-config)（2026-07-29確認）。
 
 バンドルを重視する場合、`m` + `LazyMotion`は初期約4.6KB、`motion` componentは約34KBと公式が説明する。ただしdragには`domMax`が必要である。[Reduce bundle size](https://motion.dev/docs/react-reduce-bundle-size)（2026-07-29確認）。KedamaProviderで`LazyMotion strict features={domMax}`を一度だけ置く案をPhase A-2のbundle計測で採否決定する。
+
+### 訂正1 — `motion.feedback.press` の割当（2026-07-29・ユーザー判断）
+
+**本報告書の初版は `motion.feedback.press → spring.fast` としていたが、これは誤りである。
+正しくは `spring.press`。** Phase A-1 実装時に発覚し、実装・本報告書とも訂正済み。
+
+誤りと判断した根拠は2つ。
+
+1. 同じ推奨方針の primitive 側で `spring.press` を定義し、その用途を
+   **「押し込みの手応え」と名指ししている**。用途名が一致するプリミティブがありながら
+   別のものを割り当てる理由が本文中に示されていなかった
+2. パラメータ自体も press のほうが押下に適している。`fast`（stiffness 400 / damping 34）に対し
+   `press`（500 / 38）は硬く、かつ強く減衰するため、指を離した瞬間に素早く収まる。
+   これは押した手応えとして読める挙動である
+
+この訂正により、primitive `spring.press` は「定義されているが semantic から参照されない」
+状態を脱した。
 
 ### 未確定
 
