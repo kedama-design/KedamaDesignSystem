@@ -7,7 +7,7 @@ description: >
   知見を汎用化し、Base UI + shadcn/ui + Storybook を土台に「プロトタイプ＝本番コード」を
   実現する。実装は別セッション（Claude Code 等）で行う前提のハンドオフ文書。
 adopted: 2026-07-28
-status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
+status: Draft v0.10 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
   tarballで導入済み）を反映し、Phase Cを「presentational層の全面再構築」として再定義。
   bmad-ux側のUI/UX discoveryと方針が競合していた件を解消（Kedamaは離脱先ではなく供給元）。
   最大の欠落だったAppShell一式をTier 2に追加（§4.5）、すらすらスタジオ由来のブロックを在庫に反映。
@@ -16,7 +16,10 @@ status: Draft v0.9 — すらすらスタジオの実態調査（既存UIあり�
   分離。v0.9でCodex調査（docs/codex-investigation-report.md）の結論を反映：シェル仮説は部分支持
   にとどまり主因は複合的と判明したためPhase Cのスコープを拡大、Tier 1（チャート）をレジストリ
   配布へ移してTier構成を再編、パッケージ名を@kedama-design/design-systemに確定、text-faintを
-  fg.decorativeへ分離
+  fg.decorativeへ分離。
+  v0.10でPhase A-1/A-2の実装結果を反映：モーショントークンをspring/inertia（JS層）と
+  tween（CSS層）の2系統に整理し、実測にもとづきspringの割当を直接操作系のみへ縮小。
+  Dark surface・スクリム濃度・backdrop blurを確定。取り込み品の扱いに関する原則を追記。
 ---
 
 # 横断 UI コンポーネント基盤 実装仕様（draft）
@@ -426,6 +429,17 @@ shadcn/ui (Base UI variant) のブロック
 ```
 
 - **ゼロから作らない**：AppShell・DataTable・Command を一から実装する工数を避ける
+
+> **取り込み品に手を入れる範囲（v0.10 で明文化）**
+> 上流から取り込むのは**構造と挙動**であって、見た目の値ではない。したがって
+> **トークン置換は「上流との差分」ではなく取り込みの目的そのもの**であり、遠慮なく行う。
+> 差分を増やさないという原則が禁じているのは、ロジックの書き換え・API の変更・構造の
+> フォークである。
+>
+> あわせて、shadcn の `init` を回避して配置だけ取り込むと、**init が CSS へ書き込むはずの
+> 定義が存在しない**状態になる（keyframes、`@layer base` の既定ボーダー色、依存パッケージ）。
+> クラス名はソースに残るため grep では「使われている」と見え、実際には無効という形で現れる。
+> 実際にこの原因で3件の不具合が出た。取り込み時のチェックリストを設けること。
 - **各プロダクトが上流から直接コピーしない**：これを許すと各プロダクトが個別に分岐し、
   本プロジェクトが解こうとしている「ずれ」が別の形で再発する
 - **仕様書の Tier 2 モデル（レジストリ配布）がそのまま使える**：取り込んだブロックを
@@ -632,6 +646,60 @@ Motion の `MotionConfig reducedMotion="user"` をプロバイダ層で一括適
 同ルール 3.3 が「primitive → semantic → component の順序厳守」を定めているため、
 **モーショントークンはPhase Aのトークン確定フェーズで決める。コンポーネント実装後に足すのは
 順序違反**となる。
+
+### 実装結果にもとづく改訂（2026-07-29・v0.10）
+
+Phase A-1/A-2 の実装で、本節の当初設計に2つの不足と1つの誤りが見つかった。
+
+#### 改訂1 — モーショントークンは2系統を持つ
+
+当初は spring / inertia のみを定義し「CSS transition では表現できないため tokens.css には
+出力しない」とした。これは spring については正しいが、**tween（duration + easing）の層を
+作らなかった**のが不足だった。外部から取り込むコンポーネントは CSS の transition / animation
+を使うため、参照先のトークンが存在せず `duration-450` のようなハードコードが生まれる。
+
+| 系統 | 実体 | 出力先 | 用途 |
+|---|---|---|---|
+| **spring / inertia** | stiffness・damping・mass / power・timeConstant | tokens.css に出力しない。Motion の transition 引数へ渡す | 直接操作の着地（ドラッグ・スワイプ・スナップ） |
+| **tween** | duration（fast 120 / normal 240 / slow 400 / reduced 0）+ easing（default / enter / exit） | tokens.css へ CSS 変数として出力。Tailwind の `--ease-*` と `@utility duration-*` に接続 | それ以外すべて |
+
+**トラックは選択肢ではない。**どちらを使うかはコンポーネントの描画機構で決まり、実装者の
+好み・部品の重要度・見栄えでは選ばない。
+
+#### 改訂2 — spring の割当は直接操作系のみへ縮小する
+
+当初は overlay / disclosure / value-change / press にも spring を割り当てていた
+（報告書 Q8 由来）。実測の結果、これを取り消す。
+
+| 用途 | tween 実効 | spring 実効 | 比 |
+|---|---|---|---|
+| 押下フィードバック | 104ms | 345ms | 3.3× |
+| 値の変化 | 104ms | 383ms | 3.7× |
+| 開閉（accordion） | 209ms | 480ms | 2.3× |
+| オーバーレイ出入り | 348ms | 480ms | 1.4× |
+
+減衰比はいずれも 0.93〜0.95 で、**臨界減衰にごく近い**。この帯域の spring は ease-out tween と
+ほぼ同じ軌道を描くため、中断が起きない用途では「見た目が同じで 2〜3.7 倍遅いだけ」になる。
+
+これは本節の原理からの後退ではない。**「spring の本質的価値は中断に強いこと」を厳密に適用した
+結果**であり、誤っていたのは原理ではなく当初の割当の広さである。
+
+- **primitive は在庫**：spring 4プリセットは全て残す（参照が無くてよい）
+- **semantic は約束**：駆動できない手段を指す約束は置かない
+- **留保**：`value-change` はライブ更新する数値表示を導入する際に再検討する
+  （中断が実際に起きうる最有力の用途のため）
+
+#### 改訂3 — reduced-motion の担保は2箇所
+
+「`MotionConfig reducedMotion="user"` をプロバイダ層で一括適用」は **Motion が駆動する
+アニメーションにしか効かない**。外部から取り込んだコンポーネントの CSS アニメーション
+（`animate-spin` 等）はプロバイダの外側にある。
+
+したがって担保はプロバイダ層と**グローバル CSS の2箇所**に置く。「個別コンポーネントに
+書かせない」という方針は維持する。
+
+なお spinner のように**動きそのものが情報を担う**部品では、動きを消すのではなく静的な代替
+（破線の円＋テキスト）を出す。止まった実線スピナーは「壊れている」と読まれる。
 
 ---
 
@@ -920,6 +988,14 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 | **`text-faint`**                           | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回                      | §0.7                                 |
 | **AppShell仮説の検証結果**                 | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大 | §4.6・§7                             |
 | Q1〜Q8の技術的結論                         | Codex調査報告書に記載。本書では重複させず参照する                                                                   | `docs/codex-investigation-report.md` |
+| **Dark の surface** | **birch/700**（bg より1段明るい＝§0.6 ルール1どおり）。birch/800 の平坦案は `data-surface="alt"` として残置 | §0.6 |
+| **スクリム** | **`bg.scrim` = birch/900 50% に統一**。純黒は不採用。10% はモーダルとして機能しない（実機比較で確認） | §0.6 |
+| **backdrop blur** | **既定オフ**。50% 単独で遮断は伝わり、全画面 backdrop-filter は業務画面で GPU 負荷に見合わない。primitive は在庫として残す | §3.5 |
+| **モーションの2系統** | spring/inertia（JS層・直接操作のみ）と tween（CSS層・それ以外）。トラックは描画機構で決まり選択肢ではない | §3.5 |
+| **reduced-motion** | プロバイダ層＋グローバルCSSの2箇所で担保 | §3.5 |
+| **既定のボーダー色** | `@layer base` で全要素に `border.default`。CSS 既定の `currentColor` はデザインシステムの意図ではない | §2.1.5 |
+| **取り込み品への手入れ** | トークン置換は差分ではなく取り込みの目的。禁じているのはロジック・API・構造のフォーク | §2.1.5 |
+| **モーションの実装記録** | 用途別マッピング表と未解決事項 | `docs/motion-token-mapping.md` |
 | Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外                                                          | §0.6・§0.7                           |
 | Dark／Deep-darkテーマの値                  | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え）                                              | §0.6                                 |
 | コントラスト未達4箇所の修正                | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う                                                  | §0.7                                 |
@@ -938,6 +1014,9 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 
 ## 9. 参照
 
+- **すらすらスタジオ ベンチマーク調査**：本書が §7.2 / §7.3 / §8 / §9 で繰り返し参照している
+  が、**本リポジトリに実体が無い**。§9 のビジュアル原則を根拠にした議論が検証できず、実際に
+  誤引用が1件発生した。`docs/` へコピーを置くか、所在を明記すること（未対応）
 - **Codex 調査報告書（2026-07-29）**：`docs/codex-investigation-report.md`
   — Q1〜Q9 の調査結果・推奨方針・未確定事項。本書 §8 の各決定の根拠であり、
   Q1（コンポーネント統合API）・Q2（トークンalias方式）・Q3（Figmaパイプライン未稼働）・
