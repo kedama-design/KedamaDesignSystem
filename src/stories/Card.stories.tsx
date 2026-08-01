@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { Card } from '../components/Card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/Card';
 import { Button } from '../components/Button';
 import { Badge } from '../components/Badge';
 import { TextField } from '../components/TextField';
@@ -25,9 +25,51 @@ type Story = StoryObj<typeof Card>;
 export const Default: Story = {
   render: () => (
     <Card style={{ maxWidth: '400px' }}>
-      <p style={{ color: 'var(--color-fg-default)', fontFamily: 'var(--primitive-font-family-body)' }}>
-        シンプルなカードコンテナ。padding付きで、内側にコンテンツを配置します。
-      </p>
+      {/*
+        構造は shadcn/ui に合わせてある（仕様書 §0.6 方針転換）。
+        root は縦 padding だけを持ち、左右 padding は各パートが持つ。
+        直下にコンテンツを置くと左右の余白が付かないので CardContent で包む。
+      */}
+      <CardContent>
+        <p
+          style={{
+            color: 'var(--color-fg-default)',
+            fontFamily: 'var(--primitive-font-family-body)',
+          }}
+        >
+          シンプルなカードコンテナ。内容は CardContent で包みます。
+        </p>
+      </CardContent>
+    </Card>
+  ),
+};
+
+// ─── 正規 API（named exports・報告書 Q1） ───────────────
+
+export const NamedExports: Story = {
+  name: 'named exports（正規API）',
+  render: () => (
+    <Card style={{ maxWidth: '400px' }}>
+      <CardHeader className="border-b border-border-muted">
+        <CardTitle>プロジェクト概要</CardTitle>
+        <Badge status="success">稼働中</Badge>
+      </CardHeader>
+      <CardContent>
+        <p
+          style={{
+            color: 'var(--color-fg-default)',
+            fontFamily: 'var(--primitive-font-family-body)',
+            lineHeight: 1.6,
+          }}
+        >
+          区切り線は利用者が <code>border-b</code> / <code>border-t</code> を付けたときだけ
+          余白が付きます。左右 padding を各パートが持つので、線はカードの全幅に伸びます。
+        </p>
+      </CardContent>
+      <CardFooter className="border-t border-border-muted">
+        <Button variant="ghost">キャンセル</Button>
+        <Button variant="primary">保存する</Button>
+      </CardFooter>
     </Card>
   ),
 };
@@ -67,8 +109,12 @@ export const WithSections: Story = {
         </p>
       </Card.Body>
       <Card.Footer>
-        <Button variant="ghost" size="sm">閉じる</Button>
-        <Button variant="primary" size="sm">詳細を見る</Button>
+        <Button variant="ghost" size="sm">
+          閉じる
+        </Button>
+        <Button variant="primary" size="sm">
+          詳細を見る
+        </Button>
       </Card.Footer>
     </Card>
   ),
@@ -100,10 +146,7 @@ export const NoPadding: Story = {
             { action: 'Buttonコンポーネント追加', user: 'Claude', time: '15分前' },
             { action: 'プロジェクト初期化', user: '東森', time: '1時間前' },
           ].map((row, i) => (
-            <tr
-              key={i}
-              style={{ borderBottom: '1px solid var(--color-border-muted)' }}
-            >
+            <tr key={i} style={{ borderBottom: '1px solid var(--color-border-muted)' }}>
               <td
                 style={{
                   padding: '10px 20px',
@@ -170,8 +213,12 @@ export const FormCard: Story = {
         </div>
       </Card.Body>
       <Card.Footer>
-        <Button variant="ghost" size="sm">キャンセル</Button>
-        <Button variant="primary" size="sm">送信する</Button>
+        <Button variant="ghost" size="sm">
+          キャンセル
+        </Button>
+        <Button variant="primary" size="sm">
+          送信する
+        </Button>
       </Card.Footer>
     </Card>
   ),

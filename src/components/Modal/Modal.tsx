@@ -115,8 +115,9 @@ function ModalRoot({
       className={cn(
         // リセット: dialog のデフォルトスタイルを上書き
         'm-auto p-0 bg-transparent',
-        // backdrop
-        'backdrop:bg-[var(--color-bg-scrim)] backdrop:backdrop-blur-[var(--primitive-backdrop-blur)]',
+        // backdrop — scrim はセマンティックトークン経由。値はプリミティブの
+        // birch/900 を color-mix() でアルファ合成したもの（rgba 直値ではない）
+        'backdrop:bg-scrim backdrop:backdrop-blur-[var(--primitive-backdrop-blur)]',
         // 開閉アニメーション
         'open:animate-in open:fade-in open:zoom-in-95',
       )}
@@ -133,10 +134,7 @@ function ModalRoot({
         {/* ── Header ── */}
         {title && (
           <div className="flex items-center justify-between px-6 pt-6 pb-2">
-            <h2
-              id={titleId}
-              className="font-heading text-xl font-medium text-fg-default"
-            >
+            <h2 id={titleId} className="font-heading text-xl font-medium text-fg-default">
               {title}
             </h2>
             <button
@@ -172,7 +170,7 @@ ModalRoot.displayName = 'Modal';
 
 // ─── Modal.Body ─────────────────────────────────────────
 
-export interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type ModalBodyProps = React.HTMLAttributes<HTMLDivElement>;
 
 function ModalBody({ className, children, ...props }: ModalBodyProps) {
   return (
@@ -186,7 +184,7 @@ ModalBody.displayName = 'Modal.Body';
 
 // ─── Modal.Footer ───────────────────────────────────────
 
-export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type ModalFooterProps = React.HTMLAttributes<HTMLDivElement>;
 
 function ModalFooter({ className, children, ...props }: ModalFooterProps) {
   return (

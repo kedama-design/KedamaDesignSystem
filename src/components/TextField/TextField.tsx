@@ -3,8 +3,7 @@ import { cn } from '../../lib/cn';
 
 // ─── Types ──────────────────────────────────────────────
 
-export interface TextFieldProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface TextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** ラベルテキスト */
   label?: string;
   /** 補助テキスト（入力のヒント） */
@@ -62,10 +61,7 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn(
-              'text-sm font-medium',
-              disabled ? 'text-fg-disabled' : 'text-fg-default',
-            )}
+            className={cn('text-sm font-medium', disabled ? 'text-fg-disabled' : 'text-fg-default')}
           >
             {label}
           </label>
@@ -79,18 +75,23 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             'transition-colors',
             'duration-[var(--primitive-duration-fast)]',
             // 通常状態
-            !hasError && !disabled && [
-              'border-border-default',
-              'hover:border-border-strong',
-              'focus-within:border-border-active focus-within:ring-1 focus-within:ring-border-focus',
-            ],
+            // §0.7 運用ルール2: 枠線がコントロールの境界を伝える要素は
+            // WCAG 1.4.11 で 3:1 が必要。border.default（ヘアライン）ではなく
+            // border.strong を使う。単なるディバイダーは border.default で構わない。
+            !hasError &&
+              !disabled && [
+                'border-border-strong',
+                'hover:border-border-active',
+                'focus-within:border-border-active focus-within:ring-1 focus-within:ring-border-focus',
+              ],
             // エラー状態
-            hasError && !disabled && [
-              'border-border-error',
-              'focus-within:ring-1 focus-within:ring-border-error',
-            ],
+            hasError &&
+              !disabled && [
+                'border-border-error',
+                'focus-within:ring-1 focus-within:ring-border-error',
+              ],
             // 無効状態
-            disabled && 'border-border-disabled bg-[var(--color-bg-disabled)] cursor-not-allowed',
+            disabled && 'border-border-disabled bg-bg-disabled cursor-not-allowed',
           )}
         >
           {leadingIcon && (
@@ -125,10 +126,7 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText) && (
           <p
             id={messageId}
-            className={cn(
-              'text-xs',
-              hasError ? 'text-[var(--color-status-danger)]' : 'text-fg-muted',
-            )}
+            className={cn('text-xs', hasError ? 'text-status-danger' : 'text-fg-muted')}
             role={hasError ? 'alert' : undefined}
           >
             {error ?? helperText}

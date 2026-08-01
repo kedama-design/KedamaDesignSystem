@@ -23,6 +23,15 @@ const badgeVariants = cva(
     variants: {
       status: {
         default: '',
+        /**
+         * ブランド／選択を示す。**success とは別物**。
+         *
+         * Ibuki の `variant="brand"` の移行先。`status="success"` へ機械的に
+         * 潰すと「選択されている」と「成功した」が同じ色になる（報告書 Q1）。
+         * Kedama は primary も success も緑系（色相差 13.9°）なので、判別は
+         * 参照する段の明度差で確保している（ΔE 0.226 / 色覚D型 0.216）。
+         */
+        accent: '',
         success: '',
         warning: '',
         danger: '',
@@ -36,13 +45,30 @@ const badgeVariants = cva(
     compoundVariants: [
       // ── default ──
       { status: 'default', appearance: 'subtle', className: 'bg-subtle text-fg-muted' },
-      { status: 'default', appearance: 'solid', className: 'bg-[var(--color-fg-muted)] text-fg-inverse' },
+      {
+        status: 'default',
+        appearance: 'solid',
+        className: 'bg-[var(--color-fg-muted)] text-fg-inverse',
+      },
+
+      // ── accent（ブランド／選択。success とは別物） ──
+      {
+        status: 'accent',
+        appearance: 'subtle',
+        className: 'bg-accent-primary-subtle text-accent-primary border border-border-active',
+      },
+      {
+        status: 'accent',
+        appearance: 'solid',
+        className: 'bg-accent-primary text-accent-primary-fg',
+      },
 
       // ── success ──
       {
         status: 'success',
         appearance: 'subtle',
-        className: 'bg-[var(--color-status-success-bg)] text-[var(--color-status-success)] border border-[var(--color-status-success-border)]',
+        className:
+          'bg-[var(--color-status-success-bg)] text-[var(--color-status-success)] border border-[var(--color-status-success-border)]',
       },
       {
         status: 'success',
@@ -54,7 +80,8 @@ const badgeVariants = cva(
       {
         status: 'warning',
         appearance: 'subtle',
-        className: 'bg-[var(--color-status-warning-bg)] text-[var(--color-status-warning)] border border-[var(--color-status-warning-border)]',
+        className:
+          'bg-[var(--color-status-warning-bg)] text-[var(--color-status-warning)] border border-[var(--color-status-warning-border)]',
       },
       {
         status: 'warning',
@@ -66,7 +93,8 @@ const badgeVariants = cva(
       {
         status: 'danger',
         appearance: 'subtle',
-        className: 'bg-[var(--color-status-danger-bg)] text-[var(--color-status-danger)] border border-[var(--color-status-danger-border)]',
+        className:
+          'bg-[var(--color-status-danger-bg)] text-[var(--color-status-danger)] border border-[var(--color-status-danger-border)]',
       },
       {
         status: 'danger',
@@ -78,7 +106,8 @@ const badgeVariants = cva(
       {
         status: 'info',
         appearance: 'subtle',
-        className: 'bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] border border-[var(--color-status-info-border)]',
+        className:
+          'bg-[var(--color-status-info-bg)] text-[var(--color-status-info)] border border-[var(--color-status-info-border)]',
       },
       {
         status: 'info',
@@ -97,9 +126,7 @@ const badgeVariants = cva(
 
 type BadgeVariantProps = VariantProps<typeof badgeVariants>;
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    BadgeVariantProps {
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, BadgeVariantProps {
   /** バッジの左側に表示するアイコン（ドットやSVG） */
   icon?: React.ReactNode;
 }
@@ -119,19 +146,9 @@ export interface BadgeProps
  * <Badge status="info" icon={<InfoIcon />}>3件の通知</Badge>
  * ```
  */
-export function Badge({
-  className,
-  status,
-  appearance,
-  icon,
-  children,
-  ...props
-}: BadgeProps) {
+export function Badge({ className, status, appearance, icon, children, ...props }: BadgeProps) {
   return (
-    <span
-      className={cn(badgeVariants({ status, appearance }), className)}
-      {...props}
-    >
+    <span className={cn(badgeVariants({ status, appearance }), className)} {...props}>
       {icon}
       {children}
     </span>
