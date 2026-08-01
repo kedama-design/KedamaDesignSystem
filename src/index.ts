@@ -20,10 +20,17 @@ export { Badge, badgeVariants, type BadgeProps } from './components/Badge';
 export { TextField, type TextFieldProps } from './components/TextField';
 export {
   Card,
+  // named exports が正規 API（報告書 Q1）。compound の Card.Header 等は互換のため残す
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
   type CardProps,
   type CardHeaderProps,
-  type CardBodyProps,
+  type CardTitleProps,
+  type CardContentProps,
   type CardFooterProps,
+  type CardBodyProps,
 } from './components/Card';
 export {
   Modal,

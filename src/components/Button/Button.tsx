@@ -38,15 +38,13 @@ const buttonVariants = cva(
           'hover:bg-hover',
           'active:bg-subtle',
         ],
-        ghost: [
-          'bg-transparent text-fg-default',
-          'hover:bg-hover',
-          'active:bg-subtle',
-        ],
+        ghost: ['bg-transparent text-fg-default', 'hover:bg-hover', 'active:bg-subtle'],
+        // 破壊的アクションは accent.danger（アクションの面）を使う。
+        // status.danger は「状態の表示」であり hover/active を持たない別カテゴリ。
         danger: [
-          'bg-[var(--color-status-danger-solid)] text-[var(--color-status-danger-fg)]',
-          'hover:bg-danger-700',
-          'active:bg-danger-800',
+          'bg-accent-danger text-accent-danger-fg',
+          'hover:bg-accent-danger-hover',
+          'active:bg-accent-danger-active',
         ],
       },
       size: {
@@ -83,12 +81,7 @@ function Spinner({ className }: { className?: string }) {
         strokeLinecap="round"
         opacity="0.25"
       />
-      <path
-        d="M8 2a6 6 0 0 1 6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M8 2a6 6 0 0 1 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -98,8 +91,7 @@ function Spinner({ className }: { className?: string }) {
 type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    ButtonVariantProps {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, ButtonVariantProps {
   /** ローディング状態。trueの場合スピナーを表示しボタンを無効化する */
   loading?: boolean;
   /** ボタンの左側に表示するアイコン */
