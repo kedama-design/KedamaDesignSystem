@@ -61,6 +61,33 @@ export type ThemeSetting = ThemeName | 'system';
 /** localStorage のキー。プロダクト間で揃える必要があるため固定する */
 const STORAGE_KEY = 'kedama-theme';
 
+/** 選択として妥当な値か */
+function isThemeSetting(value: string): value is ThemeSetting {
+  return value === 'system' || (THEMES as readonly string[]).includes(value);
+}
+
+/**
+ * 保存済みの選択を検証し、壊れていたら捨てる。
+ *
+ * `next-themes@0.4.6` は localStorage の値を `themes` と**照合しない**。
+ * そのため手で書き換えた値や、将来テーマ名を変えたときの古い値がそのまま
+ * `data-theme` に載り、どのテーマ定義にも一致せず素の見た目に落ちる。
+ *
+ * next-themes が読む前に消す。**消すだけ**にするのは、既定値の判断を
+ * next-themes 側に残すため（ここで既定値を書き込むと二重管理になる）。
+ */
+function discardInvalidStoredTheme(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored !== null && !isThemeSetting(stored)) {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch {
+    // localStorage が使えない環境（プライベートモード等）では何もしない
+  }
+}
+
 export interface ThemeProviderProps {
   children: React.ReactNode;
   /**
@@ -68,34 +95,36 @@ export interface ThemeProviderProps {
    * @default 'light'
    */
   defaultTheme?: ThemeSetting;
-  /**
-   * `system`（OS 追随）を選択肢に含めるか。
-   * @default true
-   */
-  enableSystem?: boolean;
   /** CSP で `script-src` に nonce を要求している場合に渡す */
   nonce?: string;
 }
 
-export function ThemeProvider({
-  children,
-  defaultTheme = 'light',
-  enableSystem = true,
-  nonce,
-}: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = 'light', nonce }: ThemeProviderProps) {
+  // next-themes が localStorage を読む前に、壊れた値を捨てる。
+  // lazy initializer は初回レンダリング中に一度だけ走る。
+  React.useState(() => {
+    discardInvalidStoredTheme();
+    return null;
+  });
+
   return (
     <NextThemeProvider
       // ── ここから下は消費側に開けない（適用方式を分岐させないため） ──
       attribute="data-theme"
       themes={[...THEMES]}
       storageKey={STORAGE_KEY}
-      // system の Dark 解決先は dark に固定される。next-themes は
-      // prefers-color-scheme: dark のとき themes の中の 'dark' を選ぶ。
-      // deep-dark は「利用者が明示的に選ぶもの」であって OS からは導かない。
-      enableSystem={enableSystem}
+      // `system` は**常に**選択肢に含める。仕様が「3テーマ ＋ system」で
+      // 確定しているため。無効化できるようにすると、`setTheme('system')` は
+      // 型上通るのに解決先が無い＝`data-theme="system"` になりうる状態を作る。
+      enableSystem
       defaultTheme={defaultTheme}
       // 切替時に全要素のトランジションが一斉に走ると画面が波打つ（Calm UI）
       disableTransitionOnChange
+      // next-themes は `light` / `dark` しか知らないため、`deep-dark` のときに
+      // `color-scheme: light` を書き込んでしまう（スクロールバーやフォーム部品が
+      // 明色のまま残る）。ここでは書かせず、3テーマ分を CSS 側で定義する
+      // （`tailwind.css` の `@layer base`）。
+      enableColorScheme={false}
       nonce={nonce}
     >
       {children}

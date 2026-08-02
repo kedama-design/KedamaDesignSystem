@@ -398,6 +398,25 @@
   body {
     color: var(--color-fg-default);
   }
+
+  /*
+   * ブラウザ組み込み UI（スクロールバー、フォーム部品、`::selection` の既定色、
+   * キャレット）の明暗。CSS 変数では届かない領域なので `color-scheme` で伝える。
+   *
+   * **next-themes には書かせない**（`enableColorScheme={false}`）。あれは
+   * `light` / `dark` の2つしか知らず、`deep-dark` のときに `color-scheme: light`
+   * を書き込んでしまう。3テーマあるのはこちらの都合なので、こちらで定義する。
+   *
+   * `deep-dark` は `dark` と同じ扱い。組み込み UI に「もっと暗い」段は無い。
+   */
+  [data-theme='light'] {
+    color-scheme: light;
+  }
+
+  [data-theme='dark'],
+  [data-theme='deep-dark'] {
+    color-scheme: dark;
+  }
 }
 
 /*

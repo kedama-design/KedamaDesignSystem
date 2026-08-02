@@ -121,6 +121,48 @@ describe('ThemeProvider の契約', () => {
     expect(screen.getByTestId('resolved')).toHaveTextContent('deep-dark');
   });
 
+  // ── 不正な保存値 ─────────────────────────────────────
+
+  /**
+   * next-themes@0.4.6 は localStorage の値を themes と照合しない。
+   * 手で書き換えた値や、テーマ名を変えたあとの古い値がそのまま data-theme に
+   * 載ると、どのテーマ定義にも一致せず素の見た目に落ちる。
+   */
+  it.each(['bogus', 'dark-alt', 'DARK', '', 'deep_dark'])(
+    '不正な保存値 %o を捨てて既定へ戻す',
+    (bad) => {
+      localStorage.setItem(STORAGE_KEY, bad);
+      render(
+        <ThemeProvider>
+          <Probe />
+        </ThemeProvider>,
+      );
+      expect(screen.getByTestId('resolved')).toHaveTextContent('light');
+      expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+      expect(localStorage.getItem(STORAGE_KEY)).not.toBe(bad);
+    },
+  );
+
+  it('不正な保存値でも defaultTheme の指定が効く', () => {
+    localStorage.setItem(STORAGE_KEY, 'bogus');
+    render(
+      <ThemeProvider defaultTheme="deep-dark">
+        <Probe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId('resolved')).toHaveTextContent('deep-dark');
+  });
+
+  it.each(['light', 'dark', 'deep-dark', 'system'])('妥当な保存値 %s は捨てない', (good) => {
+    localStorage.setItem(STORAGE_KEY, good);
+    render(
+      <ThemeProvider>
+        <Probe />
+      </ThemeProvider>,
+    );
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(good);
+  });
+
   // ── system 追随 ───────────────────────────────────────
 
   it('system の Dark 解決先は dark（deep-dark にはしない）', async () => {
@@ -145,6 +187,18 @@ describe('ThemeProvider の契約', () => {
     );
     await act(async () => {});
     expect(screen.getByTestId('resolved')).toHaveTextContent('light');
+  });
+
+  it('system を無効化する Props は公開しない（常に選択できる）', () => {
+    // 型の上でも渡せないこと自体は typecheck が担保する。
+    // ここでは「常に system へ切り替えられる」ことを実行時に確認する。
+    mockColorScheme(true);
+    render(
+      <ThemeProvider>
+        <Probe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'system へ' })).toBeEnabled();
   });
 
   it('system は「選択」であってテーマ名ではない（theme と resolvedTheme が分かれる）', async () => {
