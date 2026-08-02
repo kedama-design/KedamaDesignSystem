@@ -77,7 +77,7 @@ function DrawerOverlay({
         //    drag-release にあたる。drag-release は tween トラックを持たない
         //    （motion.ts）——Motion 導入までの暫定実装として上流のまま残す。
         // スクリムは bg-scrim（birch/900 を 50%）。上流の bg-black/10 から変更。
-        // 理由は sheet.tsx と同じ（純黒は Kedama に存在しない／既定でモーダル）。
+        // 純黒は Kedama に存在せず、Drawer は既定でモーダル（操作を遮断する）ため。
         "fixed inset-0 z-50 min-h-dvh bg-scrim opacity-[max(var(--drawer-overlay-min-opacity,0),calc(1-var(--drawer-swipe-progress)))] transition-opacity duration-slow ease-enter select-none data-ending-style:pointer-events-none data-ending-style:opacity-0 data-ending-style:ease-exit data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-snap-points:[--drawer-overlay-min-opacity:0.5] data-starting-style:opacity-0 data-swiping:duration-0 supports-[-webkit-touch-callout:none]:absolute",
         className
       )}

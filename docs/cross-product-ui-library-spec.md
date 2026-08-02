@@ -440,7 +440,7 @@ Next.jsサイトの中に共存させる**のが標準的な構成（shadcn/ui�
 
 ### 2.1.5 不足部品の調達方針（確定・2026-07-28）
 
-AppShell・Sidebar・DataTable・Sheet・Command など、Kedama に無く、すらすらスタジオが必要と
+AppShell・Sidebar・DataTable・Drawer・Command など、Kedama に無く、すらすらスタジオが必要と
 する部品をどこから持ってくるか。**確定：shadcn/ui（Base UI variant）のブロックを Kedama が
 一度取り込み、Kedama トークンで再スタイルして、Kedama のレジストリから各プロダクトへ配る。**
 
@@ -590,18 +590,21 @@ Radix にも Base UI にも依存していない。既存資産がゼロ依存�
 Q4 は「native Modal と Base UI overlay を同時に開く場合の layer policy」を未確定として
 残していた。実際に両方を開いて計測した結果:
 
-| 対象                   | 実測                                              |
-| ---------------------- | ------------------------------------------------- |
-| Modal（`<dialog>`）    | `:modal` に一致＝**top layer**。z-index は `auto` |
-| Sheet の本体・スクリム | `position: fixed` / **z-index 50**                |
-| 画面中央のヒットテスト | `H2 < DIV < DIV < DIALOG`＝**Modal が手前**       |
+| 対象                                    | 実測                                                     |
+| --------------------------------------- | -------------------------------------------------------- |
+| Modal（`<dialog>`）                     | `:modal` に一致＝**top layer**。`fixed` / z-index `auto` |
+| Drawer の popup / overlay / viewport    | `fixed` / **z-index 50**                                 |
+| 画面中央でのヒットテスト                | `H2 < DIV < DIV < DIALOG`＝**Modal**                     |
+| **Drawer の領域の真上**でのヒットテスト | `DIALOG < DIV < BODY`＝**Drawer は掴めない**             |
 
 **これは z-index では覆せない制約である。** top layer は z-index の順序体系の外側にあり、
 どんな値を与えても native `<dialog>` より前には出せない。したがって:
 
-- **Modal を開いている間、Base UI のオーバーレイ（Sheet / Drawer / Toast）は Modal の背後に
+- **Modal を開いている間、Base UI のオーバーレイ（Drawer / Toast）は Modal の背後に
   隠れる。** スクリムも背後になるため、利用者からは「開いたのに何も起きない」ように見える
-- 逆に Sheet を開いた状態から Modal を開く順序は、期待どおり Modal が前面に出る
+- 見えないだけでなく**操作もできない**。Drawer の領域の真上でヒットテストしても
+  `<dialog>` が返る（modal dialog の `::backdrop` も top layer にあるため）
+- 逆に Drawer を開いた状態から Modal を開く順序は、期待どおり Modal が前面に出る
 
 **運用**：**操作を遮断するモーダルオーバーレイは同時に1つ**とし、Modal の上に Base UI の
 モーダルオーバーレイを重ねる設計をしない。Modal の中でさらに確認を挟む必要がある場合は、Base UI ではなく Modal を重ねる
@@ -1053,7 +1056,7 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
 3. **Phase A-2（Tier 0/1）**：Tier 0/1 を構築・移植。Storybook立ち上げ・Vercelへデプロイ。
    npmパッケージとして公開（公開方式はA-0の結論による）
 4. **Phase B（Tier 2＋レジストリ）**：**AppShell 一式（§4.5）を最優先**で作り、続いて
-   DataTable・Sheet・Command（shadcnから取り込み・再スタイル、§2.1.5）、
+   DataTable・Command（shadcnから取り込み・再スタイル、§2.1.5）、
    Tier 2 の残り（ScoreRing/ChecklistStep/FindingCard/MetricCard等）を追加し、`registry.json`＋`shadcn build`でレジストリ配布できる状態にする。
    ショーケースサイトは**同一リポジトリ内・同一デプロイ**（`KedamaDesignSystem` に
    `apps/showcase` を追加する軽量monorepo構成、または既存Storybookに`/r/*.json`の静的配信を

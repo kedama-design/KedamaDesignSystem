@@ -10,7 +10,7 @@ import { cn } from '../../lib/cn';
  * 以前は Kedama 製の `Button/Button.tsx` と、取り込み品 `ui/button.tsx` の
  * 2つが並存していた。同じ要素に2つの見た目が存在する状態は、本プロジェクトが
  * 解こうとしている「ずれ」そのものなので、1つに統合し取り込み品は削除した。
- * `ui/sheet.tsx` / `ui/toast.tsx` はこの Button を参照する。
+ * `ui/toast.tsx` はこの Button を参照する。
  *
  * 統合にあたっての出自:
  * - **構造・挙動**: Base UI の Button（`render` による多態。仕様書 §4 Tier 0 の

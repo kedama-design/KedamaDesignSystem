@@ -35,10 +35,13 @@ describe('Toast', () => {
     expect(close).toBeInTheDocument();
     expect(close).toHaveAttribute('aria-label', 'Close toast');
 
-    // Base UI は `aria-hidden: !expanded && !hasFocus` を出す
-    // （ToastClose.mjs:44）。スタックが畳まれている間は前面のトーストだけを
-    // 読ませ、展開・フォーカス時に閉じるボタンが支援技術へ現れる設計。
-    // 上流の意図なのでそのまま踏襲する。変わったらここで気づく。
+    // ⚠️ これは **Kedama の恒久仕様ではなく、Base UI 互換の変更検知**である。
+    // Base UI は `aria-hidden: !expanded && !hasFocus` を出す（ToastClose.mjs:44）。
+    // 畳まれている間は前面のトーストだけを読ませ、展開・フォーカス時に閉じる
+    // ボタンが支援技術へ現れる設計。現時点では上流の意図として踏襲する。
+    //
+    // **上流の更新でこの挙動が変わったら、追随するかどうかを再評価すること。**
+    // 「落ちたから直す」ではなく、変わった事実に気づくためのアサーション。
     expect(close).toHaveAttribute('aria-hidden', 'true');
   });
 

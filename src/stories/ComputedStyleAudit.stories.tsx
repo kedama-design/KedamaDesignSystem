@@ -322,7 +322,7 @@ const USED_CLASSES: UsedClassRow[] = [
     utility: 'bg-background',
     prop: 'backgroundColor',
     reference: 'var(--color-bg-page)',
-    usedIn: 'sheet.tsx / drawer.tsx',
+    usedIn: '（使用箇所なし・在庫）',
   },
   {
     utility: 'bg-destructive/10',
@@ -406,7 +406,7 @@ const USED_CLASSES: UsedClassRow[] = [
     utility: 'border-b',
     prop: 'borderTopColor',
     reference: 'var(--color-border-default)',
-    usedIn: 'accordion.tsx（not-last:border-b） / table.tsx / sheet.tsx',
+    usedIn: 'accordion.tsx（not-last:border-b） / table.tsx / drawer.tsx',
     note: '色を書いていない border-*。CSS の初期値は currentColor（＝文字色）で、shadcn の globals.css は base レイヤに `* { border-color: var(--border) }` を敷いてこれを上書きしている。取り込み時に落ちていたため tailwind.css の @layer base で補った。この行はその規則が効いているかを見る。',
   },
   {
@@ -416,7 +416,7 @@ const USED_CLASSES: UsedClassRow[] = [
     prop: 'backdropFilter',
     reference: 'blur(8px)',
     usedIn: '（使用箇所なし・在庫）',
-    note: 'backdrop-filter は既定オフに決まった。以前は Modal が 8px、取り込んだ Sheet / Drawer が Tailwind 既定の 4px を使っており、同一システム内でブラーの強さが2種類あった。両方外して解消済み。将来使うときは必ず --primitive-backdrop-blur を経由させること（4px / 8px が散らばる状態に戻さない）。',
+    note: 'backdrop-filter は既定オフに決まった。以前は Modal が 8px、取り込んだ当時の Sheet / Drawer が Tailwind 既定の 4px を使っており、同一システム内でブラーの強さが2種類あった。両方外して解消済み。将来使うときは必ず --primitive-backdrop-blur を経由させること（4px / 8px が散らばる状態に戻さない）。',
   },
   {
     // base レイヤの規則がユーティリティに勝ってしまっていないかを見る。
@@ -468,33 +468,38 @@ const MOTION_ROWS: MotionRow[] = [
     utility: 'duration-150',
     kind: 'duration',
     reference: '150ms',
-    note: 'sheet.tsx。トークン非経由',
+    note: '取り込み直後に素の数値で書かれていた値。現在はトークンへ置換済みで使用箇所なし（在庫確認用）',
   },
   {
     utility: 'duration-200',
     kind: 'duration',
     reference: '200ms',
-    note: 'sheet.tsx / drawer.tsx。トークン非経由',
+    note: '取り込み直後に素の数値で書かれていた値。現在はトークンへ置換済みで使用箇所なし（在庫確認用）',
   },
   {
     utility: 'duration-250',
     kind: 'duration',
     reference: '250ms',
-    note: 'toast.tsx。トークン非経由',
+    note: '取り込み直後に素の数値で書かれていた値。現在はトークンへ置換済みで使用箇所なし（在庫確認用）',
   },
   {
     utility: 'duration-300',
     kind: 'duration',
     reference: '300ms',
-    note: 'drawer.tsx。トークン非経由',
+    note: '取り込み直後に素の数値で書かれていた値。現在はトークンへ置換済みで使用箇所なし（在庫確認用）',
   },
   {
     utility: 'duration-450',
     kind: 'duration',
     reference: '450ms',
-    note: 'drawer.tsx。トークン非経由',
+    note: '取り込み直後に素の数値で書かれていた値。現在はトークンへ置換済みで使用箇所なし（在庫確認用）',
   },
-  { utility: 'duration-0', kind: 'duration', reference: '0ms', note: 'drawer.tsx' },
+  {
+    utility: 'duration-0',
+    kind: 'duration',
+    reference: '0ms',
+    note: 'drawer.tsx（data-swiping。指の直接操作なので現在も素の値）',
+  },
   {
     utility: 'ease-default',
     kind: 'easing',
@@ -513,7 +518,7 @@ const MOTION_ROWS: MotionRow[] = [
     utility: 'ease-in-out',
     kind: 'easing',
     reference: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    note: 'sheet.tsx。参照が CSS キーワードでないのは、Tailwind v4 の既定 --ease-in-out が cubic-bezier(0.4, 0, 0.2, 1) だから（実測）。Kedama の easing.default と偶然同値なので見た目は一致するが、トークン経由ではない。',
+    note: '取り込み当時の sheet.tsx が使っていた値。現在は使用箇所なし。参照が CSS キーワードでないのは、Tailwind v4 の既定 --ease-in-out が cubic-bezier(0.4, 0, 0.2, 1) だから（実測）。Kedama の easing.default と偶然同値なので見た目は一致するが、トークン経由ではない。',
   },
 ];
 
@@ -990,7 +995,7 @@ function Audit({ theme: initialTheme = 'light' }: { theme?: Theme }) {
             </tr>
             {/*
              * Base UI は退出中の要素に data-ending-style 属性を立てる。
-             * sheet / drawer で「入りは easing.enter、出は easing.exit」を
+             * drawer / toast で「入りは easing.enter、出は easing.exit」を
              * `ease-enter data-ending-style:ease-exit` で表現しているので、
              * その修飾子が実際に発火するかをここで見る。属性を手で立てた
              * 要素に当てて計測する。
@@ -1029,7 +1034,7 @@ function Audit({ theme: initialTheme = 'light' }: { theme?: Theme }) {
                   whiteSpace: 'normal',
                 }}
               >
-                sheet.tsx / drawer.tsx の退出方向。属性を立てた要素で修飾子の発火を確認する
+                drawer.tsx / toast.tsx の退出方向。属性を立てた要素で修飾子の発火を確認する
               </td>
             </tr>
             {MOTION_ROWS.map((row) => {

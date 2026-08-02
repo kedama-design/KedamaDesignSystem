@@ -100,7 +100,7 @@ export const semanticMotion = {
     tween: { duration: duration.fast, easing: easing.default },
   },
 
-  /** オーバーレイの出現（Modal / Drawer / Sheet / Toast）。overshoot なし */
+  /** オーバーレイの出現（Modal / Drawer / Toast）。overshoot なし */
   'overlay-enter': {
     tween: { duration: duration.slow, easing: easing.enter },
   },
@@ -141,7 +141,7 @@ export type SemanticMotionToken = keyof typeof semanticMotion;
  * - Button → feedback-press
  * - Badge / Card / Skeleton / Icon → 原則なし（Skeleton は既定で静止）
  * - Spinner → 連続回転は機能状態。reduced motion 時は静止＋ラベルに切替
- * - Drawer / Sheet / Toast / Modal → overlay-enter / overlay-exit
+ * - Drawer / Toast / Modal → overlay-enter / overlay-exit
  * - Accordion → disclosure-expand / disclosure-collapse
  * - ThemeToggle / IconSwap / RollingText → value-change
  * - Drawer のスワイプ / ドラッグ並べ替え → drag-release（Motion 導入が必要）

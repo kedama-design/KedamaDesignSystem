@@ -53,8 +53,8 @@ Tailwind v4 に duration のテーマ名前空間は存在せず、`@theme` に 
 | --------------- | ----------------------- | ------------------------------------- | ------------------------------------------------------ | ------------------------------------------- |
 | `ui/button.tsx` | `buttonVariants` ベース | ホバー・フォーカスの色／影            | `transition-all`（duration 未指定＝既定 150ms）        | `duration-fast ease-default`                |
 | `ui/table.tsx`  | `TableRow`              | 行ホバーの背景色                      | `transition-colors`（既定 150ms）                      | `duration-fast ease-default`                |
-| `ui/sheet.tsx`  | `SheetOverlay`          | スクリムのフェード                    | `duration-150`                                         | `duration-slow ease-enter` + 出 `ease-exit` |
-| `ui/sheet.tsx`  | `SheetContent`          | パネルの出入り                        | `duration-200 ease-in-out`                             | `duration-slow ease-enter` + 出 `ease-exit` |
+| `ui/sheet.tsx`※ | `SheetOverlay`          | スクリムのフェード                    | `duration-150`                                         | `duration-slow ease-enter` + 出 `ease-exit` |
+| `ui/sheet.tsx`※ | `SheetContent`          | パネルの出入り                        | `duration-200 ease-in-out`                             | `duration-slow ease-enter` + 出 `ease-exit` |
 | `ui/drawer.tsx` | `DrawerOverlay`         | スクリムのフェード                    | `duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]`      | `duration-slow ease-enter` + 出 `ease-exit` |
 | `ui/drawer.tsx` | `DrawerSwipeHandle`     | ハンドルが消える／現れるフェード      | `duration-200`                                         | `duration-normal ease-default`              |
 | `ui/drawer.tsx` | `DrawerPopup`           | ドロワーの出入り                      | `duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]`      | `duration-slow ease-enter` + 出 `ease-exit` |
@@ -65,6 +65,8 @@ Tailwind v4 に duration のテーマ名前空間は存在せず、`@theme` に 
 
 補足:
 
+- ※ `ui/sheet.tsx` は **2026-08-02 に廃止**した（Drawer が唯一の汎用エッジパネル。
+  仕様書 §2.2）。上の2行は当時の割当の記録であり、現在このファイルは存在しない。
 - `DrawerContent` の上流 easing `cubic-bezier(0.45, 1.005, 0, 1.005)` は制御点の y が 1 を
   超えており **overshoot を含む**。§3.5「オーバーレイの出入りは damped、overshoot 不可」に
   反するため、置換で解消された。
@@ -163,8 +165,7 @@ shadcn から新しくコンポーネントを取り込んだら、`Foundations/
 
 ## 6. 未解決
 
-| 項目                                                        | 状態                                                                                                                                                     |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui/sheet.tsx` / `ui/drawer.tsx` のスクリムが `bg-black/10` | 未処理。`Modal.tsx` は `bg-scrim`（birch/900 を 50%）を使っており、同じシステム内でスクリムの濃さが2種類ある。10% → 50% は見た目が大きく変わるため要判断 |
-| Modal の退出アニメーション                                  | 未実装。`<dialog>` の close には `@starting-style` / `transition-behavior: allow-discrete` が要る。`--animate-overlay-exit` は定義済み                   |
-| `drag-release` の CSS 暫定実装                              | Motion 導入まで保留（§4）                                                                                                                                |
+| 項目                           | 状態                                                                                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Modal の退出アニメーション     | 未実装。`<dialog>` の close には `@starting-style` / `transition-behavior: allow-discrete` が要る。`--animate-overlay-exit` は定義済み |
+| `drag-release` の CSS 暫定実装 | Motion 導入まで保留（§4）                                                                                                              |
