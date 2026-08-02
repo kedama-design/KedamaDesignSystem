@@ -142,6 +142,15 @@ damped、overshoot 不可」の趣旨から外れる。業務システムのモ�
 shadcn から新しくコンポーネントを取り込んだら、`Foundations/Computed Style Audit` に行を
 足して**実測してから**完了とする。grep で判定しない。
 
+0. **同じ役割の Kedama コンポーネントが既に無いか**を最初に確認する。
+   **在る場合は、配置する前に統合方針を決める**（どちらを Tier 0 の正とするか、
+   取り込み品を参照する箇所をどう差し替えるか）。配置してから考えると、
+   同じ役割の部品が2つ並んだまま気づけない。
+   実際に Button で起きた（Kedama 製と `ui/button.tsx` が角丸・高さ・variant 名の
+   すべてで別体系のまま並存した。2026-08-02 に統合）。
+   機械的な検出は `tests/componentCollision.test.ts` にある
+   （`ui/<name>.tsx` と `components/<Name>/` の名前衝突で落ちる）。
+   判断の記録は `docs/q1-tier0-unification.md`
 1. `animate-*` を使っているか → §3 の表に行を足し、`@keyframes` の実在を CSSOM で確認する
 2. `duration-*` / `ease-*` の直値が残っていないか → §1 の原則で用途別に割り当てる
 3. 色を書いていない `border-*` があるか → `@layer base` の既定色が効いているか確認する
