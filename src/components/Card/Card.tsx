@@ -7,15 +7,20 @@ import { cn } from '../../lib/cn';
  * **構造は shadcn/ui の Card に合わせる**（仕様書 §0.6 方針転換・2026-07-30）。
  * 値（色・角丸・影）は Kedama トークン、命名は Kedama の API を維持する。
  *
- * **padding は 16px**（Q1 確定・2026-08-01）。§0.6「Ibuki が構成・レイアウト・
- * 挙動の正」の帰結として、Kedama の 24px ではなく Ibuki の 16px を採る。
- * パート間の `gap` も 16px に揃えた（padding だけ詰めて gap が 24px のままだと
- * 内側の余白より段間の方が広くなり、リズムが崩れるため）。
- * 影は `shadow-sm` を維持する（Calm UI の意図的な表現として残す判断）。
+ * **padding は 24px**（2026-08-02 確定）。一度 16px にしたが差し戻した。
+ * 16px の根拠は §0.6 の「Ibuki が構成・レイアウトの正」だったが、
+ * **その条項は 2026-07-30 に撤回済み**だった。現行の既定ルールは
+ * 「見た目・構造・スペーシング・エレベーション・角丸 → shadcn が正」であり、
+ * shadcn の Card は 24px を持つ。Card だけ例外を切ると、shadcn 由来の部品を
+ * 取り込むたびに同じ問答が起き、方針転換の目的（細部で判断を止めない）が失われる。
+ * 密度が問題になったら Card 単体ではなく、システム全体の密度の問題として扱う。
+ *
+ * 影は用途名 `shadow-raised`（= elevation.raised = shadow.sm）を経由する。
+ * 部品が primitive の段を直に参照しない（§3.3 の primitive → semantic → component）。
  *
  * shadcn 型の構造を採る理由:
- *   - root は縦方向の padding（`py-4`）と `gap-4` だけを持つ
- *   - 左右の padding（`px-4`）は各パートが持つ
+ *   - root は縦方向の padding（`py-6`）と `gap-6` だけを持つ
+ *   - 左右の padding（`px-6`）は各パートが持つ
  *   → こうすると Footer の `border-t` / Header の `border-b` が**全幅に伸びる**。
  *     root に一括で padding を置くと、区切り線の左右に余白が残ってしまう。
  *   → §2.1.5 で取り込む shadcn のブロックが同じ構造を前提にしているため、
@@ -54,10 +59,9 @@ const CardRoot = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         'flex flex-col rounded-md bg-surface',
         'border border-border-muted',
-        // Calm UI の shadow.sm（blur 8px / opacity 4%）。
-        // 「紙がそっと置かれたような」控えめな浮き上がり。
-        'shadow-sm',
-        !noPadding && 'gap-4 py-4',
+        // 地の上に浮く面。用途名で参照する（値は elevation.raised = shadow.sm）
+        'shadow-raised',
+        !noPadding && 'gap-6 py-6',
         className,
       )}
       {...props}
@@ -78,9 +82,9 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-between gap-2 px-4',
+        'flex items-center justify-between gap-2 px-6',
         // border-b が付いたときだけ下の余白を足す（線が全幅に伸びる）
-        '[.border-b]:pb-4',
+        '[.border-b]:pb-6',
         className,
       )}
       {...props}
@@ -116,7 +120,7 @@ export type CardContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn('px-4', className)} {...props}>
+    <div ref={ref} className={cn('px-6', className)} {...props}>
       {children}
     </div>
   ),
@@ -136,9 +140,9 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-end gap-2 px-4',
+        'flex items-center justify-end gap-2 px-6',
         // border-t が付いたときだけ上の余白を足す（線が全幅に伸びる）
-        '[.border-t]:pt-4',
+        '[.border-t]:pt-6',
         className,
       )}
       {...props}

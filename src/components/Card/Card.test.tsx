@@ -23,13 +23,13 @@ describe('Card', () => {
   });
 
   // 構造は shadcn/ui の Card に合わせる（仕様書 §0.6 方針転換・2026-07-30）。
-  // shadcn の Card は shadow-sm を持つため Kedama も影を持つ。
+  // shadcn の Card は影を持つ。段は用途名 shadow-raised（= elevation.raised）で参照する。
   it('has surface background, hairline border and shadow', () => {
     const { container } = render(<Card>テスト</Card>);
     const card = container.firstChild as HTMLElement;
     expect(card.className).toContain('bg-surface');
     expect(card.className).toContain('border-border-muted');
-    expect(card.className).toContain('shadow-sm');
+    expect(card.className).toContain('shadow-raised');
   });
 
   // root は縦 padding と gap だけを持ち、左右 padding は各パートが持つ。
@@ -37,16 +37,16 @@ describe('Card', () => {
   it('root has vertical padding and gap, not all-round padding', () => {
     const { container } = render(<Card>テスト</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card.className).toContain('py-4');
-    expect(card.className).toContain('gap-4');
+    expect(card.className).toContain('py-6');
+    expect(card.className).toContain('gap-6');
     expect(card.className).toContain('flex-col');
   });
 
   it('removes padding with noPadding', () => {
     const { container } = render(<Card noPadding>テスト</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card.className).not.toContain('py-4');
-    expect(card.className).not.toContain('gap-4');
+    expect(card.className).not.toContain('py-6');
+    expect(card.className).not.toContain('gap-6');
   });
 
   it('merges custom className', () => {
@@ -103,7 +103,7 @@ describe('Card', () => {
         <Part>P</Part>
       </Card>,
     );
-    expect(screen.getByText('P').className).toContain('px-4');
+    expect(screen.getByText('P').className).toContain('px-6');
   });
 
   it.each([
@@ -157,7 +157,7 @@ describe('Card', () => {
       </Card>,
     );
     const footer = screen.getByText('F');
-    expect(footer.className).toContain('[.border-t]:pt-4');
+    expect(footer.className).toContain('[.border-t]:pt-6');
     expect(footer.className).not.toMatch(/(^|\s)border-t(\s|$)/);
   });
 });
