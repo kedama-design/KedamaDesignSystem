@@ -7,7 +7,7 @@ description: >
   知見を汎用化し、Base UI + shadcn/ui + Storybook を土台に「プロトタイプ＝本番コード」を
   実現する。実装は別セッション（Claude Code 等）で行う前提のハンドオフ文書。
 adopted: 2026-07-28
-status: Draft v0.10 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
+status: Draft v0.11 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
   tarballで導入済み）を反映し、Phase Cを「presentational層の全面再構築」として再定義。
   bmad-ux側のUI/UX discoveryと方針が競合していた件を解消（Kedamaは離脱先ではなく供給元）。
   最大の欠落だったAppShell一式をTier 2に追加（§4.5）、すらすらスタジオ由来のブロックを在庫に反映。
@@ -20,6 +20,9 @@ status: Draft v0.10 — すらすらスタジオの実態調査（既存UIあり
   v0.10でPhase A-1/A-2の実装結果を反映：モーショントークンをspring/inertia（JS層）と
   tween（CSS層）の2系統に整理し、実測にもとづきspringの割当を直接操作系のみへ縮小。
   Dark surface・スクリム濃度・backdrop blurを確定。取り込み品の扱いに関する原則を追記。
+  v0.11でTier 0統合（Q1）の結果を反映：エレベーション方針を§3.6として新設（段の割当は
+  shadcnが正／影の色はKedamaが正）。Card paddingは24pxで確定（16pxは撤回済み条項を
+  根拠にした実装だった）。tailwind-mergeは見送り。詳細はdocs/q1-tier0-unification.md。
 ---
 
 # 横断 UI コンポーネント基盤 実装仕様（draft）
@@ -704,6 +707,63 @@ Phase A-1/A-2 の実装で、本節の当初設計に2つの不足と1つの誤�
 
 ---
 
+## 3.6 エレベーション方針（2026-08-02 追加）
+
+### 段の定義
+
+影の強さではなく、**その面が何であるか**で段が決まる。
+
+| 段        | 用途           | 対象                                   | 値          |
+| --------- | -------------- | -------------------------------------- | ----------- |
+| 影なし    | 操作部品       | Button など                            | —           |
+| `raised`  | 地の上に浮く面 | Card                                   | `shadow.sm` |
+| `overlay` | オーバーレイ   | Modal / Sheet / Toast / 将来の Popover | `shadow.lg` |
+
+**「操作部品には影を付けない」は明示的な規則である。** 画面の中で最も数が多い要素が
+一斉に浮くと騒がしくなる（Calm UI）。ボタンの状態は面の高さではなく、色とフォーカス
+リングで伝える。
+
+### 実装：セマンティック層を経由する
+
+`src/tokens/semantic/elevation.ts` に `elevation.raised` / `elevation.overlay` を定義し、
+Tailwind へ `shadow-raised` / `shadow-overlay` として接続する。
+
+**部品が `shadow-sm` / `shadow-md` / `shadow-lg` を直接書くことを禁じる。**
+primitive の段を直に書くと「なぜその段なのか」がコードに残らない。
+`design-rules.md` 3.3 の primitive → semantic → component をエレベーションにも適用する。
+`tests/elevation.test.ts` が違反を検出する。
+
+### shadcn を正とするルールとの関係（重要）
+
+§0.6 の既定ルールは「見た目・構造・スペーシング・エレベーション・角丸 → shadcn が正」だが、
+**shadcn が決めるのはエレベーションの有無と段であって、影の「色」ではない。**
+
+- **段の割当**（Card は raised、オーバーレイは overlay）→ shadcn に従う
+- **影の色** → Kedama のトークンの領域
+
+暖色（birch）のパレットには無機質な黒より、ブランドカラーを混ぜた影が合う。
+したがって `overlay` は Kedama 独自の値（primary/600 を 12% 混ぜた2層シャドウ）を使う。
+この切り分けは §0.6 の「トークンの値（色・タイポ・モーション）→ Kedama」と整合する。
+
+### `shadow.md` は在庫のまま残す
+
+どの用途にも割り当てていないが削除しない。`design-rules.md` 1.1.1「プリミティブは在庫、
+セマンティックは約束」による。Popover やホバー時のカードが必要になったら、ここから
+割り当てる。
+
+### 経緯
+
+Phase A-1 の指示に「Card の `shadow-sm` を削除（Ibuki の影なしを採用）」が入っていたが、
+**2026-07-30 の §0.6 方針転換で明示的に撤回された**（§0.6 の「この転換で覆った A-1 の判断」）。
+実装上も削除されたことは一度も無い。
+
+「`lg` が2種類ある」ように見えていた件は、**実際には最初から1種類だった**。Modal も
+`ui/sheet` も `ui/toast` も同じ `shadow-lg` ユーティリティを使っており、値はどれも
+primitive の `shadow.lg`（ブランド色混ぜ）に解決していた。違っていたのは値ではなく
+**出自**（Kedama 製か取り込み品か）である。
+
+---
+
 ## 4. コンポーネント在庫（Tier 分類）
 
 ### Tier 0 — 基礎プリミティブ（Base UI ラップ／プロダクト非依存）
@@ -1010,6 +1070,11 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 | ダークモードの実装タイミング               | 今回のスコープに含める（仮トークンで先行実装）                                                                             | §0.6・§7 Phase A                     |
 | Storybookのホスティング先                  | Vercel静的ホスティング。Chromaticは複数プロダクト消費開始後に再検討                                                        | §6                                   |
 | Tier 2ブロックの再同期運用                 | 自動化しない。`shadcn diff`による手動・不定期の棚卸しにとどめる                                                            | §2.1                                 |
+| エレベーションの段                         | 影なし＝操作部品／raised＝地の上に浮く面／overlay＝オーバーレイ。部品は用途名を経由する                                    | §3.6                                 |
+| エレベーションの「色」                     | shadcn が決めるのは段であって色ではない。影の色は Kedama（ブランド色を混ぜた overlay）                                     | §3.6                                 |
+| Card の padding                            | **24px**。16px は撤回済み条項を根拠にした実装だったため差し戻し。例外は切らない                                            | §0.6・`docs/q1-tier0-unification.md` |
+| Tier 0 の Button                           | 1つに統合（Kedama 製と取り込み品が並存していた）。サイズ体系は取り込み品準拠 24/28/32/36                                   | `docs/q1-tier0-unification.md`       |
+| tailwind-merge                             | **入れない**。競合そのものを禁じ、`tests/classConflict.test.ts` で担保する                                                 | `docs/proposal-tailwind-merge.md`    |
 
 ---
 
