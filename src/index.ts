@@ -15,8 +15,16 @@ import './styles/tailwind.css';
 export * from './tokens';
 
 // コンポーネント
-export { Button, buttonVariants, type ButtonProps } from './components/Button';
-export { Badge, badgeVariants, type BadgeProps } from './components/Badge';
+export {
+  Button,
+  buttonVariants,
+  type ButtonProps,
+  type ButtonVariant,
+  type ButtonSize,
+  type DeprecatedButtonVariant,
+  type DeprecatedButtonSize,
+} from './components/Button';
+export { Badge, badgeVariants, type BadgeProps, type BadgeVariant } from './components/Badge';
 export { TextField, type TextFieldProps } from './components/TextField';
 export {
   Card,

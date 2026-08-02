@@ -52,7 +52,7 @@ export const NamedExports: Story = {
     <Card style={{ maxWidth: '400px' }}>
       <CardHeader className="border-b border-border-muted">
         <CardTitle>プロジェクト概要</CardTitle>
-        <Badge status="success">稼働中</Badge>
+        <Badge variant="success">稼働中</Badge>
       </CardHeader>
       <CardContent>
         <p
@@ -92,7 +92,7 @@ export const WithSections: Story = {
         >
           プロジェクト概要
         </h3>
-        <Badge status="success">進行中</Badge>
+        <Badge variant="success">進行中</Badge>
       </Card.Header>
       <Card.Body>
         <p

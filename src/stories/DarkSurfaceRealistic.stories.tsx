@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 
-import { Button as UiButton } from '../components/ui/button';
 import {
   Table,
   TableHeader,
@@ -148,9 +147,9 @@ function Screen() {
                 <TextField label="キーワード" placeholder="サイト名で検索…" />
               </div>
               <div style={{ display: 'flex', gap: 6, paddingBottom: 6 }}>
-                <Badge status="success">完了</Badge>
-                <Badge status="warning">確認待ち</Badge>
-                <Badge status="danger">失敗</Badge>
+                <Badge variant="success">完了</Badge>
+                <Badge variant="warning">確認待ち</Badge>
+                <Badge variant="danger">失敗</Badge>
               </div>
             </div>
           </CardContent>
@@ -245,16 +244,16 @@ function Screen() {
           >
             <div style={{ fontSize: 12.5, marginBottom: 10 }}>surface-raised（モーダル相当）</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-              <UiButton size="sm">既定</UiButton>
-              <UiButton variant="outline" size="sm">
+              <Button size="sm">既定</Button>
+              <Button variant="outline" size="sm">
                 outline
-              </UiButton>
-              <UiButton variant="secondary" size="sm">
+              </Button>
+              <Button variant="secondary" size="sm">
                 secondary
-              </UiButton>
-              <UiButton variant="ghost" size="sm">
+              </Button>
+              <Button variant="ghost" size="sm">
                 ghost
-              </UiButton>
+              </Button>
             </div>
 
             <div style={{ fontSize: 11, color: 'var(--color-fg-muted)', marginBottom: 6 }}>

@@ -4,7 +4,8 @@ import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 
 import { cn } from "@/lib/cn"
-import { Button } from "@/components/ui/button"
+// Tier 0 の統合 Button（Q1・2026-08-01）。取り込み品の ui/button.tsx は削除した
+import { Button } from "@/components/Button"
 import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
 const toast = ToastPrimitive.createToastManager()

@@ -6,9 +6,9 @@ const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
   argTypes: {
-    status: {
+    variant: {
       control: 'select',
-      options: ['default', 'success', 'warning', 'danger', 'info'],
+      options: ['default', 'accent', 'success', 'warning', 'danger', 'info'],
     },
     appearance: {
       control: 'select',
@@ -26,23 +26,28 @@ type Story = StoryObj<typeof Badge>;
 // ─── 基本 ───────────────────────────────────────────────
 
 export const Default: Story = {
-  args: { status: 'default', children: 'デフォルト' },
+  args: { variant: 'default', children: 'デフォルト' },
+};
+
+/** ブランド／選択。success とは別物（Ibuki の `variant="brand"` の移行先） */
+export const Accent: Story = {
+  args: { variant: 'accent', children: '選択中' },
 };
 
 export const Success: Story = {
-  args: { status: 'success', children: '完了' },
+  args: { variant: 'success', children: '完了' },
 };
 
 export const Warning: Story = {
-  args: { status: 'warning', children: '注意' },
+  args: { variant: 'warning', children: '注意' },
 };
 
 export const Danger: Story = {
-  args: { status: 'danger', children: 'エラー' },
+  args: { variant: 'danger', children: 'エラー' },
 };
 
 export const Info: Story = {
-  args: { status: 'info', children: '情報' },
+  args: { variant: 'info', children: '情報' },
 };
 
 // ─── Subtle（全ステータス一覧） ─────────────────────────
@@ -51,19 +56,19 @@ export const AllSubtle: Story = {
   name: 'Subtle（全ステータス）',
   render: () => (
     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      <Badge status="default" appearance="subtle">
+      <Badge variant="default" appearance="subtle">
         デフォルト
       </Badge>
-      <Badge status="success" appearance="subtle">
+      <Badge variant="success" appearance="subtle">
         完了
       </Badge>
-      <Badge status="warning" appearance="subtle">
+      <Badge variant="warning" appearance="subtle">
         注意
       </Badge>
-      <Badge status="danger" appearance="subtle">
+      <Badge variant="danger" appearance="subtle">
         エラー
       </Badge>
-      <Badge status="info" appearance="subtle">
+      <Badge variant="info" appearance="subtle">
         情報
       </Badge>
     </div>
@@ -76,19 +81,19 @@ export const AllSolid: Story = {
   name: 'Solid（全ステータス）',
   render: () => (
     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      <Badge status="default" appearance="solid">
+      <Badge variant="default" appearance="solid">
         デフォルト
       </Badge>
-      <Badge status="success" appearance="solid">
+      <Badge variant="success" appearance="solid">
         完了
       </Badge>
-      <Badge status="warning" appearance="solid">
+      <Badge variant="warning" appearance="solid">
         注意
       </Badge>
-      <Badge status="danger" appearance="solid">
+      <Badge variant="danger" appearance="solid">
         エラー
       </Badge>
-      <Badge status="info" appearance="solid">
+      <Badge variant="info" appearance="solid">
         情報
       </Badge>
     </div>
@@ -117,16 +122,16 @@ export const WithIcons: Story = {
   name: 'アイコン付き',
   render: () => (
     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      <Badge status="success" icon={<StatusDot color="var(--color-status-success)" />}>
+      <Badge variant="success" icon={<StatusDot color="var(--color-status-success)" />}>
         オンライン
       </Badge>
-      <Badge status="warning" icon={<StatusDot color="var(--color-status-warning)" />}>
+      <Badge variant="warning" icon={<StatusDot color="var(--color-status-warning)" />}>
         保留中
       </Badge>
-      <Badge status="danger" icon={<StatusDot color="var(--color-status-danger)" />}>
+      <Badge variant="danger" icon={<StatusDot color="var(--color-status-danger)" />}>
         オフライン
       </Badge>
-      <Badge status="info" icon={<StatusDot color="var(--color-status-info)" />}>
+      <Badge variant="info" icon={<StatusDot color="var(--color-status-info)" />}>
         同期中
       </Badge>
     </div>
@@ -183,7 +188,7 @@ export const UsageExample: Story = {
                 {row.name}
               </td>
               <td style={{ padding: '10px 12px' }}>
-                <Badge status={row.status}>{row.label}</Badge>
+                <Badge variant={row.status}>{row.label}</Badge>
               </td>
             </tr>
           ))}

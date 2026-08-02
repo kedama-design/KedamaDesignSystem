@@ -18,32 +18,57 @@ describe('Badge', () => {
 
   // ─── ステータスバリアント ─────────────────────────────
 
-  it('applies default status by default', () => {
+  it('applies default variant by default', () => {
     render(<Badge>Default</Badge>);
     const badge = screen.getByText('Default');
     expect(badge.className).toContain('bg-subtle');
   });
 
   it.each(['success', 'warning', 'danger', 'info'] as const)(
-    'applies %s status classes',
-    (status) => {
-      render(<Badge status={status}>Label</Badge>);
+    'applies %s variant classes',
+    (variant) => {
+      render(<Badge variant={variant}>Label</Badge>);
       const badge = screen.getByText('Label');
-      expect(badge.className).toContain(status);
+      expect(badge.className).toContain(variant);
     },
   );
+
+  it('applies accent variant (ブランド／選択。success とは別の色を引く)', () => {
+    render(<Badge variant="accent">選択中</Badge>);
+    const badge = screen.getByText('選択中');
+    expect(badge.className).toContain('bg-accent-primary-subtle');
+    expect(badge.className).not.toContain('status-success');
+  });
+
+  // ─── 非推奨の別名 `status` ────────────────────────────
+
+  it('still accepts the deprecated status prop', () => {
+    render(<Badge status="success">Legacy</Badge>);
+    expect(screen.getByText('Legacy').className).toContain('status-success');
+  });
+
+  it('prefers variant over the deprecated status prop', () => {
+    render(
+      <Badge variant="danger" status="success">
+        Both
+      </Badge>,
+    );
+    const badge = screen.getByText('Both');
+    expect(badge.className).toContain('status-danger');
+    expect(badge.className).not.toContain('status-success');
+  });
 
   // ─── appearance ───────────────────────────────────────
 
   it('uses subtle appearance by default', () => {
-    render(<Badge status="success">Subtle</Badge>);
+    render(<Badge variant="success">Subtle</Badge>);
     const badge = screen.getByText('Subtle');
     expect(badge.className).toContain('border');
   });
 
   it('applies solid appearance', () => {
     render(
-      <Badge status="success" appearance="solid">
+      <Badge variant="success" appearance="solid">
         Solid
       </Badge>,
     );
@@ -87,15 +112,15 @@ describe('Badge', () => {
 
   // ─── 全ステータス × 全appearance の組み合わせ ─────────
 
-  const statuses = ['default', 'success', 'warning', 'danger', 'info'] as const;
+  const variants = ['default', 'accent', 'success', 'warning', 'danger', 'info'] as const;
   const appearances = ['subtle', 'solid'] as const;
 
-  it.each(statuses.flatMap((s) => appearances.map((a) => [s, a] as const)))(
+  it.each(variants.flatMap((v) => appearances.map((a) => [v, a] as const)))(
     'renders %s/%s without crashing',
-    (status, appearance) => {
+    (variant, appearance) => {
       const { container } = render(
-        <Badge status={status} appearance={appearance}>
-          {status}/{appearance}
+        <Badge variant={variant} appearance={appearance}>
+          {variant}/{appearance}
         </Badge>,
       );
       expect(container.firstChild).toBeInTheDocument();

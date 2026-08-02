@@ -37,16 +37,16 @@ describe('Card', () => {
   it('root has vertical padding and gap, not all-round padding', () => {
     const { container } = render(<Card>テスト</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card.className).toContain('py-6');
-    expect(card.className).toContain('gap-6');
+    expect(card.className).toContain('py-4');
+    expect(card.className).toContain('gap-4');
     expect(card.className).toContain('flex-col');
   });
 
   it('removes padding with noPadding', () => {
     const { container } = render(<Card noPadding>テスト</Card>);
     const card = container.firstChild as HTMLElement;
-    expect(card.className).not.toContain('py-6');
-    expect(card.className).not.toContain('gap-6');
+    expect(card.className).not.toContain('py-4');
+    expect(card.className).not.toContain('gap-4');
   });
 
   it('merges custom className', () => {
@@ -103,7 +103,7 @@ describe('Card', () => {
         <Part>P</Part>
       </Card>,
     );
-    expect(screen.getByText('P').className).toContain('px-6');
+    expect(screen.getByText('P').className).toContain('px-4');
   });
 
   it.each([
@@ -157,7 +157,7 @@ describe('Card', () => {
       </Card>,
     );
     const footer = screen.getByText('F');
-    expect(footer.className).toContain('[.border-t]:pt-6');
+    expect(footer.className).toContain('[.border-t]:pt-4');
     expect(footer.className).not.toMatch(/(^|\s)border-t(\s|$)/);
   });
 });

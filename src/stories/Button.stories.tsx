@@ -9,11 +9,11 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'ghost', 'danger'],
+      options: ['primary', 'secondary', 'outline', 'ghost', 'danger'],
     },
     size: {
       control: 'select',
-      options: ['sm', 'md', 'lg'],
+      options: ['xs', 'sm', 'default', 'lg', 'icon', 'icon-xs', 'icon-sm', 'icon-lg'],
     },
     loading: { control: 'boolean' },
     disabled: { control: 'boolean' },
@@ -49,8 +49,9 @@ export const Danger: Story = {
 export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <Button size="xs">XSmall</Button>
       <Button size="sm">Small</Button>
-      <Button size="md">Medium</Button>
+      <Button size="default">Default</Button>
       <Button size="lg">Large</Button>
     </div>
   ),
@@ -61,7 +62,7 @@ export const Sizes: Story = {
 export const AllVariants: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {(['primary', 'secondary', 'ghost', 'danger'] as const).map((variant) => (
+      {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((variant) => (
         <div key={variant}>
           <p
             style={{
@@ -79,16 +80,16 @@ export const AllVariants: Story = {
             <Button variant={variant} size="sm">
               Small
             </Button>
-            <Button variant={variant} size="md">
-              Medium
+            <Button variant={variant} size="default">
+              Default
             </Button>
             <Button variant={variant} size="lg">
               Large
             </Button>
-            <Button variant={variant} size="md" disabled>
+            <Button variant={variant} size="default" disabled>
               Disabled
             </Button>
-            <Button variant={variant} size="md" loading>
+            <Button variant={variant} size="default" loading>
               読込中
             </Button>
           </div>

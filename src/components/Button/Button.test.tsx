@@ -46,22 +46,56 @@ describe('Button', () => {
 
   // ─── サイズ ───────────────────────────────────────────
 
-  it('applies md size by default', () => {
-    render(<Button>Default</Button>);
-    const button = screen.getByRole('button');
-    expect(button.className).toContain('h-10');
-  });
+  // 統合後のサイズ体系は取り込み品（shadcn Base UI variant）準拠 24/28/32/36
 
-  it('applies sm size', () => {
-    render(<Button size="sm">Small</Button>);
+  it('applies default size (32px) by default', () => {
+    render(<Button>Default</Button>);
     const button = screen.getByRole('button');
     expect(button.className).toContain('h-8');
   });
 
+  it('applies xs size', () => {
+    render(<Button size="xs">XSmall</Button>);
+    expect(screen.getByRole('button').className).toContain('h-6');
+  });
+
+  it('applies sm size', () => {
+    render(<Button size="sm">Small</Button>);
+    expect(screen.getByRole('button').className).toContain('h-7');
+  });
+
   it('applies lg size', () => {
     render(<Button size="lg">Large</Button>);
+    expect(screen.getByRole('button').className).toContain('h-9');
+  });
+
+  it('applies square icon sizes', () => {
+    render(<Button size="icon-sm" aria-label="閉じる" />);
+    expect(screen.getByRole('button').className).toContain('size-7');
+  });
+
+  // ─── 非推奨の別名 ─────────────────────────────────────
+
+  it('maps deprecated size "md" to default (寸法は 40px から 32px へ変わる)', () => {
+    render(<Button size="md">Legacy</Button>);
+    expect(screen.getByRole('button').className).toContain('h-8');
+  });
+
+  it('maps deprecated variant "brand" to primary', () => {
+    render(<Button variant="brand">Brand</Button>);
+    expect(screen.getByRole('button').className).toContain('bg-accent-primary');
+  });
+
+  it('maps deprecated variant "destructive" to danger', () => {
+    render(<Button variant="destructive">Destructive</Button>);
+    expect(screen.getByRole('button').className).toContain('bg-accent-danger');
+  });
+
+  it('applies outline variant', () => {
+    render(<Button variant="outline">Outline</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('h-12');
+    expect(button.className).toContain('bg-transparent');
+    expect(button.className).toContain('border-border-strong');
   });
 
   // ─── disabled状態 ─────────────────────────────────────
@@ -168,5 +202,44 @@ describe('Button', () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Ref</Button>);
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
+  });
+
+  // ─── render による多態（旧 asChild） ──────────────────
+  //
+  // Ibuki は asChild + disabled を `inert` で塞いでいた。Base UI は
+  // tabIndex=-1 / aria-disabled / ハンドラ遮断で同じ目的を果たし、かつ
+  // 要素をアクセシビリティツリーに残す。ここではその契約を実測で確認する。
+
+  it('renders as an anchor via render prop', () => {
+    render(
+      <Button render={<a href="/docs" />} nativeButton={false}>
+        ドキュメント
+      </Button>,
+    );
+    const link = screen.getByText('ドキュメント');
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', '/docs');
+  });
+
+  it('keeps a disabled anchor out of the tab order and marks it disabled', () => {
+    render(
+      <Button render={<a href="/docs" />} nativeButton={false} disabled>
+        ドキュメント
+      </Button>,
+    );
+    const link = screen.getByText('ドキュメント');
+    expect(link).toHaveAttribute('tabindex', '-1');
+    expect(link).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('does not activate a disabled anchor on click', async () => {
+    const onClick = vi.fn();
+    render(
+      <Button render={<a href="/docs" />} nativeButton={false} disabled onClick={onClick}>
+        ドキュメント
+      </Button>,
+    );
+    await userEvent.click(screen.getByText('ドキュメント'), { pointerEventsCheck: 0 });
+    expect(onClick).not.toHaveBeenCalled();
   });
 });

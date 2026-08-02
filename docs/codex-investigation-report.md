@@ -51,6 +51,13 @@ Phase Aへ進む前に固定すべき結論は次のとおりである。
 
 ### 未確定
 
+> **2026-08-02 追記**：本節は `docs/q1-tier0-unification.md` で決着した。
+> 食い違う場合はそちらを正とする。Card の root padding は **16px** に確定し、
+> deprecated alias の除去 major version のみ据え置き。
+> あわせて、本 Q1 が書かれた時点には存在しなかった事実として、§2.1.5 の取り込みにより
+> **Button が2つ（Kedama 製と取り込み品）並存していた**。統合はそれを1つにまとめる
+> 作業になり、サイズ体系は取り込み品準拠（24/28/32/36）を採用した。
+
 - deprecated aliasの除去major version。
 - Cardのroot paddingをKedama 24pxとIbuki 16pxのどちらにするか。Ibukiの構成を正とする既定方針なら16pxを推奨する。
 
