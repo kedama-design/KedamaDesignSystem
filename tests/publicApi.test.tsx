@@ -68,6 +68,7 @@ const REQUIRED_EXPORTS = [
   'ThemeProvider',
   'ThemeToggle',
   'IconSwap',
+  'RollingText',
   'useTheme',
   'THEMES',
   // トークン・ユーティリティ

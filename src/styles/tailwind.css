@@ -2,6 +2,16 @@
 @import './tokens.css';
 
 /*
+ * slot-text（RollingText が使う）のスタイル。
+ *
+ * **ここで同梱する。** 消費側に `import 'slot-text/style.css'` を要求すると、
+ * 忘れた画面だけロールのマークアップが素のまま出る＝「入れ忘れると静かに壊れる」
+ * 種類の依存になる。Ibuki ではアプリ側の layout.tsx が読む契約だった。
+ * 基盤側が配る CSS に入れておけば、その契約自体が要らなくなる。
+ */
+@import 'slot-text/style.css';
+
+/*
  * shadcn/ui 互換エイリアス。
  *
  * 取り込んだ shadcn コンポーネント（src/components/ui/）が使う

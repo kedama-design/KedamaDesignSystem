@@ -61,9 +61,14 @@ async function freshBuild(): Promise<(candidates: string[]) => string> {
         const path = resolve(base, id);
         return { path, base: dirname(path), content: await readCached(path) };
       }
-      // `tailwindcss` / `tailwindcss/theme` などの本体側
-      const rel = id === 'tailwindcss' ? 'index.css' : id.replace(/^tailwindcss\//, '') + '.css';
-      const path = resolve(ROOT, 'node_modules/tailwindcss', rel);
+      // `tailwindcss` / `tailwindcss/theme` などの本体側は拡張子が省かれる
+      if (id === 'tailwindcss' || id.startsWith('tailwindcss/')) {
+        const rel = id === 'tailwindcss' ? 'index.css' : id.replace(/^tailwindcss\//, '') + '.css';
+        const path = resolve(ROOT, 'node_modules/tailwindcss', rel);
+        return { path, base: dirname(path), content: await readCached(path) };
+      }
+      // その他のパッケージ（`slot-text/style.css` 等）はそのまま解決する
+      const path = resolve(ROOT, 'node_modules', id);
       return { path, base: dirname(path), content: await readCached(path) };
     },
   });

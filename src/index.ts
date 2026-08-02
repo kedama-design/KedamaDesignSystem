@@ -60,6 +60,7 @@ export {
 } from './components/ThemeProvider';
 export { ThemeToggle, type ThemeToggleProps } from './components/ThemeToggle';
 export { IconSwap, type IconSwapProps } from './components/IconSwap';
+export { RollingText, type RollingTextProps } from './components/RollingText';
 
 // ─── Tier 0 低層部品（shadcn/ui の Base UI variant から取り込み） ───
 //
