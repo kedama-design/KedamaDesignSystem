@@ -9,7 +9,7 @@ import { shadow } from '../src/tokens/primitive/shadow';
  *
  *   影なし   操作部品        Button など
  *   raised   地の上に浮く面  Card
- *   overlay  オーバーレイ    Modal / Sheet / Toast / 将来の Popover
+ *   overlay  オーバーレイ    Modal / Drawer / Toast / 将来の Popover
  *
  * 部品は用途名（`shadow-raised` / `shadow-overlay`）を使い、primitive の段
  * （`shadow-sm` / `shadow-md` / `shadow-lg`）を直接参照しない。
@@ -81,7 +81,7 @@ describe('エレベーション', () => {
 
     // オーバーレイ
     expect(read('src/components/Modal/Modal.tsx')).toContain('shadow-overlay');
-    expect(read('src/components/ui/sheet.tsx')).toContain('shadow-overlay');
+    expect(read('src/components/ui/drawer.tsx')).toContain('shadow-overlay');
     expect(read('src/components/ui/toast.tsx')).toContain('shadow-overlay');
 
     // 操作部品は影を持たない

@@ -96,11 +96,11 @@ deprecated alias にすることを推奨しているが、`default` だけは�
 
 実測で出た形を規則として追認し、`src/tokens/semantic/elevation.ts` に定義した。
 
-| 段        | 用途           | 対象                                   |
-| --------- | -------------- | -------------------------------------- |
-| 影なし    | 操作部品       | Button                                 |
-| `raised`  | 地の上に浮く面 | Card                                   |
-| `overlay` | オーバーレイ   | Modal / Sheet / Toast / 将来の Popover |
+| 段        | 用途           | 対象                                    |
+| --------- | -------------- | --------------------------------------- |
+| 影なし    | 操作部品       | Button                                  |
+| `raised`  | 地の上に浮く面 | Card                                    |
+| `overlay` | オーバーレイ   | Modal / Drawer / Toast / 将来の Popover |
 
 部品は用途名（`shadow-raised` / `shadow-overlay`）を使い、primitive の段
 （`shadow-sm` / `md` / `lg`）を直接書かない。`tests/elevation.test.ts` が担保する。

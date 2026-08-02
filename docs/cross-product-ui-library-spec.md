@@ -52,6 +52,7 @@ status: Draft v0.11 — すらすらスタジオの実態調査（既存UIあり
 | 2026-07-28 | 新規リポジトリを作る計画                                              | 既存 `KedamaDesignSystem` を土台にする                        | §0.5                              |
 | 2026-07-28 | `text-faint` と 3:1 コントラスト例外案                                | `fg.decorative` / `placeholder` / `disabled` / `muted` へ分離 | §0.7                              |
 | 2026-08-02 | Card padding 16px（撤回済み条項を根拠にした実装）                     | **24px**。例外は切らない                                      | `docs/q1-tier0-unification.md` D5 |
+| 2026-08-02 | Drawer をネイティブ `<dialog>` 拡張で実装する候補                     | **Base UI Drawer** を Tier 0 の正とする（Sheet は廃止）       | §2.2・§4                          |
 
 ---
 
@@ -582,7 +583,7 @@ Radix にも Base UI にも依存していない。既存資産がゼロ依存�
 > 閉じたレイヤを残す危険まで記録している（`drawer.tsx:39-51`）。横スワイプ・マウント
 > ライフサイクル・他要素の inert までを Modal へ自作追加するより、Base UI Drawer を
 > 使う方が低リスクである。**Modal はネイティブのまま別用途として維持する。**
-> 依存 `@base-ui/react` は既に本番依存（Button・Accordion・Drawer・Sheet・Toast が使用）。
+> 依存 `@base-ui/react` は既に本番依存（Button・Accordion・Drawer・Toast が使用）。
 
 #### オーバーレイの重なり（2026-08-02 実測・Q4 の未確定を解消）
 
@@ -602,18 +603,31 @@ Q4 は「native Modal と Base UI overlay を同時に開く場合の layer poli
   隠れる。** スクリムも背後になるため、利用者からは「開いたのに何も起きない」ように見える
 - 逆に Sheet を開いた状態から Modal を開く順序は、期待どおり Modal が前面に出る
 
-**運用**：オーバーレイは同時に1つとし、Modal の上に Base UI のオーバーレイを重ねる設計を
-しない。Modal の中でさらに確認を挟む必要がある場合は、Base UI ではなく Modal を重ねる
+**運用**：**操作を遮断するモーダルオーバーレイは同時に1つ**とし、Modal の上に Base UI の
+モーダルオーバーレイを重ねる設計をしない。Modal の中でさらに確認を挟む必要がある場合は、Base UI ではなく Modal を重ねる
 （native `<dialog>` 同士なら top layer 内で後から開いた方が前に出る）。
 
-なお Toast は例外的に Modal と同時に出したい場面がありうるが、現状の実装では Modal の
-背後になる。**Toast を Modal の上に出す必要が生じたら、Toast だけ `<dialog>` 側へ寄せるか、
-Modal を Base UI Dialog へ移すかの判断が要る（未着手）。**
+Modal 内の処理結果は当面**インライン表示**とする。Toast は Modal の背後になるが、
+top layer 対応は**要求が発生するまで保留**とする（対応するなら Toast だけ `<dialog>` 側へ
+寄せるか、Modal を Base UI Dialog へ移すかの判断になる）。
 
 あわせて **Base UI Drawer は現行バージョンで正常に描画される**ことを確認した
 （`data-slot="drawer-content"` が出力され、コンソールにエラー・警告なし）。
 Q4 のもう1つの未確定「shadcn Base UI variant が v1.6 の Drawer API を追随しているか」は
 追随している。
+
+#### Sheet は持たない — Drawer が唯一の汎用エッジパネル（2026-08-02 確定）
+
+§4 Tier 2 の Sheet 行には「Drawer と役割が重なるため §2.2 の結論と併せて整理」と
+保留が書かれていた。**Drawer を唯一の汎用エッジパネルとし、Sheet は持たない。**
+
+Drawer は左右・上下の4方向、スワイプ、スナップポイントを扱えるため、Sheet の用途を
+包含する。同じ役割の部品を2つ置くことは、本プロジェクトが解こうとしている「ずれ」を
+基盤の内側に作ることであり、実際に Button で一度起きている（`docs/q1-tier0-unification.md`）。
+
+- `Drawer` … **Tier 0**（npm 公開）
+- `Sheet` … Tier 2 から削除し、**公開しない**。取り込み品 `ui/sheet.tsx` も削除した
+- `RightPane` のモバイル変換先も `Drawer`
 
 ---
 
@@ -772,11 +786,11 @@ Phase A-1/A-2 の実装で、本節の当初設計に2つの不足と1つの誤�
 
 影の強さではなく、**その面が何であるか**で段が決まる。
 
-| 段        | 用途           | 対象                                   | 値          |
-| --------- | -------------- | -------------------------------------- | ----------- |
-| 影なし    | 操作部品       | Button など                            | —           |
-| `raised`  | 地の上に浮く面 | Card                                   | `shadow.sm` |
-| `overlay` | オーバーレイ   | Modal / Sheet / Toast / 将来の Popover | `shadow.lg` |
+| 段        | 用途           | 対象                                    | 値          |
+| --------- | -------------- | --------------------------------------- | ----------- |
+| 影なし    | 操作部品       | Button など                             | —           |
+| `raised`  | 地の上に浮く面 | Card                                    | `shadow.sm` |
+| `overlay` | オーバーレイ   | Modal / Drawer / Toast / 将来の Popover | `shadow.lg` |
 
 **「操作部品には影を付けない」は明示的な規則である。** 画面の中で最も数が多い要素が
 一斉に浮くと騒がしくなる（Calm UI）。ボタンの状態は面の高さではなく、色とフォーカス
@@ -889,7 +903,6 @@ Ibuki の9ファミリーを移植して不足分を新造するより大幅に�
 | **Grass（草ヒートマップ）**                                                        | 同上 `heatmap-chart`                                                 | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
 | **TimelineRow**                                                                    | Ibuki `timeline-row.tsx`                                             | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない                                                                                                                                        |
 | **TrackBar**                                                                       | Ibuki `track-bar.tsx`                                                | 上流に無い。自前維持                                                                                                                                                                                                                                                  |
-| **Sheet**                                                                          | shadcn/ui を取り込み                                                 | モバイルで RightPane を変換する先。Drawer と役割が重なるため §2.2 の結論と併せて整理                                                                                                                                                                                  |
 
 ### Tier 3 — 明示的にプロダクト固有（汎用化しない）
 
@@ -917,14 +930,14 @@ VersionDiff／ApprovalBar／PublishStatus
 **すらすらスタジオのベンチマーク調査 §7.2**。両者は独立に同じ構成へ到達している。
 「構成・レイアウト・挙動は Ibuki が正」（§0.6）の原則がそのまま適用できる。
 
-| コンポーネント | 役割                                                        | 出典                                     |
-| -------------- | ----------------------------------------------------------- | ---------------------------------------- |
-| `AppShell`     | 全体の骨格。どのスロットを持つかを型で規定する              | Ibuki `.app`                             |
-| `SidebarNav`   | 左サイドバー（224〜240px）。ラベル付きナビ                  | Ibuki `.side` ／ ベンチ §7.2             |
-| `IconRail`     | 左端のアイコンのみの細いレール（VS Code / Linear 型）       | ベンチ §3.2・3.3                         |
-| `AppHeader`    | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー             | Ibuki `.apphead` ／ ベンチ §7.2          |
-| `StatusBar`    | 下部ステータスバー。接続状態・保存状態・件数等              | Ibuki `.statusbar`（未コンポーネント化） |
-| `RightPane`    | 開閉可能な右ペイン（320〜400px）。モバイルでは Sheet へ変換 | ベンチ §7.2                              |
+| コンポーネント | 役割                                                         | 出典                                     |
+| -------------- | ------------------------------------------------------------ | ---------------------------------------- |
+| `AppShell`     | 全体の骨格。どのスロットを持つかを型で規定する               | Ibuki `.app`                             |
+| `SidebarNav`   | 左サイドバー（224〜240px）。ラベル付きナビ                   | Ibuki `.side` ／ ベンチ §7.2             |
+| `IconRail`     | 左端のアイコンのみの細いレール（VS Code / Linear 型）        | ベンチ §3.2・3.3                         |
+| `AppHeader`    | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー              | Ibuki `.apphead` ／ ベンチ §7.2          |
+| `StatusBar`    | 下部ステータスバー。接続状態・保存状態・件数等               | Ibuki `.statusbar`（未コンポーネント化） |
+| `RightPane`    | 開閉可能な右ペイン（320〜400px）。モバイルでは Drawer へ変換 | ベンチ §7.2                              |
 
 **シェル適用ルール（最重要）**：`AppShell` は「どのルートに外枠を着せるか」を**明示的に選択させる
 API** を持つこと。ログイン・招待受諾・2段階認証など**認証前の画面にサイドバーが出てはならない**。

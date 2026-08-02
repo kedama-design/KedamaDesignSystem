@@ -17,7 +17,7 @@ import { shadow } from '../primitive/shadow';
  *
  *   影なし   操作部品        Button など。面ではないので浮かない
  *   raised   地の上に浮く面  Card
- *   overlay  オーバーレイ    Modal / Sheet / Toast / 将来の Popover
+ *   overlay  オーバーレイ    Modal / Drawer / Toast / 将来の Popover
  *
  * 「操作部品には影を付けない」は明示的な規則である。ボタンが浮くと、
  * 画面の中で最も数が多い要素が一斉に浮いて騒がしくなる（Calm UI）。
@@ -56,7 +56,7 @@ export const elevation = {
   raised: shadow.sm,
 
   /**
-   * 他のすべての上に載るもの。モーダル、シート、トースト、ポップオーバー。
+   * 他のすべての上に載るもの。モーダル、ドロワー、トースト、ポップオーバー。
    * = shadow.lg（ブランドカラーを混ぜた2層シャドウ）
    */
   overlay: shadow.lg,

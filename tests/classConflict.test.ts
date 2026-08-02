@@ -171,12 +171,16 @@ function findConflicts(classList: string): string[] {
 }
 
 /**
- * 監視対象の3箇所。
+ * 監視対象。「取り込み品が Button に className を重ねる」実在の箇所すべて。
  *
- * いずれも「取り込み品が Button に className を重ねる」場所であり、
- * tailwind-merge が無いことの影響を最初に受ける。
+ * tailwind-merge が無いことの影響を最初に受ける場所である。
  * literal は取り込み品のソースそのままなので、ソースが変わったら
  * 下の「literal がソースと一致している」テストが落ちて気づける。
+ *
+ * 以前は SheetContent の閉じるボタンも対象だったが、**Sheet は廃止した**
+ * （Drawer が唯一の汎用エッジパネル。仕様書 §2.2）。Drawer は Button を
+ * 使わないため、現在の該当箇所は ui/toast.tsx の2つだけである。
+ * 取り込みで Button に className を重ねる箇所が増えたらここへ足すこと。
  */
 const SITES = [
   {
@@ -191,12 +195,6 @@ const SITES = [
     file: 'src/components/ui/toast.tsx',
     button: buttonVariants({ variant: 'outline', size: 'sm' }),
     literal: 'shrink-0',
-  },
-  {
-    name: 'SheetContent の閉じるボタン（ui/sheet.tsx）',
-    file: 'src/components/ui/sheet.tsx',
-    button: buttonVariants({ variant: 'ghost', size: 'icon-sm' }),
-    literal: 'absolute top-3 right-3',
   },
 ] as const;
 
