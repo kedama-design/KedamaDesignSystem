@@ -245,7 +245,21 @@
   --radius-lg: var(--primitive-radius-lg);
   --radius-full: var(--primitive-radius-full);
 
-  /* ── Shadow ─────────────────────────────────────────── */
+  /* ── Shadow / Elevation ─────────────────────────────── */
+  /*
+   * **部品は用途名（shadow-raised / shadow-overlay）を使う。**
+   * shadow-sm / shadow-md / shadow-lg は primitive の段そのものであり、
+   * 「なぜその段なのか」がコードに残らない。段の割当は
+   * src/tokens/semantic/elevation.ts が持つ（§3.3）。
+   *
+   *   影なし   操作部品（Button など）
+   *   raised   地の上に浮く面（Card）
+   *   overlay  オーバーレイ（Modal / Sheet / Toast / 将来の Popover）
+   */
+  --shadow-raised: var(--elevation-raised);
+  --shadow-overlay: var(--elevation-overlay);
+
+  /* primitive の段。新規の部品では使わない（在庫であって約束ではない） */
   --shadow-sm: var(--primitive-shadow-sm);
   --shadow-md: var(--primitive-shadow-md);
   --shadow-lg: var(--primitive-shadow-lg);

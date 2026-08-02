@@ -74,6 +74,7 @@ export {
 } from './semantic/colors';
 
 export { semanticMotion, type SemanticMotionToken } from './semantic/motion';
+export { elevation, type ElevationLevel } from './semantic/elevation';
 
 export {
   semanticTypography,

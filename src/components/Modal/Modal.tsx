@@ -43,7 +43,7 @@ const sizeClasses = {
  * - `inert` で背景要素を自動無効化
  *
  * Calm UI:
- * - shadow-lg（ブランドカラー混ぜ）で上質な浮遊感
+ * - shadow-overlay（= elevation.overlay = shadow.lg。ブランドカラー混ぜ）で上質な浮遊感
  * - scrim（birch/900 50%）で背面を遮る。backdrop-filter は使わない
  * - 穏やかなフェードイン（duration-normal）
  *
@@ -139,7 +139,7 @@ function ModalRoot({
     >
       <div
         className={cn(
-          'w-full rounded-md bg-surface shadow-lg',
+          'w-full rounded-md bg-surface shadow-overlay',
           'border border-border-muted',
           sizeClasses[size],
           className,

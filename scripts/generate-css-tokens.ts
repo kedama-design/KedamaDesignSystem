@@ -44,6 +44,7 @@ import { dataVizStroke, dataVizDash, dataVizHeatmap } from '../src/tokens/primit
 
 // ─── Semantics ──────────────────────────────────────────
 import { themes, dark, darkSurfaceAlt } from '../src/tokens/semantic/colors';
+import { elevation } from '../src/tokens/semantic/elevation';
 import {
   isColorMix,
   type ColorValue,
@@ -269,6 +270,11 @@ lines.push(...flattenToVars(dataVizDash as Record<string, string>, 'primitive-da
 lines.push(
   ...flattenToVars(dataVizHeatmap as Record<string, string>, 'primitive-data-viz-heatmap'),
 );
+
+lines.push('');
+lines.push('  /* ── Semantic: Elevation ─────────────────────────── */');
+lines.push('  /* 用途名。部品は shadow-sm / shadow-lg ではなくこちらを参照する。 */');
+lines.push(...flattenToVars(elevation as Record<string, string>, 'elevation'));
 
 lines.push('');
 lines.push('  /* ── Semantic: Typography ────────────────────────── */');

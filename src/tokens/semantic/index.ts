@@ -32,6 +32,7 @@ export {
 } from './colors';
 
 export { semanticMotion, type SemanticMotionToken } from './motion';
+export { elevation, type ElevationLevel } from './elevation';
 
 export {
   semanticTypography,
