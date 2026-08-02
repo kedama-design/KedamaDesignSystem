@@ -52,8 +52,9 @@ Phase Aへ進む前に固定すべき結論は次のとおりである。
 ### 未確定
 
 > **2026-08-02 追記**：本節は `docs/q1-tier0-unification.md` で決着した。
-> 食い違う場合はそちらを正とする。Card の root padding は **16px** に確定し、
-> deprecated alias の除去 major version のみ据え置き。
+> 食い違う場合はそちらを正とする。Card の root padding は **24px** に確定
+> （一度 16px にしたが、根拠が撤回済みの条項だったため差し戻した。仕様書
+> 冒頭「方針変更の履歴」参照）。deprecated alias の除去 major version のみ据え置き。
 > あわせて、本 Q1 が書かれた時点には存在しなかった事実として、§2.1.5 の取り込みにより
 > **Button が2つ（Kedama 製と取り込み品）並存していた**。統合はそれを1つにまとめる
 > 作業になり、サイズ体系は取り込み品準拠（24/28/32/36）を採用した。
@@ -245,6 +246,13 @@ Kedama Modalはnative dialogの`showModal/close`に依存（`Modal.tsx:72-109`�
 横スワイプ、mount lifecycle、他要素inertまでModalへ自作追加するよりBase UI Drawerを使う方が低リスクである。したがって親仕様書§4を残し、§2.2のnative Drawer候補を削除する。Modalはnativeのまま別用途として維持する。
 
 ### 未確定
+
+> **2026-08-02 追記：2点とも実測で解消した**（仕様書 §2.2「オーバーレイの重なり」）。
+> Drawer は現行バージョンで正常に描画され、コンソールにエラー・警告は出ない。
+> layer policy は「native `<dialog>` は top layer に載るため、z-index 50 の
+> Base UI オーバーレイは Modal の背後に隠れる。z-index では覆せない」。
+> したがってオーバーレイは同時に1つとする。
+> あわせて §2.2 のネイティブ Drawer 候補を削除し、§4 との内部矛盾も解消した。
 
 - shadcn Base UI variantがv1.6のDrawer APIを追随しているか。
 - native ModalとBase UI overlayを同時に開く場合のlayer policy。

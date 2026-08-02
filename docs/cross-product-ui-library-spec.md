@@ -569,12 +569,51 @@ KedamaDesignSystem の Modal はネイティブ `<dialog>` 要素＋自前フォ
 Radix にも Base UI にも依存していない。既存資産がゼロ依存である以上、「最初から Base UI で作る」を
 無条件に踏襲する必要はなく、コンポーネントごとに要否を判断する。
 
-- **ネイティブ要素で十分なもの**：Modal（実装済み）。Drawer も `<dialog>` を横からスライドさせる
-  形で拡張できる可能性がある（要検証）
+- **ネイティブ要素で十分なもの**：Modal（実装済み）
 - **Base UI 導入が現実的なもの**：Accordion（フォーカス管理・aria-\* 込みで自作するコストが高い）、
-  将来的な Combobox/Autocomplete（ネイティブ要素で代替しにくい）
+  Drawer・Toast、将来的な Combobox/Autocomplete（ネイティブ要素で代替しにくい）
 - 方針：**必要になったコンポーネントから都度 Base UI を追加**し、依存を先取りしない
   （KedamaDesignSystemの「Simple」原則＝YAGNIとも整合する）
+
+> **Drawer をネイティブ `<dialog>` で拡張する案は撤回（2026-08-02・Q4 の結論）。**
+> ここには当初「Drawer も `<dialog>` を横からスライドさせる形で拡張できる可能性がある
+> （要検証）」と書いていたが、削除した。Base UI Drawer は `hideOthers`（他要素の inert 化）・
+> フォーカス／dismiss レイヤ・Presence の unmount 保証を持ち、Ibuki は `forceMount` が
+> 閉じたレイヤを残す危険まで記録している（`drawer.tsx:39-51`）。横スワイプ・マウント
+> ライフサイクル・他要素の inert までを Modal へ自作追加するより、Base UI Drawer を
+> 使う方が低リスクである。**Modal はネイティブのまま別用途として維持する。**
+> 依存 `@base-ui/react` は既に本番依存（Button・Accordion・Drawer・Sheet・Toast が使用）。
+
+#### オーバーレイの重なり（2026-08-02 実測・Q4 の未確定を解消）
+
+Q4 は「native Modal と Base UI overlay を同時に開く場合の layer policy」を未確定として
+残していた。実際に両方を開いて計測した結果:
+
+| 対象                   | 実測                                              |
+| ---------------------- | ------------------------------------------------- |
+| Modal（`<dialog>`）    | `:modal` に一致＝**top layer**。z-index は `auto` |
+| Sheet の本体・スクリム | `position: fixed` / **z-index 50**                |
+| 画面中央のヒットテスト | `H2 < DIV < DIV < DIALOG`＝**Modal が手前**       |
+
+**これは z-index では覆せない制約である。** top layer は z-index の順序体系の外側にあり、
+どんな値を与えても native `<dialog>` より前には出せない。したがって:
+
+- **Modal を開いている間、Base UI のオーバーレイ（Sheet / Drawer / Toast）は Modal の背後に
+  隠れる。** スクリムも背後になるため、利用者からは「開いたのに何も起きない」ように見える
+- 逆に Sheet を開いた状態から Modal を開く順序は、期待どおり Modal が前面に出る
+
+**運用**：オーバーレイは同時に1つとし、Modal の上に Base UI のオーバーレイを重ねる設計を
+しない。Modal の中でさらに確認を挟む必要がある場合は、Base UI ではなく Modal を重ねる
+（native `<dialog>` 同士なら top layer 内で後から開いた方が前に出る）。
+
+なお Toast は例外的に Modal と同時に出したい場面がありうるが、現状の実装では Modal の
+背後になる。**Toast を Modal の上に出す必要が生じたら、Toast だけ `<dialog>` 側へ寄せるか、
+Modal を Base UI Dialog へ移すかの判断が要る（未着手）。**
+
+あわせて **Base UI Drawer は現行バージョンで正常に描画される**ことを確認した
+（`data-slot="drawer-content"` が出力され、コンソールにエラー・警告なし）。
+Q4 のもう1つの未確定「shadcn Base UI variant が v1.6 の Drawer API を追随しているか」は
+追随している。
 
 ---
 
@@ -804,11 +843,10 @@ Ibuki `packages/ui` から移植・Base UI 化。
 | Accordion                                                | 新規（プロトタイプ `.acc`）           | Base UI の Accordion primitive に載せ替え、`32_screen_spec.md` の観点アコーディオンを汎用化        |
 | Toast                                                    | components/index.ts（sonner再export） | 現状は素通しなので、doc25トークンでスタイルするラッパーを正式に作る（Ibuki側のTODOコメントに対応） |
 
-> **要解消の内部矛盾**：上表の Drawer 行「Base UI Dialog に置換」・Accordion 行「Base UI の
-> Accordion primitive に載せ替え」は、後から追記した §2.2「必要になったコンポーネントから都度
-> Base UI を追加し、依存を先取りしない」（Drawerはネイティブ `<dialog>` 拡張で足りる可能性、
-> 要検証）と食い違っている。**どちらを残すかは未確定**。Codex調査（Q4）の結論を待って
-> 一本化する。
+> **内部矛盾は解消済み（2026-08-02・Q4 の結論）**：上表の Drawer・Accordion 行と §2.2 の
+> 「Drawer はネイティブ `<dialog>` 拡張で足りる可能性」が食い違っていた件は、**本表を残し、
+> §2.2 のネイティブ Drawer 候補を削除**することで一本化した。Drawer・Accordion・Toast は
+> Base UI を使う。Modal はネイティブ `<dialog>` のまま別用途として維持する。
 
 ### Tier 1 — 解体（v0.9で再編）
 
