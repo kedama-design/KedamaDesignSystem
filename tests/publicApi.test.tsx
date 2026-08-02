@@ -66,6 +66,7 @@ const REQUIRED_EXPORTS = [
   'useToastManager',
   // テーマ
   'ThemeProvider',
+  'ThemeToggle',
   'useTheme',
   'THEMES',
   // トークン・ユーティリティ

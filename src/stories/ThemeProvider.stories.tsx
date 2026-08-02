@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 
-import { ThemeProvider, useTheme, type ThemeSetting } from '../components/ThemeProvider';
-import { Button } from '../components/Button';
+import { ThemeProvider, useTheme } from '../components/ThemeProvider';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Badge } from '../components/Badge';
 
@@ -19,29 +19,17 @@ import { Badge } from '../components/Badge';
 const meta: Meta = { title: 'Foundations/ThemeProvider' };
 export default meta;
 
-const CHOICES: ThemeSetting[] = ['light', 'dark', 'deep-dark', 'system'];
-
 function Switcher() {
-  const { theme, resolvedTheme, systemTheme, setTheme, mounted } = useTheme();
+  const { theme, resolvedTheme, systemTheme, mounted } = useTheme();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {CHOICES.map((choice) => (
-          <Button
-            key={choice}
-            variant={theme === choice ? 'primary' : 'secondary'}
-            size="sm"
-            onClick={() => setTheme(choice)}
-          >
-            {choice}
-          </Button>
-        ))}
-      </div>
+      <ThemeToggle />
 
       {/*
        * テーマ名を文字で見せる部分は mounted まで待つ。
        * SSR ではテーマが確定しないため、待たないとハイドレーション不一致になる。
+       * ThemeToggle 自体は待たずに描画される（場所が動かないように）。
        */}
       <div style={{ fontSize: 13, color: 'var(--color-fg-muted)', minHeight: 20 }}>
         {mounted ? (

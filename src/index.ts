@@ -58,6 +58,7 @@ export {
   type ThemeSetting,
   type UseThemeResult,
 } from './components/ThemeProvider';
+export { ThemeToggle, type ThemeToggleProps } from './components/ThemeToggle';
 
 // ─── Tier 0 低層部品（shadcn/ui の Base UI variant から取り込み） ───
 //
