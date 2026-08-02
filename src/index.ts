@@ -49,6 +49,16 @@ export {
 // アイコン（Lucide React ベース）
 export * from './components/Icon';
 
+// テーマ（next-themes ベース。data-theme 方式・保存キー kedama-theme）
+export {
+  ThemeProvider,
+  useTheme,
+  THEMES,
+  type ThemeProviderProps,
+  type ThemeSetting,
+  type UseThemeResult,
+} from './components/ThemeProvider';
+
 // ─── Tier 0 低層部品（shadcn/ui の Base UI variant から取り込み） ───
 //
 // ファイル名は上流との追随性のため小文字のまま。**公開シンボルは PascalCase**。
