@@ -99,8 +99,27 @@ export interface ThemeProviderProps {
   nonce?: string;
 }
 
+/**
+ * SSR 用の検証スクリプト。**next-themes のスクリプトより前に置く。**
+ *
+ * SSR では next-themes のインラインスクリプトが解析時に走り、localStorage の
+ * 値をそのまま `data-theme` に載せてしまう。React の lazy initializer は
+ * hydration 時にしか動かないので、それだけでは**初回描画で一度
+ * `data-theme="bogus"` が立つ**。
+ *
+ * この `<script>` は DOM 上で先に現れるため、next-themes が読む前に同期実行される。
+ * 消すだけにして、既定値の判断は next-themes に残す（二重管理を避ける）。
+ *
+ * 文字列で持つのは、これがブラウザで解析される生のコードだから。
+ * `THEMES` から生成して定義の二重化を防ぐ。
+ */
+const PURGE_INVALID_THEME_SCRIPT = `try{var k=${JSON.stringify(STORAGE_KEY)},v=localStorage.getItem(k);if(v!==null&&${JSON.stringify(
+  [...THEMES, 'system'],
+)}.indexOf(v)<0)localStorage.removeItem(k)}catch(e){}`;
+
 export function ThemeProvider({ children, defaultTheme = 'light', nonce }: ThemeProviderProps) {
-  // next-themes が localStorage を読む前に、壊れた値を捨てる。
+  // CSR（Storybook・SPA）向け。React が挿入した <script> はクライアント
+  // レンダリングでは実行されないため、こちらでも同じ検証を行う。
   // lazy initializer は初回レンダリング中に一度だけ走る。
   React.useState(() => {
     discardInvalidStoredTheme();
@@ -108,27 +127,35 @@ export function ThemeProvider({ children, defaultTheme = 'light', nonce }: Theme
   });
 
   return (
-    <NextThemeProvider
-      // ── ここから下は消費側に開けない（適用方式を分岐させないため） ──
-      attribute="data-theme"
-      themes={[...THEMES]}
-      storageKey={STORAGE_KEY}
-      // `system` は**常に**選択肢に含める。仕様が「3テーマ ＋ system」で
-      // 確定しているため。無効化できるようにすると、`setTheme('system')` は
-      // 型上通るのに解決先が無い＝`data-theme="system"` になりうる状態を作る。
-      enableSystem
-      defaultTheme={defaultTheme}
-      // 切替時に全要素のトランジションが一斉に走ると画面が波打つ（Calm UI）
-      disableTransitionOnChange
-      // next-themes は `light` / `dark` しか知らないため、`deep-dark` のときに
-      // `color-scheme: light` を書き込んでしまう（スクロールバーやフォーム部品が
-      // 明色のまま残る）。ここでは書かせず、3テーマ分を CSS 側で定義する
-      // （`tailwind.css` の `@layer base`）。
-      enableColorScheme={false}
-      nonce={nonce}
-    >
-      {children}
-    </NextThemeProvider>
+    <>
+      {/* next-themes のスクリプトより前に出す。順序が意味を持つ */}
+      <script
+        nonce={nonce}
+        // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+        dangerouslySetInnerHTML={{ __html: PURGE_INVALID_THEME_SCRIPT }}
+      />
+      <NextThemeProvider
+        // ── ここから下は消費側に開けない（適用方式を分岐させないため） ──
+        attribute="data-theme"
+        themes={[...THEMES]}
+        storageKey={STORAGE_KEY}
+        // `system` は**常に**選択肢に含める。仕様が「3テーマ ＋ system」で
+        // 確定しているため。無効化できるようにすると、`setTheme('system')` は
+        // 型上通るのに解決先が無い＝`data-theme="system"` になりうる状態を作る。
+        enableSystem
+        defaultTheme={defaultTheme}
+        // 切替時に全要素のトランジションが一斉に走ると画面が波打つ（Calm UI）
+        disableTransitionOnChange
+        // next-themes は `light` / `dark` しか知らないため、`deep-dark` のときに
+        // `color-scheme: light` を書き込んでしまう（スクロールバーやフォーム部品が
+        // 明色のまま残る）。ここでは書かせず、3テーマ分を CSS 側で定義する
+        // （`tailwind.css` の `@layer base`）。
+        enableColorScheme={false}
+        nonce={nonce}
+      >
+        {children}
+      </NextThemeProvider>
+    </>
   );
 }
 

@@ -236,6 +236,49 @@ describe('ThemeProvider の契約', () => {
     expect(html).toContain('>undefined<');
   });
 
+  /**
+   * SSR では next-themes のスクリプトが解析時に走り、localStorage の値を
+   * そのまま data-theme に載せる。検証スクリプトが**先に**無いと、
+   * 初回描画で一度 data-theme="bogus" が立つ。順序が意味を持つ。
+   */
+  it('検証スクリプトを next-themes のスクリプトより前に出す', () => {
+    const html = renderToStaticMarkup(
+      <ThemeProvider>
+        <span />
+      </ThemeProvider>,
+    );
+    const purgeAt = html.indexOf('removeItem');
+    const nextThemesAt = html.indexOf('setAttribute');
+
+    expect(purgeAt, '検証スクリプトが出ていない').toBeGreaterThan(-1);
+    expect(nextThemesAt, 'next-themes のスクリプトが出ていない').toBeGreaterThan(-1);
+    expect(purgeAt, '検証スクリプトが後ろにある').toBeLessThan(nextThemesAt);
+  });
+
+  it('検証スクリプトは公開テーマと system だけを通す', () => {
+    const html = renderToStaticMarkup(
+      <ThemeProvider>
+        <span />
+      </ThemeProvider>,
+    );
+    expect(html).toContain('["light","dark","deep-dark","system"]');
+  });
+
+  it('検証スクリプトに nonce を付ける', () => {
+    const html = renderToStaticMarkup(
+      <ThemeProvider nonce="abc123">
+        <span />
+      </ThemeProvider>,
+    );
+    // 検証スクリプト（先頭）に nonce が乗ること
+    expect(html.indexOf('<script nonce="abc123">')).toBe(0);
+
+    // next-themes 側は `typeof window === 'undefined'` のときだけ nonce を出す
+    // 実装（dist/index.mjs の `nonce: typeof window=="undefined"?d:""`）。
+    // jsdom では window が在るため、このテスト環境では空文字になる。
+    // 実 SSR（node）では両方に nonce が乗る。ここでは前段だけを固定する。
+  });
+
   it('初期描画のちらつきを防ぐスクリプトを差し込む', () => {
     const html = renderToStaticMarkup(
       <ThemeProvider>
