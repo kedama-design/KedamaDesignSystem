@@ -59,6 +59,7 @@ export {
   type UseThemeResult,
 } from './components/ThemeProvider';
 export { ThemeToggle, type ThemeToggleProps } from './components/ThemeToggle';
+export { IconSwap, type IconSwapProps } from './components/IconSwap';
 
 // ─── Tier 0 低層部品（shadcn/ui の Base UI variant から取り込み） ───
 //

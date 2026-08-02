@@ -131,7 +131,8 @@ export function ThemeProvider({ children, defaultTheme = 'light', nonce }: Theme
       {/* next-themes のスクリプトより前に出す。順序が意味を持つ */}
       <script
         nonce={nonce}
-        // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+        // 中身は THEMES と STORAGE_KEY から JSON.stringify で組み立てた定数のみ。
+        // 実行時の入力は一切入らない（next-themes 自身も同じ形で script を出す）。
         dangerouslySetInnerHTML={{ __html: PURGE_INVALID_THEME_SCRIPT }}
       />
       <NextThemeProvider
