@@ -379,6 +379,25 @@
   *::after {
     border-color: var(--color-border-default);
   }
+
+  /*
+   * 既定の文字色。border-color と同じ性質の欠落で、shadcn の `init` が
+   * `body { @apply text-foreground }` として書き込むはずのものが、配置だけ
+   * 取り込んだために存在しなかった（§2.1.5 の注意書きにある3件と同種）。
+   *
+   * 無いと、文字色を持たない要素が **CSS 初期値の純黒 `#000`** に落ちる。
+   * Kedama に純黒は存在しない（最暗は fg.default = birch/900 の #040302）。
+   * 実測で発覚: Button の ghost から既定文字色を外したところ、継承先が無く
+   * rgb(0,0,0) になった。
+   *
+   * ghost 側に文字色を戻す道は採らない。それをすると、文字色を重ねる
+   * 取り込み品（ui/toast.tsx の ToastClose）と競合し、勝敗が生成 CSS の
+   * 順序で決まる状態に戻る（tests/classConflict.test.ts が検出する）。
+   * 継承元を正すのが筋であり、上流 shadcn の構造とも一致する。
+   */
+  body {
+    color: var(--color-fg-default);
+  }
 }
 
 /*

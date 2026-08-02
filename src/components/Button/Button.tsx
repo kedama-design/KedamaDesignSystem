@@ -63,11 +63,13 @@ const buttonVariants = cva(
           'hover:bg-hover',
           'active:bg-subtle',
         ],
-        ghost: [
-          'bg-transparent text-fg-default border-transparent',
-          'hover:bg-hover',
-          'active:bg-subtle',
-        ],
+        // 既定の文字色を**持たない**（上流 shadcn の ghost と同形）。
+        // 文字色を持たせると、ghost の上に文字色を重ねる取り込み品
+        // （ui/toast.tsx の ToastClose 等）と衝突し、勝敗が生成 CSS の
+        // 順序で決まる＝ tailwind-merge のセマンティクス依存になる。
+        // 依存を足すより競合の発生源を断つ（docs/proposal-tailwind-merge.md）。
+        // 色は親から継承する。
+        ghost: ['bg-transparent border-transparent', 'hover:bg-hover', 'active:bg-subtle'],
         // 破壊的アクションは accent.danger（アクションの面）を使う。
         // status.danger は「状態の表示」であり hover/active を持たない別カテゴリ。
         danger: [
