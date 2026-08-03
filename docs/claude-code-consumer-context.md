@@ -10,7 +10,7 @@
 
 ## デザインシステム
 
-このプロジェクトは @kedama/design-system を使用する。
+このプロジェクトは @kedama-design/design-system を使用する。
 UIの実装時は、以下のソースファイルを参照して最新の定義に基づいて作業すること。
 
 ### ソースファイル参照先
@@ -40,14 +40,14 @@ UIの実装時は、以下のソースファイルを参照して最新の定義
 CSSをアプリのエントリーポイントで読み込む:
 
 ```tsx
-import '@kedama/design-system/styles';
+import '@kedama-design/design-system/styles';
 ```
 
 ### インポート
 
 ```tsx
-import { Button, Badge, TextField, Card, Modal } from '@kedama/design-system';
-import { Search, Plus, Trash2, Check, AlertTriangle } from '@kedama/design-system';
+import { Button, Badge, TextField, Card, Modal } from '@kedama-design/design-system';
+import { Search, Plus, Trash2, Check, AlertTriangle } from '@kedama-design/design-system';
 ```
 
 ### スタイリングルール

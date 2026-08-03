@@ -1,0 +1,10 @@
+{
+  "name": "kedama-consumer-check",
+  "private": true,
+  "type": "module",
+  "description": "公開済みパッケージを消費側の立場で導入して確かめるための最小プロジェクト。canary ワークフローが使う",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "vite build"
+  }
+}

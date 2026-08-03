@@ -10,7 +10,10 @@ export default defineConfig({
     tailwindcss(),
     dts({
       include: ['src/**/*'],
-      exclude: ['src/stories/**/*'],
+      // テストとストーリーの型宣言は配布物に入れない。
+      // 消費側が使うことはなく、tarball に載るだけ無駄になる
+      // （`*.test.d.ts` が 15 ファイル同梱されていたのを実測で発見）。
+      exclude: ['src/stories/**/*', 'src/**/*.test.*'],
     }),
   ],
   resolve: {

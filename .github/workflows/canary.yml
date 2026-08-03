@@ -1,0 +1,104 @@
+name: Canary
+
+# **公開済みパッケージを、消費側の立場で新規導入して確かめる。**
+#
+# CI のビルドが通ることと、消費側が実際に入れて使えることは別問題である。
+# exports の書き漏らし・files の取りこぼし・peer の不足は、リポジトリの中では
+# 気づけない（ソースが手元にあるので解決してしまう）。
+# ここでは GitHub Packages から**完全固定のバージョン**を入れ直す。
+on:
+  workflow_run:
+    workflows: ['Release']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '検証するバージョン（完全固定。例 0.1.0）'
+        type: string
+        required: true
+
+concurrency:
+  group: canary
+  cancel-in-progress: false
+
+jobs:
+  install-and-build:
+    name: Install from GitHub Packages and build
+    runs-on: ubuntu-latest
+    # Release が失敗したときは追わない
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+
+    permissions:
+      contents: read
+      # GitHub Packages からの読み取りに必要
+      packages: read
+
+    steps:
+      # 消費側を模すので、このリポジトリのソースは使わない。
+      # チェックアウトするのは検証用プロジェクトの雛形だけ。
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/consumer-check
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          registry-url: https://npm.pkg.github.com
+          scope: '@kedama-design'
+
+      # workflow_run 経由ではタグ名が取れないので head_branch から読む。
+      # どちらの経路でも「完全固定のバージョン」を入れる（^ や ~ は使わない）。
+      # 信頼できない値なので ${{ }} で run へ埋め込まず、env 経由で受ける。
+      - name: Resolve the version to install
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            # Release は tag（v0.1.0）で走る
+            VERSION="${HEAD_BRANCH#v}"
+          fi
+          case "$VERSION" in
+            [0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "::error::バージョンの形式が不正です: $VERSION"; exit 1 ;;
+          esac
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "検証対象: @kedama-design/design-system@$VERSION"
+
+      - name: Install the published package
+        working-directory: .github/consumer-check
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          # --save-exact で完全固定。範囲指定だと別の版が入りうる
+          npm install --save-exact "@kedama-design/design-system@$VERSION" \
+            react@19 react-dom@19 vite@6 typescript@5 @types/react@19 \
+            --no-audit --no-fund
+
+      - name: Verify the installed version is exactly what we asked for
+        working-directory: .github/consumer-check
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          INSTALLED="$(node -p "require('@kedama-design/design-system/package.json').version")"
+          echo "installed=$INSTALLED expected=$VERSION"
+          if [ "$INSTALLED" != "$VERSION" ]; then
+            echo "::error::入った版 $INSTALLED が指定した $VERSION と違います"
+            exit 1
+          fi
+
+      # root / /tokens / /styles の3つを消費側の視点で使う
+      - name: Typecheck
+        working-directory: .github/consumer-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        working-directory: .github/consumer-check
+        run: npx vite build

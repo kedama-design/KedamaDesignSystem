@@ -1,10 +1,17 @@
 {
-  "name": "@kedama/design-system",
+  "name": "@kedama-design/design-system",
   "version": "0.1.0",
   "type": "module",
   "description": "Kedama Design System — Calm UI tokens and components for internal business systems",
   "license": "UNLICENSED",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kedama-design/KedamaDesignSystem.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
   "packageManager": "pnpm@9.15.9",
   "sideEffects": [
     "*.css"

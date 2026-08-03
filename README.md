@@ -15,7 +15,7 @@
 ### インストール
 
 ```bash
-pnpm add @kedama/design-system
+pnpm add @kedama-design/design-system
 ```
 
 peer dependencies:
@@ -28,10 +28,10 @@ pnpm add react react-dom
 
 ```tsx
 // CSS を読み込む（Tailwind + デザイントークン）
-import '@kedama/design-system/styles';
+import '@kedama-design/design-system/styles';
 
 // コンポーネントとトークンをインポート
-import { Button, Badge, TextField, Card, Modal, Search } from '@kedama/design-system';
+import { Button, Badge, TextField, Card, Modal, Search } from '@kedama-design/design-system';
 
 function App() {
   return (
@@ -54,7 +54,7 @@ function App() {
 
 ### ⚠️ CSS を読み込むと変わるグローバルな既定
 
-`@kedama/design-system/styles` は、コンポーネントの外にも効く既定を 2 つ持ちます。
+`@kedama-design/design-system/styles` は、コンポーネントの外にも効く既定を 2 つ持ちます。
 どちらも既存の画面に影響しうるので、導入時に確認してください。
 
 #### 1. 全要素の既定ボーダー色
@@ -91,7 +91,7 @@ OS の「視差効果を減らす」が有効な環境では、全要素の `tra
 コンポーネントを使わずトークン値だけ参照したい場合:
 
 ```tsx
-import { semanticColors, spacing, fontSize } from '@kedama/design-system/tokens';
+import { semanticColors, spacing, fontSize } from '@kedama-design/design-system/tokens';
 
 // TypeScript 定数として利用
 const primaryColor = semanticColors.accent.primary; // '#315039'

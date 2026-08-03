@@ -1,0 +1,63 @@
+name: Storybook
+
+# Storybook を GitHub Pages へデプロイする。
+#
+# 当初 §6 は Vercel を採用としていたが、GitHub Pages へ変更した（2026-08-03）。
+# `GITHUB_TOKEN` だけで完結し、外部サービスの認証情報を持ち回らなくて済む。
+# 権限もリポジトリと同じものが効く。Chromatic を将来入れる判断には影響しない
+# （あれは Visual Regression が目的で、ホスティングとは別の話）。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # build:storybook は内部で generate:tokens を走らせる。
+      # tokens.css は .gitignore 対象なので、生成しないと素の見た目になる。
+      - name: Build Storybook
+        run: pnpm build:storybook
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
