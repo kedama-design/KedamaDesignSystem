@@ -59,16 +59,24 @@ jobs:
 
       # 呼び出し元から渡された値をそのまま使う。SemVer として妥当かだけ確かめる
       # （不正な値のまま install させると、失敗の原因が分かりにくくなる）。
+      #
+      # 判定は **semver.org 公式の ECMAScript 互換式**を Node の RegExp で行う。
+      # `grep -E` へ移植してはいけない。公式式は `(?:...)` を使っており、それを
+      # 外した近似式は不正な pre-release / build metadata を通してしまう
+      # （`1.0.0-01` / `1.0.0-a..b` / `1.0.0-a.` / `1.0.0+build..5` を実測で確認）。
       - name: Validate the version
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          SEMVER='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
-          if ! printf '%s' "$VERSION" | grep -Eq "$SEMVER"; then
-            echo "::error::SemVer として不正なバージョンです: $VERSION"
-            exit 1
-          fi
-          echo "検証対象: @kedama-design/design-system@$VERSION"
+          node -e '
+            const RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+            const v = process.env.VERSION ?? "";
+            if (!RE.test(v)) {
+              console.log(`::error::SemVer として不正なバージョンです: ${v}`);
+              process.exit(1);
+            }
+            console.log(`検証対象: @kedama-design/design-system@${v}`);
+          '
 
       - name: Install the published package
         working-directory: .github/consumer-check

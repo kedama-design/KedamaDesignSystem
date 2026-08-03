@@ -69,17 +69,22 @@ jobs:
 
       # publish する版は **package.json を正**とする。canary へもこの値を渡す
       # （タグ名や workflow_run の ref からは導かない）。
+      # 判定は semver.org 公式の ECMAScript 互換式（canary 側と同一）。
+      # `grep -E` へ移植した近似式は不正な pre-release / build metadata を通す。
       - name: Read the version from package.json
         id: version
         run: |
-          PKG="$(node -p "require('./package.json').version")"
-          SEMVER='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
-          if ! printf '%s' "$PKG" | grep -Eq "$SEMVER"; then
-            echo "::error::package.json の version が SemVer ではありません: $PKG"
-            exit 1
-          fi
-          echo "value=$PKG" >> "$GITHUB_OUTPUT"
-          echo "publish 対象: $PKG"
+          node -e '
+            const fs = require("node:fs");
+            const RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+            const v = require("./package.json").version ?? "";
+            if (!RE.test(v)) {
+              console.log(`::error::package.json の version が SemVer ではありません: ${v}`);
+              process.exit(1);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `value=${v}\n`);
+            console.log(`publish 対象: ${v}`);
+          '
 
       # タグ名と package.json の version が食い違ったまま publish すると、
       # 後から「どのコードが入っているか」を追えなくなる。

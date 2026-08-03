@@ -19,6 +19,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
+    # `configure-pages` は Pages の設定を API から取りにいく。
+    # private リポジトリでは読み取り権限が要る。書き込みは deploy 側だけが持つ。
+    permissions:
+      contents: read
+      pages: read
+
     steps:
       - uses: actions/checkout@v4
 
