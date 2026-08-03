@@ -15,14 +15,14 @@
 
 ### 揃っているもの
 
-| 層               | 内容                                                                                |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| トークン         | primitive / semantic の2層。3テーマ（light / dark / deep-dark）＋ 検証用 `dark-alt` |
-| Kedama 製 Tier 0 | Button / Badge / TextField / Card / Modal / Icon                                    |
-| 取り込み Tier 0  | Accordion / Drawer / Skeleton / Spinner / Table / Toast（`src/components/ui/`）     |
-| 移植 Tier 0      | ThemeProvider / ThemeToggle / IconSwap / RollingText                                |
-| 配布             | `@kedama-design/design-system`。release / canary / storybook の3ワークフロー        |
-| 検証             | 635 テスト。`format:check` / `typecheck` / `lint` / `test` の4ゲート                |
+| 層               | 内容                                                                                                                                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| トークン         | primitive / semantic の2層。**公開3テーマ**（light / dark / deep-dark）＋ dark テーマの検証用 alt surface（`[data-theme='dark'][data-surface='alt']`）。alt surface は**第4のテーマではなく属性の組み合わせ**で、`ThemeProvider` の選択肢に含めない |
+| Kedama 製 Tier 0 | Button / Badge / TextField / Card / Modal / Icon                                                                                                                                                                                                    |
+| 取り込み Tier 0  | Accordion / Drawer / Skeleton / Spinner / Table / Toast（`src/components/ui/`）                                                                                                                                                                     |
+| 移植 Tier 0      | ThemeProvider / ThemeToggle / IconSwap / RollingText                                                                                                                                                                                                |
+| 配布             | `@kedama-design/design-system`。release / canary / storybook の3ワークフロー                                                                                                                                                                        |
+| 検証             | 635 テスト。`format:check` / `typecheck` / `lint` / `test` の4ゲート                                                                                                                                                                                |
 
 ### 直近のコミット
 

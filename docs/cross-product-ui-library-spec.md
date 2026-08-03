@@ -117,14 +117,14 @@ status: Draft v0.12 — すらすらスタジオの実態調査（既存UIあり
 > 当時のギャップを記録として残す。**下記はいずれも解消済み**なので、現状把握には
 > 使わないこと。
 >
-> | 当時の項目                                     | 現在                                                                   |
-> | ---------------------------------------------- | ---------------------------------------------------------------------- |
-> | ダークモード未実装                             | light / dark / deep-dark の3テーマ ＋ `dark-alt`（検証用）を実装済み   |
-> | Drawer・Accordion・Skeleton・Spinner・Toast 等 | Tier 0 として実装・公開済み（§4）                                      |
-> | ThemeToggle                                    | 実装・公開済み（3テーマ ＋ 自動の segmented control）                  |
-> | チャート系（Tier 1）                           | **Tier 1 は解体**。チャートは Tier 2 のレジストリ配布へ移した          |
-> | Tier 2・レジストリ配布層                       | 未着手（Phase B で `app-shell` から着手）                              |
-> | Base UI／Radix 未導入                          | Base UI を採用済み（Button・Accordion・Drawer・Toast）。Radix は不採用 |
+> | 当時の項目                                     | 現在                                                                                                                                                                                                                                        |
+> | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | ダークモード未実装                             | **公開3テーマ**（light / dark / deep-dark）を実装済み。あわせて dark テーマの検証用 alt surface（`[data-theme='dark'][data-surface='alt']`）があるが、これは**第4のテーマではなく属性の組み合わせ**で、`ThemeProvider` の選択肢には含めない |
+> | Drawer・Accordion・Skeleton・Spinner・Toast 等 | Tier 0 として実装・公開済み（§4）                                                                                                                                                                                                           |
+> | ThemeToggle                                    | 実装・公開済み（3テーマ ＋ 自動の segmented control）                                                                                                                                                                                       |
+> | チャート系（Tier 1）                           | **Tier 1 は解体**。チャートは Tier 2 のレジストリ配布へ移した                                                                                                                                                                               |
+> | Tier 2・レジストリ配布層                       | 未着手（Phase B で `app-shell` から着手）                                                                                                                                                                                                   |
+> | Base UI／Radix 未導入                          | Base UI を採用済み（Button・Accordion・Drawer・Toast）。Radix は不採用                                                                                                                                                                      |
 
 - ダークモード未実装（`semantic/colors.ts` は Light のみ。設計上は同キーで `dark/colors.ts` を
   追加する想定はコメント済み）
