@@ -6,10 +6,20 @@ name: Canary
 # exports の書き漏らし・files の取りこぼし・peer の不足は、リポジトリの中では
 # 気づけない（ソースが手元にあるので解決してしまう）。
 # ここでは GitHub Packages から**完全固定のバージョン**を入れ直す。
+#
+# ## 起動経路
+#
+# `workflow_run` は使わない。あれは Release が **dry-run で成功した場合にも**発火し、
+# 公開されていないのに canary が走ってしまう。加えて `workflow_run` の ref は
+# 既定ブランチになる仕様で、`head_branch` から公開バージョンを導けない。
+# **実際に publish した Release から version を明示的に渡す**形にする。
 on:
-  workflow_run:
-    workflows: ['Release']
-    types: [completed]
+  workflow_call:
+    inputs:
+      version:
+        description: '検証するバージョン（完全固定。例 0.1.0）'
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       version:
@@ -25,8 +35,6 @@ jobs:
   install-and-build:
     name: Install from GitHub Packages and build
     runs-on: ubuntu-latest
-    # Release が失敗したときは追わない
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     permissions:
       contents: read
@@ -49,50 +57,46 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@kedama-design'
 
-      # workflow_run 経由ではタグ名が取れないので head_branch から読む。
-      # どちらの経路でも「完全固定のバージョン」を入れる（^ や ~ は使わない）。
-      # 信頼できない値なので ${{ }} で run へ埋め込まず、env 経由で受ける。
-      - name: Resolve the version to install
-        id: version
+      # 呼び出し元から渡された値をそのまま使う。SemVer として妥当かだけ確かめる
+      # （不正な値のまま install させると、失敗の原因が分かりにくくなる）。
+      - name: Validate the version
         env:
-          INPUT_VERSION: ${{ inputs.version }}
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          VERSION: ${{ inputs.version }}
         run: |
-          if [ -n "$INPUT_VERSION" ]; then
-            VERSION="$INPUT_VERSION"
-          else
-            # Release は tag（v0.1.0）で走る
-            VERSION="${HEAD_BRANCH#v}"
+          SEMVER='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+          if ! printf '%s' "$VERSION" | grep -Eq "$SEMVER"; then
+            echo "::error::SemVer として不正なバージョンです: $VERSION"
+            exit 1
           fi
-          case "$VERSION" in
-            [0-9]*.[0-9]*.[0-9]*) ;;
-            *) echo "::error::バージョンの形式が不正です: $VERSION"; exit 1 ;;
-          esac
-          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
           echo "検証対象: @kedama-design/design-system@$VERSION"
 
       - name: Install the published package
         working-directory: .github/consumer-check
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.value }}
+          VERSION: ${{ inputs.version }}
         run: |
           # --save-exact で完全固定。範囲指定だと別の版が入りうる
           npm install --save-exact "@kedama-design/design-system@$VERSION" \
             react@19 react-dom@19 vite@6 typescript@5 @types/react@19 \
             --no-audit --no-fund
 
+      # `require('@kedama-design/design-system/package.json')` は使えない。
+      # package.json は exports に無いため ERR_PACKAGE_PATH_NOT_EXPORTED になる
+      # （実測で確認）。**確認のために公開面を増やさない**。実ファイルを直接読む。
       - name: Verify the installed version is exactly what we asked for
         working-directory: .github/consumer-check
         env:
-          VERSION: ${{ steps.version.outputs.value }}
+          VERSION: ${{ inputs.version }}
         run: |
-          INSTALLED="$(node -p "require('@kedama-design/design-system/package.json').version")"
+          INSTALLED="$(node -p "require('./node_modules/@kedama-design/design-system/package.json').version")"
           echo "installed=$INSTALLED expected=$VERSION"
           if [ "$INSTALLED" != "$VERSION" ]; then
             echo "::error::入った版 $INSTALLED が指定した $VERSION と違います"
             exit 1
           fi
+          # どこから解決されたかを記録に残す（レジストリ経由であることの証跡）
+          npm ls @kedama-design/design-system --json
 
       # root / /tokens / /styles の3つを消費側の視点で使う
       - name: Typecheck
