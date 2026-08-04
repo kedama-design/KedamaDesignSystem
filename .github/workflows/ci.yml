@@ -51,6 +51,14 @@ jobs:
       # vitest.config.ts はクラウドストレージ上のチェックアウトでのみ
       # ワーカーを1本に絞る。CI のパスは判定に一致しないので、ここでは
       # 既定の並列度で走る。
+      #
+      # `pnpm test` は自身で generate:tokens を実行する（package.json）。
+      # ここに生成ステップを足して解決しないこと。tests/classConflict.test.ts は
+      # tailwind.css を compile() して `@import './tokens.css'` を解決するため、
+      # 生成物が無いチェックアウトでは ENOENT で落ちる。ローカルには前回の
+      # 生成物が残っていて通ってしまい、fresh clone の CI でだけ失敗した
+      # （2026-08-04・CI #7）。**入口を揃えて再発を防ぐ**のが趣旨で、
+      # CI 側だけの手当てでは同じ穴がローカルに残る。
       - name: Test
         run: pnpm test
 

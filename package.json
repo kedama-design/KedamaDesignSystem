@@ -51,8 +51,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "pnpm generate:tokens && vitest run",
+    "test:watch": "pnpm generate:tokens && vitest",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
