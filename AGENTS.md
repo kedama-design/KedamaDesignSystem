@@ -121,7 +121,15 @@ src/
     semantic/       ← 用途（fg.default, heading-2xl, elevation.raised）＝約束
   components/       ← Kedama 製: Button, Badge, TextField, Card, Modal, Icon
     ui/             ← shadcn(Base UI variant) からの取り込み品（§2.1.5）
-                      accordion, drawer, sheet, skeleton, spinner, table, toast
+                      accordion, drawer, skeleton, spinner, table, toast
+                      （sheet は廃止済み。Drawer が唯一の汎用エッジパネル）
+  blocks/           ← Tier 2。レジストリ配布で、npm では配らない（§2.1・§4.5）
+    app-shell/      ← AppShell / AuthShell / SidebarNav / IconRail / AppHeader /
+                      StatusBar / RightPane。registry.json の1アイテム。
+                      src/index.ts から export しない（tests/tier2Boundary.test.ts）。
+                      Tier 0 は `@kedama-design/design-system` 経由でだけ使う
+                      （自パッケージ名を src/index.ts へ向ける alias が
+                      tsconfig / vite / vitest の3箇所にある）
   styles/
     tailwind.css    ← @theme でトークンを Tailwind に接続。@layer base の既定値もここ
     tokens.css      ← 自動生成（編集禁止・gitignore 済み）

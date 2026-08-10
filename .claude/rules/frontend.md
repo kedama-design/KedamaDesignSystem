@@ -74,6 +74,18 @@ PascalCase のファイル名規約はここだけ適用しない。
 - jsdom 環境
 - テストファイル: `src/components/{Name}/{Name}.test.tsx`
 
+### Tier 2 複合ブロックの例外
+
+**`src/blocks/{item}/` の複合ブロックは、部品ごとに分けず「アイテム単位の契約テスト」
+1本にまとめてよい**（`src/blocks/{item}/{item}.test.tsx`）。
+
+ブロックは shadcn レジストリの**1アイテムとしてまとめて配られる**単位であり、部品は
+共有コンテキスト（例: `useAppShell`）で結ばれていて単体では描画できない。部品ごとに
+分けると、どのファイルにも属さない「部品どうしの契約」——スロットとランドマークの対応、
+開閉状態の一元管理、画面幅で `ref` や props が消えないこと——が抜け落ちる。
+
+Tier 0（`src/components/`）にこの例外は適用しない。あちらは部品が独立して配られる。
+
 ## Storybook
 
 - ストーリーファイル: `src/stories/{Name}.stories.tsx`

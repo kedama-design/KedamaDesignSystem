@@ -1,0 +1,62 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "kedama",
+  "homepage": "https://kedama-design.github.io/KedamaDesignSystem/",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "app-shell",
+      "type": "registry:block",
+      "title": "AppShell",
+      "description": "アプリケーションの外枠一式。AppShell / AuthShell / SidebarNav / IconRail / AppHeader / StatusBar / RightPane を1つのアイテムとして配る。Tier 0 は npm の @kedama-design/design-system から取る。",
+      "dependencies": ["@kedama-design/design-system", "lucide-react"],
+      "files": [
+        {
+          "path": "src/blocks/app-shell/AppShell.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/AppShell.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/AuthShell.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/AuthShell.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/SidebarNav.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/SidebarNav.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/IconRail.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/IconRail.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/AppHeader.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/AppHeader.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/StatusBar.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/StatusBar.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/RightPane.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/RightPane.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/useIsMobile.ts",
+          "type": "registry:hook",
+          "target": "components/app-shell/useIsMobile.ts"
+        },
+        {
+          "path": "src/blocks/app-shell/index.ts",
+          "type": "registry:component",
+          "target": "components/app-shell/index.ts"
+        }
+      ]
+    }
+  ]
+}

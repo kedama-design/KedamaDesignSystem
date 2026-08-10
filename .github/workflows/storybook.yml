@@ -45,8 +45,14 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      # build:storybook は内部で generate:tokens を走らせる。
-      # tokens.css は .gitignore 対象なので、生成しないと素の見た目になる。
+      # build:storybook は内部で generate:tokens と build:registry を走らせる。
+      # どちらの出力も .gitignore 対象なので、生成しないと欠けたまま公開される。
+      #
+      #   generate:tokens → src/styles/tokens.css ほか
+      #                     … 無いと素の見た目で出る
+      #   build:registry  → public/r/*.json（staticDirs 経由で storybook-static/r/ へ）
+      #                     … 無いと Tier 2 の配布 URL が 404 になる。消費側の
+      #                       `shadcn add <URL>` はここを引く（仕様書 §2.1）
       - name: Build Storybook
         run: pnpm build:storybook
 

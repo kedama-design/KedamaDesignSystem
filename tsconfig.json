@@ -17,7 +17,8 @@
     "sourceMap": true,
     "outDir": "dist",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@kedama-design/design-system": ["./src/index.ts"]
     }
   },
   "include": ["src/**/*", "scripts/**/*", "tests/**/*"],

@@ -17,6 +17,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      /*
+       * Tier 2 ブロック（src/blocks/）は Tier 0 を公開 API 経由でだけ使う。
+       * tsconfig.json の paths / vite.config.ts の alias と対。
+       */
+      '@kedama-design/design-system': resolve(__dirname, 'src/index.ts'),
     },
   },
   test: {

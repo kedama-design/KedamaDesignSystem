@@ -14,6 +14,11 @@ src/styles/tokens.css
 src/styles/alias-ibuki.css
 src/styles/alias-shadcn.css
 
+# Tier 2 レジストリの配信物（pnpm build:registry が registry.json と
+# src/blocks/ のソースから生成する複製）。正は registry.json 側。
+# 配信するホスティング（apps/showcase / Pages）のビルド時に生成する。
+public/r/
+
 # OS
 .DS_Store
 Thumbs.db
