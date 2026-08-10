@@ -5,6 +5,15 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  /*
+   * `public/` は Storybook Pages へ Tier 2 レジストリを配るための置き場で、
+   * Tier 0 の npm パッケージへ入れるものではない。Vite は既定で publicDir を
+   * `dist/` へコピーするため、無効にしないと `dist/r/*.json`（ブロックの
+   * ソース本文を含む）が tarball に混入する。
+   *
+   * Storybook 側は `.storybook/main.ts` の `staticDirs` で明示的にコピーする。
+   */
+  publicDir: false,
   plugins: [
     react(),
     tailwindcss(),

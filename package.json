@@ -46,9 +46,10 @@
   "scripts": {
     "generate:tokens": "tsx scripts/generate-css-tokens.ts",
     "dev": "pnpm generate:tokens && pnpm build:registry && storybook dev -p 6006",
-    "build": "pnpm generate:tokens && vite build",
+    "build": "pnpm generate:tokens && vite build && pnpm verify:package-boundary",
     "build:storybook": "pnpm generate:tokens && pnpm build:registry && storybook build",
     "build:registry": "shadcn build",
+    "verify:package-boundary": "tsx scripts/verify-package-boundary.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
