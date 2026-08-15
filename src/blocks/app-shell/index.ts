@@ -2,7 +2,7 @@
  * Tier 2 ブロック `app-shell`（仕様書 §4.5）
  *
  * ⚠️ **`src/index.ts` からは公開しない。** Tier 2 の配布は npm ではなく
- *    shadcn レジストリ（`registry.json` → `shadcn add @kedama/app-shell`）で、
+ *    shadcn レジストリ（`registry.json` → `shadcn add <公開URL>/r/app-shell.json`）で、
  *    「コピーしてプロダクトごとに手を入れる」ことを前提にした単位である（§2.1）。
  *    npm に載せると、その前提と「バージョンで一元的に配る」Tier 0 の前提が混ざる。
  *    `tests/tier2Boundary.test.ts` が機械的に担保している。

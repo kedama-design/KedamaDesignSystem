@@ -13,7 +13,7 @@ import { Meta } from '@storybook/blocks';
 ## インストール
 
 ```bash
-pnpm add @kedama/design-system
+pnpm add @kedama-design/design-system
 ```
 
 peer dependencies として React が必要です:
@@ -30,7 +30,7 @@ pnpm add react react-dom
 
 ```tsx
 // app.tsx または main.tsx
-import '@kedama/design-system/styles';
+import '@kedama-design/design-system/styles';
 ```
 
 これにより Tailwind CSS のユーティリティクラスと、デザイントークンの CSS Custom Properties が利用可能になります。
@@ -57,7 +57,7 @@ Google Fonts から読み込む例:
 ## 使い方
 
 ```tsx
-import { Button, TextField, Card, Search } from '@kedama/design-system';
+import { Button, TextField, Card, Search } from '@kedama-design/design-system';
 
 function ContactForm() {
   return (
@@ -83,7 +83,7 @@ function ContactForm() {
 コンポーネントを使わず、トークンの値だけ参照したい場合:
 
 ```tsx
-import { semanticColors, spacing, fontSize } from '@kedama/design-system/tokens';
+import { semanticColors, spacing, fontSize } from '@kedama-design/design-system/tokens';
 
 const primaryColor = semanticColors.accent.primary; // '#315039'
 const gap = spacing[16]; // '16px'

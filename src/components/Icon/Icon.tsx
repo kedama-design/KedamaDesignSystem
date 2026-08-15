@@ -12,7 +12,7 @@
  *
  * @example
  * ```tsx
- * import { Search, Plus, Trash2 } from '@kedama/design-system';
+ * import { Search, Plus, Trash2 } from '@kedama-design/design-system';
  *
  * <Search size={20} className="text-fg-muted" />
  * <Plus size={16} />

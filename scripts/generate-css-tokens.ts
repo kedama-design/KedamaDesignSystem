@@ -246,7 +246,7 @@ lines.push(...flattenToVars(zIndex as Record<string, string | number>, 'primitiv
 lines.push('');
 lines.push('  /* ── Primitive: Motion ───────────────────────────── */');
 lines.push('  /* spring / inertia は CSS transition で表現できないため出力しない。 */');
-lines.push('  /* JS へ渡す値は @kedama/design-system/tokens から import する。      */');
+lines.push('  /* JS へ渡す値は @kedama-design/design-system/tokens から import する。 */');
 lines.push(...flattenToVars(duration as Record<string, string>, 'primitive-duration'));
 lines.push(...flattenToVars(easing as Record<string, string>, 'primitive-easing'));
 

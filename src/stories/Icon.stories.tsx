@@ -156,7 +156,7 @@ export const AllIcons: Story = {
         Lucide React ベースのアイコンセット。stroke ベース、24×24 viewBox。
         <br />
         <code style={{ fontFamily: 'var(--primitive-font-family-mono)', fontSize: '13px' }}>
-          {"import { Search, Plus } from '@kedama/design-system';"}
+          {"import { Search, Plus } from '@kedama-design/design-system';"}
         </code>
       </p>
 

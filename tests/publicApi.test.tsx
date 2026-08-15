@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import React from 'react';
 import * as api from '../src/index';
 
@@ -98,6 +100,55 @@ describe('公開 API', () => {
     // 取り込み品の内部ヘルパが漏れていないこと
     expect(api).not.toHaveProperty('useDrawer');
     expect(api).not.toHaveProperty('DrawerContext');
+  });
+
+  /**
+   * 旧スコープ `@kedama/…` が live なコードとドキュメントに残っていないこと。
+   *
+   * パッケージ名は `@kedama-design/design-system` に確定している（仕様書 §2.1）。
+   * `@kedama` スコープは GitHub Packages で取得できず、**publish も install も
+   * できない名前**である。にもかかわらず「はじめに」の install コマンドが旧名の
+   * まま残っていた。消費側がそのまま貼れば必ず失敗する種類の誤りだが、型もテストも
+   * 通ってしまうので、目で見つけるしかない状態だった。
+   *
+   * `docs/` は対象外。あちらは改名の経緯そのものを記録しており、旧名が出るのが正しい。
+   */
+  it('does not reference the retired @kedama scope in src/ or scripts/', () => {
+    const root = resolve(__dirname, '..');
+    const offenders: string[] = [];
+
+    const walk = (dir: string): void => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = resolve(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(full);
+          continue;
+        }
+        if (!/\.(tsx?|mdx|css)$/.test(entry.name)) continue;
+        readFileSync(full, 'utf-8')
+          .split('\n')
+          .forEach((line, i) => {
+            // `@kedama-design/` は正しい名前なので、それ以外の `@kedama/` だけ拾う
+            if (line.includes('@kedama/')) {
+              offenders.push(`${full.replace(`${root}/`, '')}:${i + 1}`);
+            }
+          });
+      }
+    };
+
+    walk(resolve(root, 'src'));
+    walk(resolve(root, 'scripts'));
+
+    expect(
+      offenders,
+      [
+        '取得できない旧スコープ `@kedama/` を参照しています:',
+        ...offenders.map((o) => `  - ${o}`),
+        '',
+        '正しいパッケージ名は `@kedama-design/design-system` です（仕様書 §2.1）。',
+        '生成物（src/styles/*.css）が該当するなら scripts/generate-css-tokens.ts を直します。',
+      ].join('\n'),
+    ).toEqual([]);
   });
 
   /**

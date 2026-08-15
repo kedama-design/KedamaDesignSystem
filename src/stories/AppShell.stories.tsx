@@ -42,7 +42,7 @@ import {
  *
  * **npm では配らない。** レジストリ配布であり、`src/index.ts` からは公開していない
  * （`tests/tier2Boundary.test.ts`）。このストーリーが `../blocks/app-shell` を
- * 直接 import しているのはそのため。消費側は `shadcn add @kedama/app-shell` で
+ * 直接 import しているのはそのため。消費側は `shadcn add <公開URL>/r/app-shell.json` で
  * ファイルごと受け取る。
  *
  * ## ここで実測すること（design-rules 3.5）

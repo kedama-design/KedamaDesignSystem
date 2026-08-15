@@ -10,6 +10,7 @@
       "title": "AppShell",
       "description": "アプリケーションの外枠一式。AppShell / AuthShell / SidebarNav / IconRail / AppHeader / StatusBar / RightPane を1つのアイテムとして配る。Tier 0 は npm の @kedama-design/design-system から取る。",
       "dependencies": ["@kedama-design/design-system", "lucide-react"],
+      "docs": "Tier 0 を先に入れておくこと（@kedama-design/design-system は private な GitHub Packages。.npmrc と read:packages が要る）。AppShell は認証後の画面にだけ着せ、ログインなど認証前の画面には AuthShell を使う。",
       "files": [
         {
           "path": "src/blocks/app-shell/AppShell.tsx",

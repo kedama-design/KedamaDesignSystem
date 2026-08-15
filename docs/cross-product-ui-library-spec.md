@@ -54,17 +54,18 @@ status: Draft v0.12 — すらすらスタジオの実態調査（既存UIあり
 
 条項を撤回したらここに1行足すこと。**説明は書かない。**内容は後継の節を読む。
 
-| 日付       | 撤回された条項                                                        | 後継の方針                                                    | 参照                              |
-| ---------- | --------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
-| 2026-07-30 | 構成・レイアウト・スペーシング・エレベーション・角丸は **Ibuki が正** | **shadcn が正**（トークンの値は引き続き Kedama）              | §0.6 方針転換ブロック             |
-| 2026-07-30 | （上の帰結）A-1 の「Card の `shadow-sm` を削除」                      | 影は持つ。段は用途名で参照                                    | §0.6・§3.6                        |
-| 2026-07-29 | bmad-ux の「Kedama から段階移行する」仮説                             | Kedama は離脱先ではなく**供給元**                             | §2.1.5                            |
-| 2026-07-28 | 新規リポジトリを作る計画                                              | 既存 `KedamaDesignSystem` を土台にする                        | §0.5                              |
-| 2026-07-28 | `text-faint` と 3:1 コントラスト例外案                                | `fg.decorative` / `placeholder` / `disabled` / `muted` へ分離 | §0.7                              |
-| 2026-08-02 | Card padding 16px（撤回済み条項を根拠にした実装）                     | **24px**。例外は切らない                                      | `docs/q1-tier0-unification.md` D5 |
-| 2026-08-02 | Drawer をネイティブ `<dialog>` 拡張で実装する候補                     | **Base UI Drawer** を Tier 0 の正とする（Sheet は廃止）       | §2.2・§4                          |
-| 2026-08-03 | Storybook のホスティング先は **Vercel**                               | **GitHub Pages**（`GITHUB_TOKEN` だけで完結）                 | §6                                |
-| 2026-08-03 | 「このリポジトリ自体では実装しない」                                  | このリポジトリで実装する（実態に合わせた訂正）                | 冒頭                              |
+| 日付       | 撤回された条項                                                                | 後継の方針                                                                                 | 参照                              |
+| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------- |
+| 2026-07-30 | 構成・レイアウト・スペーシング・エレベーション・角丸は **Ibuki が正**         | **shadcn が正**（トークンの値は引き続き Kedama）                                           | §0.6 方針転換ブロック             |
+| 2026-07-30 | （上の帰結）A-1 の「Card の `shadow-sm` を削除」                              | 影は持つ。段は用途名で参照                                                                 | §0.6・§3.6                        |
+| 2026-07-29 | bmad-ux の「Kedama から段階移行する」仮説                                     | Kedama は離脱先ではなく**供給元**                                                          | §2.1.5                            |
+| 2026-07-28 | 新規リポジトリを作る計画                                                      | 既存 `KedamaDesignSystem` を土台にする                                                     | §0.5                              |
+| 2026-07-28 | `text-faint` と 3:1 コントラスト例外案                                        | `fg.decorative` / `placeholder` / `disabled` / `muted` へ分離                              | §0.7                              |
+| 2026-08-02 | Card padding 16px（撤回済み条項を根拠にした実装）                             | **24px**。例外は切らない                                                                   | `docs/q1-tier0-unification.md` D5 |
+| 2026-08-02 | Drawer をネイティブ `<dialog>` 拡張で実装する候補                             | **Base UI Drawer** を Tier 0 の正とする（Sheet は廃止）                                    | §2.2・§4                          |
+| 2026-08-03 | Storybook のホスティング先は **Vercel**                                       | **GitHub Pages**（`GITHUB_TOKEN` だけで完結）                                              | §6                                |
+| 2026-08-03 | 「このリポジトリ自体では実装しない」                                          | このリポジトリで実装する（実態に合わせた訂正）                                             | 冒頭                              |
+| 2026-08-10 | ショーケース兼レジストリを Next.js `apps/showcase` の軽量 monorepo として新設 | 既存 Storybook にカタログと `/r/*.json` を同居し、GitHub Pages で配信（monorepo 化しない） | §2.1・§7 Phase B・§8              |
 
 ---
 
@@ -438,31 +439,58 @@ text=birch/50・text-light=birch/200・text-muted=birch/300・text-faint=birch/4
 ### 2.1 配布モデル：npm パッケージ ＋ shadcn レジストリのハイブリッド
 
 「複数プロダクトの内製共有」という当初目的の**実現手段として**、配布方式に shadcn のレジストリ形式
-（`registry.json`／`shadcn build`／`npx shadcn add`）を採用する。ただし全部をレジストリ配布にすると
+（`registry.json`／`shadcn build`／`shadcn add`）を採用する。ただし全部をレジストリ配布にすると
 「コピー後に各プロダクトでハンドエディットされ、また ずれる」というリスクを再導入してしまうため、
 Tier によって配布方式を分ける。
 
-| Tier                                                               | 配布方式                                              | 理由                                                                                                                                                                                                |
-| ------------------------------------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tier 0（基礎プリミティブ）                                         | **npm パッケージ**（`@kedama-design/design-system`）  | どのプロダクトでも挙動が完全に同一であるべき部分。コピー配布にすると各プロダクトで独自にいじられ、今回解決したい「ずれ」がここで再発する。バージョン管理で一元的に更新を配る                        |
-| Tier 2（複合ブロック：DashboardShell・MetricCard・FindingCard 等） | **shadcn レジストリ**（`npx shadcn add @kedama/xxx`） | ブロックは元々「コピーしてプロダクトごとに手を入れる」ことを前提にした単位（shadcn/ui 本来の思想、shadcndashboard.dev もこの層を売っている）。Tier 0/1 に依存する形で書き、コピー後の改変は許容する |
+| Tier                                                               | 配布方式                                                                      | 理由                                                                                                                                                                                                |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tier 0（基礎プリミティブ）                                         | **npm パッケージ**（`@kedama-design/design-system`）                          | どのプロダクトでも挙動が完全に同一であるべき部分。コピー配布にすると各プロダクトで独自にいじられ、今回解決したい「ずれ」がここで再発する。バージョン管理で一元的に更新を配る                        |
+| Tier 2（複合ブロック：DashboardShell・MetricCard・FindingCard 等） | **shadcn レジストリ**（`pnpm dlx shadcn@4.16.1 add https://…/r/[name].json`） | ブロックは元々「コピーしてプロダクトごとに手を入れる」ことを前提にした単位（shadcn/ui 本来の思想、shadcndashboard.dev もこの層を売っている）。Tier 0/1 に依存する形で書き、コピー後の改変は許容する |
 
 **registry.json の設計（Tier 2 用）**
 
 - ルートに `registry.json`、各ブロックに `registry-item.json` 相当（name / type / files / Tier0-1への依存関係）
-- `npx shadcn build` で `public/r/[name].json` を静的生成
-- ホスティングは軽量な Next.js サイト1つで良い（後述のショーケースサイトと兼用可）
-- namespace は `@kedama` を仮案（§8参照）
+- `pnpm build:registry`（= `shadcn build`）で `public/r/[name].json` を静的生成。
+  **CLI の版は固定する。`npx` や `@latest` は使わない** — 版が動くと何を検証したのかが残らない。
+  ただし提供側と消費側で持ち方が違う:
+  - **提供側**（このリポジトリ）… **完全固定の devDependency**（`shadcn@4.16.1`、MIT）。
+    `pnpm build:registry` が使う
+  - **消費側** … CLI を依存に持たない。**固定版を `pnpm dlx` で都度実行する**
+    （`pnpm dlx shadcn@4.16.1 add <URL>`）。`shadcn add …` とだけ書くと、CLI を入れていない
+    消費側では実行できない
+- `public/r/` は生成物なので **commit しない**（`.gitignore` 対象）。`dev` と `build:storybook` が
+  先に `build:registry` を走らせる
+- ホスティングは **既存の Storybook（GitHub Pages）が兼ねる**。下記の「ホスティング先」参照
+- **消費側は実 URL を渡す**：`pnpm dlx shadcn@4.16.1 add https://kedama-design.github.io/KedamaDesignSystem/r/app-shell.json`。
+  `@kedama/app-shell` のような namespace 短縮形は、消費側 `components.json` の `registries` に
+  エンドポイントを登録して初めて解決する。**その設定は配っていないので、短縮形は書かない**
 
-**レジストリのホスティング先とショーケースサイトの関係（確定：同一で良い）**：shadcnレジストリは
+**レジストリのホスティング先とショーケースサイトの関係（確定：同一デプロイ）**：shadcnレジストリは
 「人間が見る紹介ページ」と「`shadcn add`が読みに行く静的JSON（`/r/[name].json`）」を**同じ
-Next.jsサイトの中に共存させる**のが標準的な構成（shadcn/ui公式のレジストリ機能自体、
-`app/r/[name]/route.ts`のようなAPIルートと、コンポーネント一覧を人間向けに見せるページを
-同じアプリに同居させる前提で設計されている）。したがって「別ドメインにするか」を悩む必要はなく、
-1つのNext.jsサイト＝ショーケースページ兼レジストリ配信元、で問題ない。さらにそのサイト自体を
-**`KedamaDesignSystem`と同一リポジトリに同居**させてよい（`packages/design-system`＋
-`apps/showcase`のような軽量monorepo構成になる。すでにpnpmを使っているため、
-`pnpm-workspace.yaml`を1つ足すだけで済む）。
+デプロイの中に共存させる**のが標準的な構成。したがって「別ドメインにするか」を悩む必要はない。
+
+> **2026-08-10 撤回**：ここには当初「1つの**Next.js**サイト＝ショーケースページ兼レジストリ
+> 配信元」「`packages/design-system` ＋ `apps/showcase` のような**軽量monorepo構成**にする
+> （`pnpm-workspace.yaml`を1つ足すだけ）」と書いていたが、**撤回する。monorepo 化しない。**
+>
+> §7 Phase B はもともとこれを「または既存Storybookに`/r/*.json`の静的配信を同居させる形」との
+> **二択**で書いており、後者を採った。実装は次の3点だけで済み、Next.js もワークスペースも要らない。
+>
+> - `.storybook/main.ts` の `staticDirs: ['../public']` … `public/r/*.json` を
+>   `storybook-static/r/` へ載せる
+> - `src/stories/Registry.mdx` ＋ `RegistryCatalog.tsx` … 人間向けのカタログ。
+>   一覧と追加コマンドの URL は **`registry.json` をビルド時に読んで生成**する
+>   （手で書くと「配布はできるが一覧に出ない」が起きるため）
+> - `.github/workflows/storybook.yml` … `build:storybook` が `generate:tokens` と
+>   `build:registry` の両方を走らせる
+>
+> 結果、**Storybook のデプロイ1つがショーケース兼レジストリ配信元**になる。
+> 公開 URL は `https://kedama-design.github.io/KedamaDesignSystem/r/[name].json`。
+>
+> 将来 Phase G（外部販売）で認証付き API 配信が要るときは、§2.1「将来の外部販売に備えた
+> 拡張ポイント」のとおり **同じ namespace 構造のままエンドポイントだけ差し替える**。
+> そのタイミングで初めて `apps/showcase` を検討すればよく、今作る理由はない。
 
 ### 2.1.5 不足部品の調達方針（確定・2026-07-28）
 
@@ -560,7 +588,7 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
 |            | デザイントークンパイプライン（`docs/design-system-pipeline.md`）                                                   | Tier 2ブロックの再同期                                                                                                                                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 対象       | **値**（色・タイポ・スペーシング等のトークン）                                                                     | **コンポーネントのソースコード**そのもの（`.tsx`ファイル）                                                                                                           |
-| 流通経路   | Figma → Tokens Studio → Style Dictionary → `variables.css`/`tokens.ts` → **npmパッケージ経由でimport**（Tier 0/1） | `npx shadcn add` で**コピー**されて消費側リポジトリに物理的に複製される（Tier 2）                                                                                    |
+| 流通経路   | Figma → Tokens Studio → Style Dictionary → `variables.css`/`tokens.ts` → **npmパッケージ経由でimport**（Tier 0/1） | `shadcn add` で**コピー**されて消費側リポジトリに物理的に複製される（Tier 2）                                                                                        |
 | 更新の伝播 | npmパッケージのバージョンを上げれば、消費側は`npm update`するだけで自動追従する（コード変更不要）                  | コピー後は消費側の管理下になるため、元のTier 2コンポーネントが後から改善されても**自動では反映されない**。消費側が独自に手を入れている可能性もあり、単純上書きは危険 |
 | 今回の課題 | 解決済み（パイプライン設計がそのまま使える）                                                                       | 追従の運用ルールを別途決める必要がある（本節のテーマ）                                                                                                               |
 
@@ -569,12 +597,15 @@ npm標準に近い（`npm install` だけで完結し、消費側でビルドを
 - 理由：Tier 2は「コピーして手を入れる」ことを前提にした配布形式（shadcn/uiの設計思想そのもの）。
   自動同期を仕組み化すると、各プロダクトが加えたカスタマイズを機械的に上書きしてしまうリスクが
   上がる。チーム規模（1-3人）を考えると、厳密な追従の仕組みを作るコストは見合わない。
-- 具体的な運用：`npx shadcn diff <component>` で元のブロックとの差分を確認できるコマンドが
-  shadcn CLIに用意されている。**新しいプロダクトがTier 2ブロックを取り込むたび、または
-  半年に一度など区切りのタイミングで、`shadcn diff`を各消費先で実行し、明らかなバグ修正や
-  a11y改善だけを見て個別に取り込むかどうか判断する**、という軽い運用にする。
-  厳密なバージョン管理や自動PR生成のような仕組みは、消費プロダクト数が増えて手動運用が
-  回らなくなった段階で改めて検討すればよい。
+- 具体的な運用：`pnpm dlx shadcn@4.16.1 add <URL> --diff` で元のブロックとの差分を確認できる。
+  **新しいプロダクトがTier 2ブロックを取り込むたび、または半年に一度など区切りのタイミングで
+  これを各消費先で実行し、明らかなバグ修正や a11y改善だけを見て個別に取り込むかどうか
+  判断する**、という軽い運用にする。厳密なバージョン管理や自動PR生成のような仕組みは、
+  消費プロダクト数が増えて手動運用が回らなくなった段階で改めて検討すればよい。
+
+  > **`shadcn diff` は使わない。** 4.16.1 で非推奨になっており、CLI 自身が
+  > `[DEPRECATED] Use "add [component] --diff" instead.` と出す（`shadcn diff --help` で確認）。
+  > 後継は `add … --diff`。
 
 ### Radix → Base UI の移行方針
 
@@ -928,7 +959,7 @@ Ibuki の9ファミリーを移植して不足分を新造するより大幅に�
 | **DataTable**                                                                      | shadcn/ui（Base UI variant）を取り込み＋再スタイル                   | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる**                                                            |
 | **FilterBar / SavedViewPicker（汎用部分）**                                        | ベンチマーク §7.3                                                    | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ                                                                                                                                                                                                                |
 | **CommandPalette**                                                                 | shadcn/ui `Command` を取り込み                                       | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補）                                                                                                                                                                                                         |
-| **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`npx shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する                                                                          |
+| **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する                                                                              |
 | **Grass（草ヒートマップ）**                                                        | 同上 `heatmap-chart`                                                 | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
 | **TimelineRow**                                                                    | Ibuki `timeline-row.tsx`                                             | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない                                                                                                                                        |
 | **TrackBar**                                                                       | Ibuki `track-bar.tsx`                                                | 上流に無い。自前維持                                                                                                                                                                                                                                                  |
@@ -1102,9 +1133,14 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
 4. **Phase B（Tier 2＋レジストリ）**：**AppShell 一式（§4.5）を最優先**で作り、続いて
    DataTable・Command（shadcnから取り込み・再スタイル、§2.1.5）、
    Tier 2 の残り（ScoreRing/ChecklistStep/FindingCard/MetricCard等）を追加し、`registry.json`＋`shadcn build`でレジストリ配布できる状態にする。
-   ショーケースサイトは**同一リポジトリ内・同一デプロイ**（`KedamaDesignSystem` に
-   `apps/showcase` を追加する軽量monorepo構成、または既存Storybookに`/r/*.json`の静的配信を
-   同居させる形）とし、`/r/*.json`の配信元も兼ねる
+   ショーケースサイトは**同一リポジトリ内・同一デプロイ**とし、`/r/*.json`の配信元も兼ねる。
+   当初は「`apps/showcase` を追加する軽量monorepo構成、または既存Storybookに`/r/*.json`の
+   静的配信を同居させる形」の二択で書いていたが、**2026-08-10 に後者で確定した**
+   （`apps/showcase` は作らない。§2.1 の撤回ブロック参照）。実体は次のとおり:
+   - 配信 … `.storybook/main.ts` の `staticDirs: ['../public']` → `storybook-static/r/*.json`
+   - 紹介面 … `src/stories/Registry.mdx` ＋ `RegistryCatalog.tsx`（`registry.json` から生成）
+   - 公開 URL … `https://kedama-design.github.io/KedamaDesignSystem/r/[name].json`
+
 5. **Phase C（すらすらスタジオの presentational 層 再構築＝本番実証）★ゴール達成地点**：
    すらすらスタジオの画面を、HTMLプロトタイプを介さず **Storybook上で本番コンポーネントを
    組む形で設計 → そのままcontainerを被せて本番化**する。ここで「プロトタイプと本番が同一
@@ -1129,7 +1165,7 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
 6. **Phase D（Ibuki 変換検証）**：shadcnのAI移行スキルで `packages/ui` のRadix依存部分を
    新パッケージ相当に変換・比較検証（本番へは反映しない、検証のみ）
 7. **Phase E（Ibuki 本番置換）**：検証OKなら、Ibuki-Code-v2 の `apps/web` が `@ibuki/ui` の
-   代わりに新パッケージ（npm import）＋Tier2ブロック（`npx shadcn add`でコピー）＋Tier3の
+   代わりに新パッケージ（npm import）＋Tier2ブロック（`shadcn add`でコピー）＋Tier3の
    Ibuki固有ラッパー（別途 `packages/ui-ibuki` 等に残す）を参照するよう置き換え。
    §0.6 の再配色をIbukiプロトタイプと突き合わせて検証するのもここ
 8. **Phase F**：残るプロダクト（FP&Aアプリ等）が新パッケージ・レジストリを新規に取り込む
@@ -1149,50 +1185,52 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 §4の内部矛盾／Tier 1の棚卸し／パッケージ公開方式／コントラスト修正のレビューと完了条件／
 モーショントークン設計）。それらの結論は本書 v0.7 で反映する。
 
-| 論点                                       | 決定                                                                                                                       | 参照                                 |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| ゴールの定義                               | すらすらスタジオの本番画面が新パッケージに載せ替わった状態（Phase C完了）をもって達成                                      | §1・§7                               |
-| 最初の本番適用先                           | Ibuki ではなく **すらすらスタジオ**。ただし新規適用ではなく既存UIの全面再構築（presentational層のみ）                      | §7                                   |
-| 不足部品の調達方針                         | shadcnのBase UI variantをKedamaが取り込み・再スタイルし、Kedamaのレジストリから配る                                        | §2.1.5                               |
-| bmad-ux discovery との関係                 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元）                                                 | §2.1.5                               |
-| AppShell の扱い                            | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先**                                                               | §4.5                                 |
-| すらすらスタジオの独立ダッシュボード       | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2）                                                        | §4.6                                 |
-| データテーブル                             | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り                                                    | §4                                   |
-| Mantine                                    | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため）                                                               | §2.1.5                               |
-| **パッケージ名**                           | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可）           | §2.1                                 |
-| **チャートの配布層**                       | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保                                         | §4                                   |
-| **チャートの調達元**                       | bklit-ui（MIT部分のみ）を取り込み。Grass も上流の heatmap-chart でカバー済み。TimelineRow / TrackBar のみ自前維持          | §4                                   |
-| **evilcharts**                             | 構造の参考のみ。演出（animated / effects）は Calm UI と衝突するため持ち込まない                                            | §4                                   |
-| **dither-kit**                             | 不採用（ライセンス不明・キャンバス描画がトークン適用とa11yを阻害・ディザリング表現がCalm UIと衝突）                        | —                                    |
-| **`text-faint`**                           | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回                             | §0.7                                 |
-| **AppShell仮説の検証結果**                 | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大        | §4.6・§7                             |
-| Q1〜Q8の技術的結論                         | Codex調査報告書に記載。本書では重複させず参照する                                                                          | `docs/codex-investigation-report.md` |
-| **Dark の surface**                        | **birch/700**（bg より1段明るい＝§0.6 ルール1どおり）。birch/800 の平坦案は `data-surface="alt"` として残置                | §0.6                                 |
-| **スクリム**                               | **`bg.scrim` = birch/900 50% に統一**。純黒は不採用。10% はモーダルとして機能しない（実機比較で確認）                      | §0.6                                 |
-| **backdrop blur**                          | **既定オフ**。50% 単独で遮断は伝わり、全画面 backdrop-filter は業務画面で GPU 負荷に見合わない。primitive は在庫として残す | §3.5                                 |
-| **モーションの2系統**                      | spring/inertia（JS層・直接操作のみ）と tween（CSS層・それ以外）。トラックは描画機構で決まり選択肢ではない                  | §3.5                                 |
-| **reduced-motion**                         | プロバイダ層＋グローバルCSSの2箇所で担保                                                                                   | §3.5                                 |
-| **既定のボーダー色**                       | `@layer base` で全要素に `border.default`。CSS 既定の `currentColor` はデザインシステムの意図ではない                      | §2.1.5                               |
-| **取り込み品への手入れ**                   | トークン置換は差分ではなく取り込みの目的。禁じているのはロジック・API・構造のフォーク                                      | §2.1.5                               |
-| **モーションの実装記録**                   | 用途別マッピング表と未解決事項                                                                                             | `docs/motion-token-mapping.md`       |
-| Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外                                                                 | §0.6・§0.7                           |
-| Dark／Deep-darkテーマの値                  | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え）                                                     | §0.6                                 |
-| コントラスト未達4箇所の修正                | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う                                                         | §0.7                                 |
-| 物理演算アニメーションの採用               | Motion（peerDependency）。spring と inertia の2本立て。overshoot は直接操作の余韻のみ                                      | §3.5                                 |
-| モーショントークン                         | 2層トークンに motion カテゴリを追加。Phase A-1（コンポーネントより先）で確定                                               | §3.5                                 |
-| KedamaDesignSystemの作業ツリー整理         | 重複`.git`・stale lock除去は完了。残る変更のコミットはユーザー側で実施                                                     | §0.5                                 |
-| Tier 0 の公開方法                          | GitHub Packages。タグまたは手動 release のときだけ publish（`.github/workflows/release.yml`）                              | §2.1                                 |
-| Tier 2 レジストリのホスティング先          | ショーケースサイトと同一デプロイ（shadcn標準構成）                                                                         | §2.1                                 |
-| レジストリ/ショーケースサイトのリポジトリ  | KedamaDesignSystemと同一（軽量monorepo化）                                                                                 | §2.1                                 |
-| Tier 2 を初期スコープに含めるか            | 含める（Ibukiダッシュボード再構築で直接使うため）                                                                          | §7 Phase B                           |
-| ダークモードの実装タイミング               | 今回のスコープに含める（仮トークンで先行実装）                                                                             | §0.6・§7 Phase A                     |
-| Storybookのホスティング先                  | **GitHub Pages**（2026-08-03 変更）。Chromaticは複数プロダクト消費開始後に再検討                                           | §6                                   |
-| Tier 2ブロックの再同期運用                 | 自動化しない。`shadcn diff`による手動・不定期の棚卸しにとどめる                                                            | §2.1                                 |
-| エレベーションの段                         | 影なし＝操作部品／raised＝地の上に浮く面／overlay＝オーバーレイ。部品は用途名を経由する                                    | §3.6                                 |
-| エレベーションの「色」                     | shadcn が決めるのは段であって色ではない。影の色は Kedama（ブランド色を混ぜた overlay）                                     | §3.6                                 |
-| Card の padding                            | **24px**。16px は撤回済み条項を根拠にした実装だったため差し戻し。例外は切らない                                            | §0.6・`docs/q1-tier0-unification.md` |
-| Tier 0 の Button                           | 1つに統合（Kedama 製と取り込み品が並存していた）。サイズ体系は取り込み品準拠 24/28/32/36                                   | `docs/q1-tier0-unification.md`       |
-| tailwind-merge                             | **入れない**。競合そのものを禁じ、`tests/classConflict.test.ts` で担保する                                                 | `docs/proposal-tailwind-merge.md`    |
+| 論点                                       | 決定                                                                                                                                       | 参照                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| ゴールの定義                               | すらすらスタジオの本番画面が新パッケージに載せ替わった状態（Phase C完了）をもって達成                                                      | §1・§7                               |
+| 最初の本番適用先                           | Ibuki ではなく **すらすらスタジオ**。ただし新規適用ではなく既存UIの全面再構築（presentational層のみ）                                      | §7                                   |
+| 不足部品の調達方針                         | shadcnのBase UI variantをKedamaが取り込み・再スタイルし、Kedamaのレジストリから配る                                                        | §2.1.5                               |
+| bmad-ux discovery との関係                 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元）                                                                 | §2.1.5                               |
+| AppShell の扱い                            | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先**                                                                               | §4.5                                 |
+| すらすらスタジオの独立ダッシュボード       | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2）                                                                        | §4.6                                 |
+| データテーブル                             | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り                                                                    | §4                                   |
+| Mantine                                    | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため）                                                                               | §2.1.5                               |
+| **パッケージ名**                           | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可）                           | §2.1                                 |
+| **チャートの配布層**                       | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保                                                         | §4                                   |
+| **チャートの調達元**                       | bklit-ui（MIT部分のみ）を取り込み。Grass も上流の heatmap-chart でカバー済み。TimelineRow / TrackBar のみ自前維持                          | §4                                   |
+| **evilcharts**                             | 構造の参考のみ。演出（animated / effects）は Calm UI と衝突するため持ち込まない                                                            | §4                                   |
+| **dither-kit**                             | 不採用（ライセンス不明・キャンバス描画がトークン適用とa11yを阻害・ディザリング表現がCalm UIと衝突）                                        | —                                    |
+| **`text-faint`**                           | 廃止し `fg.decorative` / `fg.placeholder` / `fg.disabled` / `fg.muted` へ分離。3:1例外案は撤回                                             | §0.7                                 |
+| **AppShell仮説の検証結果**                 | 部分支持どまり。主因は複合的（CSS二重層・container/presentational混在・状態とDOMの密結合）。Phase Cのスコープを拡大                        | §4.6・§7                             |
+| Q1〜Q8の技術的結論                         | Codex調査報告書に記載。本書では重複させず参照する                                                                                          | `docs/codex-investigation-report.md` |
+| **Dark の surface**                        | **birch/700**（bg より1段明るい＝§0.6 ルール1どおり）。birch/800 の平坦案は `data-surface="alt"` として残置                                | §0.6                                 |
+| **スクリム**                               | **`bg.scrim` = birch/900 50% に統一**。純黒は不採用。10% はモーダルとして機能しない（実機比較で確認）                                      | §0.6                                 |
+| **backdrop blur**                          | **既定オフ**。50% 単独で遮断は伝わり、全画面 backdrop-filter は業務画面で GPU 負荷に見合わない。primitive は在庫として残す                 | §3.5                                 |
+| **モーションの2系統**                      | spring/inertia（JS層・直接操作のみ）と tween（CSS層・それ以外）。トラックは描画機構で決まり選択肢ではない                                  | §3.5                                 |
+| **reduced-motion**                         | プロバイダ層＋グローバルCSSの2箇所で担保                                                                                                   | §3.5                                 |
+| **既定のボーダー色**                       | `@layer base` で全要素に `border.default`。CSS 既定の `currentColor` はデザインシステムの意図ではない                                      | §2.1.5                               |
+| **取り込み品への手入れ**                   | トークン置換は差分ではなく取り込みの目的。禁じているのはロジック・API・構造のフォーク                                                      | §2.1.5                               |
+| **モーションの実装記録**                   | 用途別マッピング表と未解決事項                                                                                                             | `docs/motion-token-mapping.md`       |
+| Lightテーマの再配色マッピング（3判断含む） | 推奨案どおり確定。ただし `--border-strong` は判断3の対象外                                                                                 | §0.6・§0.7                           |
+| Dark／Deep-darkテーマの値                  | Kedama既存プリミティブから仮算出・確定（Kedama正式版が出たら差し替え）                                                                     | §0.6                                 |
+| コントラスト未達4箇所の修正                | 実測にもとづき修正済み。`text-faint` は装飾ティア（3:1）として扱う                                                                         | §0.7                                 |
+| 物理演算アニメーションの採用               | Motion（peerDependency）。spring と inertia の2本立て。overshoot は直接操作の余韻のみ                                                      | §3.5                                 |
+| モーショントークン                         | 2層トークンに motion カテゴリを追加。Phase A-1（コンポーネントより先）で確定                                                               | §3.5                                 |
+| KedamaDesignSystemの作業ツリー整理         | 重複`.git`・stale lock除去は完了。残る変更のコミットはユーザー側で実施                                                                     | §0.5                                 |
+| Tier 0 の公開方法                          | GitHub Packages。タグまたは手動 release のときだけ publish（`.github/workflows/release.yml`）                                              | §2.1                                 |
+| Tier 2 レジストリのホスティング先          | ショーケースと同一デプロイ。**既存の Storybook（GitHub Pages）が兼ねる**（2026-08-10 確定）                                                | §2.1・§7                             |
+| レジストリ/ショーケースサイトのリポジトリ  | KedamaDesignSystemと同一。**monorepo 化しない**（`apps/showcase` は作らず Storybook に同居。2026-08-10 撤回）                              | §2.1                                 |
+| Tier 2 の取り込みコマンド                  | 実 URL を渡す（`pnpm dlx shadcn@4.16.1 add https://kedama-design.github.io/KedamaDesignSystem/r/[name].json`）。namespace 短縮形は使わない | §2.1                                 |
+| shadcn CLI の版                            | 提供側は完全固定の devDependency（`shadcn@4.16.1`、MIT）。**消費側は固定版を `pnpm dlx`**。`npx` / `@latest` は使わない                    | §2.1                                 |
+| Tier 2 を初期スコープに含めるか            | 含める（Ibukiダッシュボード再構築で直接使うため）                                                                                          | §7 Phase B                           |
+| ダークモードの実装タイミング               | 今回のスコープに含める（仮トークンで先行実装）                                                                                             | §0.6・§7 Phase A                     |
+| Storybookのホスティング先                  | **GitHub Pages**（2026-08-03 変更）。Chromaticは複数プロダクト消費開始後に再検討                                                           | §6                                   |
+| Tier 2ブロックの再同期運用                 | 自動化しない。`pnpm dlx shadcn@4.16.1 add <URL> --diff` による手動・不定期の棚卸しにとどめる（`shadcn diff` は 4.16.1 で非推奨）           | §2.1                                 |
+| エレベーションの段                         | 影なし＝操作部品／raised＝地の上に浮く面／overlay＝オーバーレイ。部品は用途名を経由する                                                    | §3.6                                 |
+| エレベーションの「色」                     | shadcn が決めるのは段であって色ではない。影の色は Kedama（ブランド色を混ぜた overlay）                                                     | §3.6                                 |
+| Card の padding                            | **24px**。16px は撤回済み条項を根拠にした実装だったため差し戻し。例外は切らない                                                            | §0.6・`docs/q1-tier0-unification.md` |
+| Tier 0 の Button                           | 1つに統合（Kedama 製と取り込み品が並存していた）。サイズ体系は取り込み品準拠 24/28/32/36                                                   | `docs/q1-tier0-unification.md`       |
+| tailwind-merge                             | **入れない**。競合そのものを禁じ、`tests/classConflict.test.ts` で担保する                                                                 | `docs/proposal-tailwind-merge.md`    |
 
 ---
 

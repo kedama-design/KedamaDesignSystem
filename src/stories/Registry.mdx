@@ -1,0 +1,144 @@
+import { Meta } from '@storybook/blocks';
+import { RegistryCatalog, RegistryEndpoint, TierComparison } from './RegistryCatalog';
+
+<Meta title="レジストリ" />
+
+# レジストリ
+
+**複合ブロック（Tier 2）の配布元。** このページと同じデプロイが、`shadcn` が読みに行く
+静的 JSON も配信している（仕様書 §2.1）。
+
+---
+
+## Tier 0 と Tier 2 のどちらで受け取るか
+
+配布方式は Tier で分かれている。**取り違えると、この基盤が無くそうとしている「ずれ」が
+別の形で戻ってくる**ので、先にここを確認すること。
+
+<TierComparison />
+
+Tier 2 のブロックは Tier 0 に依存している。**先に npm パッケージを入れておくことを推奨**する。
+`shadcn add` は依存を自分で入れようとするので逆順でも通るが、先に入れておくと
+ブロックを読むときに型が解決していて追いやすい。
+
+---
+
+## 配信元
+
+<RegistryEndpoint />
+
+---
+
+## 消費側の準備
+
+### 1. Tier 0 を npm から入れる
+
+`@kedama-design/design-system` は **private な GitHub Packages** で配っている。
+`.npmrc` にレジストリと認証を設定し、トークンに `read:packages` を持たせること。
+
+```ini
+# .npmrc
+@kedama-design:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+```bash
+pnpm add @kedama-design/design-system
+pnpm add react react-dom lucide-react
+```
+
+`shadcn add` は item の `dependencies`（`@kedama-design/design-system` と `lucide-react`）を
+**自分でインストールしようとする**ので、上を先に済ませていなくても入る。ただし
+**`.npmrc` はどちらにせよ先に要る**——認証が無いと `shadcn add` のインストール工程で落ちる。
+
+> **切り分けの目安**：`shadcn add` は内部で工程が分かれており、**どの工程で落ちたかで原因が違う。**
+> `dependencies` のインストールも `shadcn add` の中で行われるので、別途 `pnpm install` を
+> 走らせる話ではない。
+>
+> - **`Checking registry`**（`/r/[name].json` の取得）… ここで落ちるのは**配信側**。
+>   JSON は公開の静的ファイルで認証は要らない。404 なら Pages への配置、500 ならビルドを見る
+> - **`Installing dependencies`**（item の `dependencies` を入れる）… **401 / 403 はここで出る。**
+>   GitHub Packages の認証の問題で、`.npmrc` とトークンの `read:packages` を見る
+> - **`Updating files`**（ファイルの展開）… 展開先の問題。`components.json` の
+>   `aliases` と書き込み権限を見る
+>
+> レジストリの配信と GitHub Packages の認証は**別系統**である。前者だけなら認証なしで通る。
+
+### 2. `components.json` を置く
+
+`shadcn` がファイルの展開先を決めるために要る。
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": false,
+  "tsx": true,
+  "iconLibrary": "lucide",
+  "tailwind": {
+    "config": "",
+    "css": "src/app.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "ui": "@/components/ui",
+    "utils": "@/lib/utils",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+```
+
+### 3. CSS を読み込む
+
+```css
+/* src/app.css */
+@import '@kedama-design/design-system/styles';
+```
+
+### 4. ブロックを追加する
+
+下のカタログにある URL をそのまま渡す。
+
+---
+
+## カタログ
+
+<RegistryCatalog />
+
+実物は <a href="?path=/story/blocks-appshell--default" target="_top">Blocks / AppShell</a> で
+動かせる。デスクトップ・モバイル・3テーマの確認もそちらで行う。
+
+---
+
+## 取り込んだ後の追従
+
+**自動同期はしない**（仕様書 §2.1）。Tier 2 は「コピーして手を入れる」前提の配布形式で、
+機械的に上書きすると消費側のカスタマイズを壊す。
+
+差分は**カタログの「取り込み済みのものと差分を見る」**のコマンドで見る。
+版と URL はそちらで `package.json` と `registry.json` から組み立てているので、
+**ここには書き写さない**（同じページの中で古い版が残るのを避けるため）。
+
+`shadcn diff` は使わない。固定している版の CLI 自身が非推奨だと出す
+（`shadcn diff --help` で確認できる）。
+
+```text
+[DEPRECATED] Use `add [component] --diff` instead.
+```
+
+新しいプロダクトが取り込むとき、または半年に一度など区切りのタイミングで差分を見て、
+明らかなバグ修正と a11y 改善だけを個別に判断して取り込む。厳密なバージョン管理や
+自動 PR は、消費プロダクトが増えて手動運用が回らなくなってから検討する。
+
+---
+
+## このページ自体について
+
+一覧は `registry.json` を**ビルド時に読んで生成**している。手で書き写していないので、
+アイテムを足したときに「配布はできるが一覧に出ない」状態にはならない。
+追加コマンドの URL も `registry.json` の `homepage` から組み立てているため、
+公開先を変えるときに直すのは1箇所で済む。

@@ -4,8 +4,8 @@
  * トークン + CSS + コンポーネント（Phase 4以降）をすべてエクスポート。
  *
  * 使い方:
- *   import { Button, Badge, semanticColors } from '@kedama/design-system';
- *   import '@kedama/design-system/styles';
+ *   import { Button, Badge, semanticColors } from '@kedama-design/design-system';
+ *   import '@kedama-design/design-system/styles';
  */
 
 // CSS（Tailwind + トークンCSS変数）
