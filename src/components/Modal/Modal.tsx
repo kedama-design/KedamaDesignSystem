@@ -13,8 +13,12 @@ export interface ModalProps {
   title?: string;
   /** モーダルの説明（aria-describedby に使用） */
   description?: string;
+  /** 視覚的な title を置かないときのアクセシブル名 */
+  ariaLabel?: string;
   /** モーダルの幅。デフォルトは md（480px） */
   size?: 'sm' | 'md' | 'lg';
+  /** 画面内の配置。コマンドパレット等は top を使う */
+  placement?: 'center' | 'top';
   /** モーダルのコンテンツ */
   children: React.ReactNode;
   /** ルートに追加するクラス名 */
@@ -27,6 +31,11 @@ const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-2xl',
+} as const;
+
+const placementClasses = {
+  center: 'm-auto',
+  top: 'mx-auto mt-4 mb-auto sm:mt-[18vh]',
 } as const;
 
 // ─── Component ──────────────────────────────────────────
@@ -65,7 +74,9 @@ function ModalRoot({
   onClose,
   title,
   description,
+  ariaLabel,
   size = 'md',
+  placement = 'center',
   children,
   className,
 }: ModalProps) {
@@ -112,9 +123,12 @@ function ModalRoot({
       onCancel={handleCancel}
       aria-labelledby={titleId}
       aria-describedby={descId}
+      aria-label={titleId ? undefined : ariaLabel}
       className={cn(
         // リセット: dialog のデフォルトスタイルを上書き
-        'm-auto p-0 bg-transparent',
+        'w-[calc(100%_-_2rem)] p-0 bg-transparent',
+        sizeClasses[size],
+        placementClasses[placement],
         // backdrop — scrim はセマンティックトークン経由。値はプリミティブの
         // birch/900 を color-mix() でアルファ合成したもの（rgba 直値ではない）
         //
@@ -141,7 +155,6 @@ function ModalRoot({
         className={cn(
           'w-full rounded-md bg-surface shadow-overlay',
           'border border-border-muted',
-          sizeClasses[size],
           className,
         )}
         role="document"

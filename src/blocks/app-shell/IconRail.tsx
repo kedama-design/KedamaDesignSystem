@@ -13,14 +13,15 @@ import { cn } from '@kedama-design/design-system';
  * 「どの領域を見るか」を選び、サイドバーは「その領域の中の何を見るか」を選ぶ。**
  * したがってレールはサイドバーの畳み方（`collapsible`）に連動しない。常に出ている。
  *
- * ## アイコンだけにしない
+ * ## 表示はアイコンだけ、名前は失わない
  *
- * ベンチマーク §3.3 は避ける点として「**アイコンだけで意味を推測させる
- * ナビゲーション**」を挙げている。そのため:
+ * Linear / VS Code と同じく、レール上にラベル文字列は表示しない。領域名まで並べると
+ * SidebarNav と情報量が重複し、48px のレールが小さなサイドバーになってしまうため。
+ * 一方、アイコンの形だけで意味を推測させないよう次を契約にする。
  *
  * - `label` は必須。アクセシブルネーム（`aria-label`）と `title` の両方に使う
- * - `showLabels` でアイコン下に小さなラベルを出せる（VS Code も設定で出せる）。
- *   既定は false（レールを細く保つ）だが、業務システムでは true を推奨する
+ * - 現在地は色面ではなく、左端の細いインジケーターと `aria-current` で示す
+ * - 下部のアカウント／設定はアプリ全体のスコープ。選択中サイトの設定は SidebarNav に置く
  *
  * モバイルでは隠す。左ナビは SidebarNav の Drawer に集約する（ベンチマーク §7.2）。
  */
@@ -37,21 +38,89 @@ export interface IconRailItem {
 }
 
 export interface IconRailProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onSelect'> {
+  /** 上側に並ぶ主要な領域 */
   items: IconRailItem[];
+  /** 下側に固定するアカウント・アプリ全体設定など。サイト固有設定は置かない */
+  footerItems?: IconRailItem[];
   activeId?: string;
   onSelect?: (item: IconRailItem) => void;
   /** 上部（プロダクトのマーク） */
   header?: React.ReactNode;
-  /** 下部（設定・ユーザー） */
+  /** 下部の追加要素。項目として扱うものは `footerItems` を使う */
   footer?: React.ReactNode;
-  /** アイコンの下にラベルを出す。既定 false */
-  showLabels?: boolean;
   /** ナビゲーションランドマークの名前。既定「領域の切り替え」 */
   'aria-label'?: string;
 }
 
+interface RailItemListProps {
+  items: IconRailItem[];
+  activeId?: string;
+  onSelect?: (item: IconRailItem) => void;
+  position: 'main' | 'footer';
+}
+
+function RailItemList({
+  items,
+  activeId,
+  onSelect,
+  position,
+}: RailItemListProps): React.JSX.Element {
+  return (
+    <ul
+      data-slot={position === 'main' ? 'icon-rail-items' : 'icon-rail-footer-items'}
+      className={cn(
+        'flex flex-col items-center',
+        position === 'main' ? 'min-h-0 flex-1 overflow-y-auto' : 'shrink-0',
+      )}
+    >
+      {items.map((item) => {
+        const active = item.id === activeId;
+        return (
+          <li key={item.id} data-slot="icon-rail-item" data-position={position}>
+            <button
+              type="button"
+              data-slot="icon-rail-button"
+              data-active={active ? '' : undefined}
+              aria-label={item.label}
+              aria-current={active ? 'page' : undefined}
+              title={item.label}
+              disabled={item.disabled}
+              onClick={() => onSelect?.(item)}
+              className={cn(
+                'relative flex size-12 items-center justify-center',
+                'text-fg-muted transition-colors duration-fast ease-default',
+                'outline-hidden focus-visible:ring-2 focus-visible:ring-border-focus',
+                'hover:bg-hover hover:text-fg-default',
+                'data-active:text-fg-default',
+                'disabled:pointer-events-none disabled:text-fg-disabled',
+                'before:absolute before:top-1/2 before:left-0 before:h-7 before:w-0.5 before:-translate-y-1/2',
+                'before:bg-accent-primary before:opacity-0',
+                'before:transition-opacity before:duration-fast before:ease-default',
+                'data-active:before:opacity-100',
+                '[&>svg]:size-6',
+              )}
+            >
+              {item.icon}
+
+              {item.badge != null && (
+                <span
+                  data-slot="icon-rail-badge"
+                  aria-hidden="true"
+                  className="absolute top-0.5 right-0.5"
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export const IconRail = React.forwardRef<HTMLElement, IconRailProps>(function IconRail(
-  { items, activeId, onSelect, header, footer, showLabels = false, className, ...props },
+  { items, footerItems, activeId, onSelect, header, footer, className, ...props },
   ref,
 ) {
   const { 'aria-label': ariaLabel = '領域の切り替え', ...rest } = props;
@@ -62,8 +131,8 @@ export const IconRail = React.forwardRef<HTMLElement, IconRailProps>(function Ic
       data-slot="icon-rail"
       aria-label={ariaLabel}
       className={cn(
-        'hidden w-(--app-shell-rail-width) shrink-0 flex-col items-center gap-1 md:flex',
-        'border-r border-sidebar-border bg-sidebar p-1',
+        'hidden w-(--app-shell-rail-width) shrink-0 flex-col items-center md:flex',
+        'border-r border-sidebar-border bg-sidebar',
         className,
       )}
       {...rest}
@@ -74,56 +143,16 @@ export const IconRail = React.forwardRef<HTMLElement, IconRailProps>(function Ic
         </div>
       )}
 
-      <ul className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto">
-        {items.map((item) => {
-          const active = item.id === activeId;
-          return (
-            <li key={item.id} data-slot="icon-rail-item">
-              <button
-                type="button"
-                data-slot="icon-rail-button"
-                data-active={active ? '' : undefined}
-                aria-label={item.label}
-                aria-current={active ? 'page' : undefined}
-                title={item.label}
-                disabled={item.disabled}
-                onClick={() => onSelect?.(item)}
-                className={cn(
-                  'relative flex w-10 flex-col items-center justify-center gap-0.5 rounded-md py-1.5',
-                  'text-fg-muted transition-colors duration-fast ease-default',
-                  'outline-hidden focus-visible:ring-2 focus-visible:ring-border-focus',
-                  'hover:bg-hover hover:text-fg-default',
-                  'data-active:bg-selected data-active:text-fg-default',
-                  'disabled:pointer-events-none disabled:text-fg-disabled',
-                  '[&>svg]:size-5',
-                )}
-              >
-                {item.icon}
+      <RailItemList items={items} activeId={activeId} onSelect={onSelect} position="main" />
 
-                {showLabels && (
-                  <span
-                    data-slot="icon-rail-label"
-                    aria-hidden="true"
-                    className="w-full truncate text-center text-2xs leading-relaxed"
-                  >
-                    {item.label}
-                  </span>
-                )}
-
-                {item.badge != null && (
-                  <span
-                    data-slot="icon-rail-badge"
-                    aria-hidden="true"
-                    className="absolute top-0.5 right-0.5"
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      {footerItems != null && footerItems.length > 0 && (
+        <RailItemList
+          items={footerItems}
+          activeId={activeId}
+          onSelect={onSelect}
+          position="footer"
+        />
+      )}
 
       {footer != null && (
         <div data-slot="icon-rail-footer" className="flex shrink-0 flex-col items-center py-1">

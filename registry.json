@@ -8,7 +8,7 @@
       "name": "app-shell",
       "type": "registry:block",
       "title": "AppShell",
-      "description": "アプリケーションの外枠一式。AppShell / AuthShell / SidebarNav / IconRail / AppHeader / StatusBar / RightPane を1つのアイテムとして配る。Tier 0 は npm の @kedama-design/design-system から取る。",
+      "description": "アプリケーションの外枠一式。AppShell / AuthShell / AppTitleBar / SidebarNav / IconRail / AppHeader / StatusBar / RightPane を1つのアイテムとして配る。Tier 0 は npm の @kedama-design/design-system から取る。",
       "dependencies": ["@kedama-design/design-system", "lucide-react"],
       "docs": "Tier 0 を先に入れておくこと（@kedama-design/design-system は private な GitHub Packages。.npmrc と read:packages が要る）。AppShell は認証後の画面にだけ着せ、ログインなど認証前の画面には AuthShell を使う。",
       "files": [
@@ -21,6 +21,11 @@
           "path": "src/blocks/app-shell/AuthShell.tsx",
           "type": "registry:component",
           "target": "components/app-shell/AuthShell.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell/AppTitleBar.tsx",
+          "type": "registry:component",
+          "target": "components/app-shell/AppTitleBar.tsx"
         },
         {
           "path": "src/blocks/app-shell/SidebarNav.tsx",
@@ -56,6 +61,48 @@
           "path": "src/blocks/app-shell/index.ts",
           "type": "registry:component",
           "target": "components/app-shell/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "data-table",
+      "type": "registry:block",
+      "title": "DataTable",
+      "description": "TanStack Table v8を中核にした業務一覧。行選択・列フィルタ・ソート・列表示制御・loading / empty / error・任意ページングを提供する。フィルタとソートは保存ビューから外部制御できる。",
+      "dependencies": ["@kedama-design/design-system", "@tanstack/react-table@8.21.3"],
+      "docs": "列はIDで定義し、位置で値を参照しない。列表示は設定画面からcolumnVisibilityで制御し、フィルタはDataTableColumnHeaderから列ごとに行う。columnFilters / sortingを外部制御すると、AppHeaderのタブなどプロダクト側の保存ビューと接続できる。selectableで先頭に選択列を追加し、onSelectedRowsChangeで元データを一括操作へ渡せる。",
+      "files": [
+        {
+          "path": "src/blocks/data-table/DataTable.tsx",
+          "type": "registry:component",
+          "target": "components/data-table/DataTable.tsx"
+        },
+        {
+          "path": "src/blocks/data-table/index.ts",
+          "type": "registry:component",
+          "target": "components/data-table/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "command-palette",
+      "type": "registry:block",
+      "title": "CommandPalette",
+      "description": "cmdkを中核にした横断検索とクイック操作。安定したcommand ID、グループ、keywords、disabled、Cmd/Ctrl+K、制御・非制御の開閉を提供する。",
+      "dependencies": ["@kedama-design/design-system", "cmdk@1.1.1"],
+      "docs": "CommandPaletteは補助入口であり、主要操作をここだけに隠さない。外部のinput / textarea / select / contenteditableではCmd/Ctrl+Kを横取りしない。shortcutKey={null}でグローバルキーを無効化できる。",
+      "files": [
+        {
+          "path": "src/blocks/command-palette/CommandPalette.tsx",
+          "type": "registry:component",
+          "target": "components/command-palette/CommandPalette.tsx"
+        },
+        {
+          "path": "src/blocks/command-palette/index.ts",
+          "type": "registry:component",
+          "target": "components/command-palette/index.ts"
         }
       ]
     }

@@ -7,6 +7,7 @@ import { AppShell, useAppShell } from './AppShell';
 import { AuthShell } from './AuthShell';
 import { SidebarNav, type SidebarNavGroup } from './SidebarNav';
 import { IconRail, type IconRailItem } from './IconRail';
+import { AppTitleBar } from './AppTitleBar';
 import { AppHeader } from './AppHeader';
 import { StatusBar, StatusBarItem } from './StatusBar';
 import { RightPane } from './RightPane';
@@ -16,7 +17,7 @@ import { RightPane } from './RightPane';
  *
  * ## なぜ1ファイルにまとめてあるか
  *
- * 7つの部品は**1つのレジストリアイテム**として配られ、`useAppShell` を通じて
+ * 8つの部品は**1つのレジストリアイテム**として配られ、`useAppShell` を通じて
  * 1つの状態を共有する。AppShell の外では投げる設計なので、単体で描ける部品が
  * そもそも無い。契約はシェル1式として意味を持つ。
  *
@@ -81,6 +82,13 @@ describe('AppShell — スロットの契約', () => {
   it('渡したスロットをすべて描き、main はちょうど1つだけ持つ', () => {
     render(
       <AppShell
+        titleBar={
+          <AppTitleBar
+            navigation={<button>戻る</button>}
+            commandCenter={<button>全体検索</button>}
+            actions={<button>レイアウト</button>}
+          />
+        }
         iconRail={<IconRail items={RAILS} activeId="articles" />}
         sidebar={<SidebarNav groups={NAV} activeId="articles" />}
         header={<AppHeader breadcrumbs={[{ id: 'root', label: '記事' }]} />}
@@ -92,11 +100,29 @@ describe('AppShell — スロットの契約', () => {
     );
 
     expect(screen.getByRole('navigation', { name: '領域の切り替え' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '全体検索' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'レイアウト' })).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'メインナビゲーション' })).toBeInTheDocument();
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo', { name: 'ステータス' })).toBeInTheDocument();
     expect(screen.getAllByRole('main')).toHaveLength(1);
     expect(within(screen.getByRole('main')).getByText('コンテンツ')).toBeInTheDocument();
+  });
+
+  it('Title Bar は Editor 内の banner と分かれた最上段として描く', () => {
+    const { container } = render(
+      <AppShell
+        titleBar={<AppTitleBar commandCenter={<span>ワークスペース</span>} />}
+        header={<AppHeader breadcrumbs={[{ id: 'view', label: '現在のビュー' }]} />}
+      >
+        本文
+      </AppShell>,
+    );
+
+    const shell = container.querySelector('[data-slot="app-shell"]')!;
+    expect(shell.firstElementChild).toHaveAttribute('data-slot', 'app-title-bar');
+    expect(screen.getByText('ワークスペース')).toBeInTheDocument();
+    expect(screen.getAllByRole('banner')).toHaveLength(1);
   });
 
   it('スロットを渡さなければ、その領域は DOM に出ない', () => {
@@ -110,7 +136,7 @@ describe('AppShell — スロットの契約', () => {
 
   it('シェルの寸法を CSS カスタムプロパティで渡す', () => {
     const { container } = render(
-      <AppShell sidebarWidth="14rem" rightPaneWidth="20rem">
+      <AppShell sidebarWidth="14rem" rightPaneWidth="20rem" viewHeaderHeight="2.625rem">
         本文
       </AppShell>,
     );
@@ -118,6 +144,7 @@ describe('AppShell — スロットの契約', () => {
 
     expect(shell.style.getPropertyValue('--sidebar-width')).toBe('14rem');
     expect(shell.style.getPropertyValue('--app-shell-right-pane-width')).toBe('20rem');
+    expect(shell.style.getPropertyValue('--app-shell-view-header-height')).toBe('2.625rem');
   });
 });
 
@@ -394,22 +421,33 @@ describe('SidebarNav', () => {
 });
 
 describe('IconRail', () => {
-  it('アイコンだけにせず、必ずアクセシブルネームと title を持つ', () => {
-    render(<AppShell iconRail={<IconRail items={RAILS} activeId="articles" />}>本文</AppShell>);
+  it('表示はアイコンだけだが、アクセシブルネームと title は失わない', () => {
+    const { container } = render(
+      <AppShell iconRail={<IconRail items={RAILS} activeId="articles" />}>本文</AppShell>,
+    );
 
     const articles = screen.getByRole('button', { name: '記事' });
     expect(articles).toHaveAttribute('title', '記事');
     expect(articles).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: '設定' })).not.toHaveAttribute('aria-current');
+    expect(container.querySelector('[data-slot="icon-rail-label"]')).toBeNull();
   });
 
-  it('showLabels で見えるラベルも出せる', () => {
+  it('アカウントと全体設定を下部項目として分離できる', () => {
     const { container } = render(
-      <AppShell iconRail={<IconRail items={RAILS} showLabels />}>本文</AppShell>,
+      <AppShell
+        iconRail={<IconRail items={[RAILS[0]]} footerItems={[RAILS[1]]} activeId="settings" />}
+      >
+        本文
+      </AppShell>,
     );
-    const labels = container.querySelectorAll('[data-slot="icon-rail-label"]');
-    expect(labels).toHaveLength(RAILS.length);
-    expect(labels[0]).toHaveTextContent('記事');
+
+    const footer = container.querySelector<HTMLElement>('[data-slot="icon-rail-footer-items"]')!;
+    expect(within(footer).getByRole('button', { name: '設定' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(container.querySelector('[data-slot="icon-rail-items"] [aria-label="設定"]')).toBeNull();
   });
 
   it('サイドバーの畳み方に連動しない（役割が違う。VS Code の Activity Bar）', async () => {
@@ -430,6 +468,66 @@ describe('IconRail', () => {
 });
 
 describe('AppHeader', () => {
+  const TABS = [
+    { id: 'all', label: 'すべての記事' },
+    { id: 'reviews', label: '確認待ち', closable: true },
+  ];
+
+  it('開いている作業面を ID で選び、現在地を aria-current で伝える', async () => {
+    const user = userEvent.setup();
+    const onTabSelect = vi.fn();
+
+    render(
+      <AppShell header={<AppHeader tabs={TABS} activeTabId="all" onTabSelect={onTabSelect} />}>
+        本文
+      </AppShell>,
+    );
+
+    const tabs = screen.getByRole('navigation', { name: '開いているビュー' });
+    expect(within(tabs).getByRole('button', { name: 'すべての記事' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(tabs).getByRole('button', { name: '確認待ち' })).not.toHaveAttribute(
+      'aria-current',
+    );
+
+    await user.click(within(tabs).getByRole('button', { name: '確認待ち' }));
+    expect(onTabSelect).toHaveBeenCalledWith(expect.objectContaining({ id: 'reviews' }));
+  });
+
+  it('閉じる操作は closable なタブへ指定したときだけ出す', async () => {
+    const user = userEvent.setup();
+    const onTabClose = vi.fn();
+
+    render(<AppShell header={<AppHeader tabs={TABS} onTabClose={onTabClose} />}>本文</AppShell>);
+
+    expect(screen.queryByRole('button', { name: 'すべての記事を閉じる' })).toBeNull();
+    expect(screen.queryByRole('button', { name: '新しいビューを開く' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: '確認待ちを閉じる' }));
+    expect(onTabClose).toHaveBeenCalledWith(expect.objectContaining({ id: 'reviews' }));
+  });
+
+  it('タブだけで現在地が足りる場合は空のビューヘッダーを描かない', () => {
+    const { container } = render(
+      <AppShell
+        header={
+          <AppHeader
+            tabs={TABS}
+            activeTabId="all"
+            showSidebarToggle={false}
+            showRightPaneToggle={false}
+          />
+        }
+      >
+        本文
+      </AppShell>,
+    );
+
+    expect(container.querySelector('[data-slot="app-header-tab-bar"]')).not.toBeNull();
+    expect(container.querySelector('[data-slot="app-header-view-bar"]')).toBeNull();
+  });
+
   it('パンくずの末尾だけが現在地になる', () => {
     render(
       <AppShell
@@ -549,6 +647,32 @@ describe('RightPane', () => {
 
     await user.click(screen.getByRole('button', { name: '右ペインを閉じる' }));
     expect(pane()).toHaveAttribute('data-state', 'closed');
+  });
+
+  it('一覧の列見出しと揃う40pxのヘッダーと、シェルの面色を持つ', () => {
+    const { container } = render(
+      <AppShell defaultRightPaneOpen rightPane={<RightPane title="レビュー">中身</RightPane>}>
+        本文
+      </AppShell>,
+    );
+    const header = container.querySelector('[data-slot="right-pane-header"]');
+    expect(header?.className).toContain('h-10');
+    expect(header?.className).toContain('bg-sidebar');
+  });
+
+  it('デスクトップでは表示開始時に幅と不透明度を補間する', () => {
+    const { container } = render(
+      <AppShell defaultRightPaneOpen rightPane={<RightPane title="レビュー">中身</RightPane>}>
+        本文
+      </AppShell>,
+    );
+    const pane = container.querySelector('[data-slot="right-pane"]');
+    expect(pane?.className).toContain('transition-[width,opacity]');
+    expect(pane?.className).toContain('duration-normal');
+    expect(pane?.className).toContain('ease-enter');
+    expect(pane?.className).toContain('starting:w-0');
+    expect(pane?.className).toContain('starting:opacity-0');
+    expect(pane?.className).toContain('motion-reduce:transition-none');
   });
 
   it('制御できる', async () => {

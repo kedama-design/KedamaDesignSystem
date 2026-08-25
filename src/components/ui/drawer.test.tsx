@@ -51,6 +51,19 @@ describe('Drawer', () => {
     expect(popup?.className).not.toMatch(/\bshadow-(sm|md|lg)\b/);
   });
 
+  it('popup は移動だけでなく不透明度も補間して現れる', () => {
+    const { baseElement } = render(
+      <Drawer open>
+        <DrawerContent>
+          <DrawerTitle>詳細</DrawerTitle>
+        </DrawerContent>
+      </Drawer>,
+    );
+    const popup = baseElement.querySelector('[data-slot="drawer-popup"]');
+    expect(popup?.className).toContain('transition-[transform,height,opacity,filter]');
+    expect(popup?.className).toContain('data-starting-style:opacity-0');
+  });
+
   it('carries the expected slots', () => {
     const { baseElement } = render(
       <Drawer open>

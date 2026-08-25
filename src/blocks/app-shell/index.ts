@@ -32,7 +32,14 @@ export {
 
 export { IconRail, type IconRailProps, type IconRailItem } from './IconRail';
 
-export { AppHeader, type AppHeaderProps, type AppHeaderBreadcrumb } from './AppHeader';
+export { AppTitleBar, type AppTitleBarProps } from './AppTitleBar';
+
+export {
+  AppHeader,
+  type AppHeaderProps,
+  type AppHeaderBreadcrumb,
+  type AppHeaderTab,
+} from './AppHeader';
 
 export {
   StatusBar,

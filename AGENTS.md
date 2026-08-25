@@ -124,12 +124,16 @@ src/
                       accordion, drawer, skeleton, spinner, table, toast
                       （sheet は廃止済み。Drawer が唯一の汎用エッジパネル）
   blocks/           ← Tier 2。レジストリ配布で、npm では配らない（§2.1・§4.5）
-    app-shell/      ← AppShell / AuthShell / SidebarNav / IconRail / AppHeader /
-                      StatusBar / RightPane。registry.json の1アイテム。
+    app-shell/      ← AppShell / AuthShell / AppTitleBar / SidebarNav / IconRail /
+                      AppHeader / StatusBar / RightPane。registry.json の1アイテム。
                       src/index.ts から export しない（tests/tier2Boundary.test.ts）。
                       Tier 0 は `@kedama-design/design-system` 経由でだけ使う
                       （自パッケージ名を src/index.ts へ向ける alias が
                       tsconfig / vite / vitest の3箇所にある）
+    data-table/     ← TanStack Table v8。列フィルタ・ソート・表示切替・状態表示。
+                      registry.json の別アイテムで、src/index.ts から export しない
+    command-palette/ ← cmdk。横断検索・クイック操作・Cmd/Ctrl+K。
+                       registry.json の別アイテムで、src/index.ts から export しない
   styles/
     tailwind.css    ← @theme でトークンを Tailwind に接続。@layer base の既定値もここ
     tokens.css      ← 自動生成（編集禁止・gitignore 済み）

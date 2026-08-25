@@ -24,8 +24,9 @@ import { useAppShell } from './AppShell';
  *
  * デスクトップでは `display:none` にする（`hidden` ＋ `data-[state=open]:flex`）。
  * **レイアウトとペイントから外れるだけで、React ツリーは保持される。**
- * 中身は unmount されず、内部状態はそのまま残る。幅を 0 へ遷移させる案を
- * 採らないのは、閉じている間もレイアウト計算が走り続けるのを避けるため
+ * 中身は unmount されず、内部状態はそのまま残る。開くときは
+ * `@starting-style` から幅と不透明度を補間するが、閉じた後は `display:none` に戻す。
+ * 閉じている間も中身のレイアウト計算が走り続ける状態にはしない
  * （中身が重い差分表示・履歴を想定している）。
  *
  * モバイル（Drawer）は閉じると unmount される。Base UI の Presence による
@@ -56,7 +57,7 @@ export const RightPane = React.forwardRef<HTMLElement, RightPaneProps>(function 
   const head = (
     <div
       data-slot="right-pane-header"
-      className="flex h-(--app-shell-header-height,3rem) shrink-0 items-center gap-2 border-b border-border-muted px-3"
+      className="flex h-10 shrink-0 items-center gap-2 border-b border-border-muted bg-sidebar px-3"
     >
       <span data-slot="right-pane-title" className="min-w-0 flex-1 truncate text-sm font-medium">
         {title}
@@ -124,8 +125,9 @@ export const RightPane = React.forwardRef<HTMLElement, RightPaneProps>(function 
       data-slot="right-pane"
       data-state={rightPaneOpen ? 'open' : 'closed'}
       className={cn(
-        'hidden w-(--app-shell-right-pane-width) shrink-0 flex-col',
+        'hidden w-(--app-shell-right-pane-width) shrink-0 flex-col opacity-100',
         'border-l border-border-muted bg-surface',
+        'transition-[width,opacity] duration-normal ease-enter starting:w-0 starting:opacity-0 motion-reduce:transition-none',
         'data-[state=open]:flex',
         className,
       )}

@@ -7,7 +7,7 @@ description: >
   知見を汎用化し、Base UI + shadcn/ui + Storybook を土台に「プロトタイプ＝本番コード」を
   実現する。実装は別セッション（Claude Code 等）で行う前提のハンドオフ文書。
 adopted: 2026-07-28
-status: Draft v0.12 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
+status: Draft v0.15 — すらすらスタジオの実態調査（既存UIあり・@kedama/design-system 0.1.0を
   tarballで導入済み）を反映し、Phase Cを「presentational層の全面再構築」として再定義。
   bmad-ux側のUI/UX discoveryと方針が競合していた件を解消（Kedamaは離脱先ではなく供給元）。
   最大の欠落だったAppShell一式をTier 2に追加（§4.5）、すらすらスタジオ由来のブロックを在庫に反映。
@@ -29,6 +29,13 @@ status: Draft v0.12 — すらすらスタジオの実態調査（既存UIあり
   検証するcanary、StorybookのGitHub Pagesデプロイを追加。あわせて残存していた
   4件の矛盾（冒頭の「実装しない」・§0.5の未整備一覧・§2.1のTier 1配布・§4.5の
   「Ibukiが正」）を訂正した。
+  v0.13でPhase BのAppShellをVS Code / Linearの階層へ再設計し、AppTitleBar・Editor tabs・
+  アイコンのみのIconRail・条件付きView Headerを確定。DataTableをTanStack Table v8の独立した
+  registry:blockとして実装し、列ヘッダーのフィルタ、列IDによる表示制御、件数の外部連携を固定した。
+  v0.14でCommandPaletteをshadcn 4.16.1のCommand構造とcmdk 1.1.1から実装。安定したcommand ID、
+  Cmd/Ctrl+K、編集欄とのショートカット競合回避、既存Modalへの統合を契約化した。
+  v0.15で保存ビューを独立部品ではなくAppHeaderのタブとDataTableの外部制御状態の組み合わせに
+  確定。常設FilterBarは作らず、高度な横断条件が実要件になった時点まで保留する。
 ---
 
 # 横断 UI コンポーネント基盤 実装仕様（draft）
@@ -54,18 +61,21 @@ status: Draft v0.12 — すらすらスタジオの実態調査（既存UIあり
 
 条項を撤回したらここに1行足すこと。**説明は書かない。**内容は後継の節を読む。
 
-| 日付       | 撤回された条項                                                                | 後継の方針                                                                                 | 参照                              |
-| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------- |
-| 2026-07-30 | 構成・レイアウト・スペーシング・エレベーション・角丸は **Ibuki が正**         | **shadcn が正**（トークンの値は引き続き Kedama）                                           | §0.6 方針転換ブロック             |
-| 2026-07-30 | （上の帰結）A-1 の「Card の `shadow-sm` を削除」                              | 影は持つ。段は用途名で参照                                                                 | §0.6・§3.6                        |
-| 2026-07-29 | bmad-ux の「Kedama から段階移行する」仮説                                     | Kedama は離脱先ではなく**供給元**                                                          | §2.1.5                            |
-| 2026-07-28 | 新規リポジトリを作る計画                                                      | 既存 `KedamaDesignSystem` を土台にする                                                     | §0.5                              |
-| 2026-07-28 | `text-faint` と 3:1 コントラスト例外案                                        | `fg.decorative` / `placeholder` / `disabled` / `muted` へ分離                              | §0.7                              |
-| 2026-08-02 | Card padding 16px（撤回済み条項を根拠にした実装）                             | **24px**。例外は切らない                                                                   | `docs/q1-tier0-unification.md` D5 |
-| 2026-08-02 | Drawer をネイティブ `<dialog>` 拡張で実装する候補                             | **Base UI Drawer** を Tier 0 の正とする（Sheet は廃止）                                    | §2.2・§4                          |
-| 2026-08-03 | Storybook のホスティング先は **Vercel**                                       | **GitHub Pages**（`GITHUB_TOKEN` だけで完結）                                              | §6                                |
-| 2026-08-03 | 「このリポジトリ自体では実装しない」                                          | このリポジトリで実装する（実態に合わせた訂正）                                             | 冒頭                              |
-| 2026-08-10 | ショーケース兼レジストリを Next.js `apps/showcase` の軽量 monorepo として新設 | 既存 Storybook にカタログと `/r/*.json` を同居し、GitHub Pages で配信（monorepo 化しない） | §2.1・§7 Phase B・§8              |
+| 日付       | 撤回された条項                                                                | 後継の方針                                                                                   | 参照                              |
+| ---------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------- |
+| 2026-07-30 | 構成・レイアウト・スペーシング・エレベーション・角丸は **Ibuki が正**         | **shadcn が正**（トークンの値は引き続き Kedama）                                             | §0.6 方針転換ブロック             |
+| 2026-07-30 | （上の帰結）A-1 の「Card の `shadow-sm` を削除」                              | 影は持つ。段は用途名で参照                                                                   | §0.6・§3.6                        |
+| 2026-07-29 | bmad-ux の「Kedama から段階移行する」仮説                                     | Kedama は離脱先ではなく**供給元**                                                            | §2.1.5                            |
+| 2026-07-28 | 新規リポジトリを作る計画                                                      | 既存 `KedamaDesignSystem` を土台にする                                                       | §0.5                              |
+| 2026-07-28 | `text-faint` と 3:1 コントラスト例外案                                        | `fg.decorative` / `placeholder` / `disabled` / `muted` へ分離                                | §0.7                              |
+| 2026-08-02 | Card padding 16px（撤回済み条項を根拠にした実装）                             | **24px**。例外は切らない                                                                     | `docs/q1-tier0-unification.md` D5 |
+| 2026-08-02 | Drawer をネイティブ `<dialog>` 拡張で実装する候補                             | **Base UI Drawer** を Tier 0 の正とする（Sheet は廃止）                                      | §2.2・§4                          |
+| 2026-08-03 | Storybook のホスティング先は **Vercel**                                       | **GitHub Pages**（`GITHUB_TOKEN` だけで完結）                                                | §6                                |
+| 2026-08-03 | 「このリポジトリ自体では実装しない」                                          | このリポジトリで実装する（実態に合わせた訂正）                                               | 冒頭                              |
+| 2026-08-10 | ショーケース兼レジストリを Next.js `apps/showcase` の軽量 monorepo として新設 | 既存 Storybook にカタログと `/r/*.json` を同居し、GitHub Pages で配信（monorepo 化しない）   | §2.1・§7 Phase B・§8              |
+| 2026-08-16 | AppHeader はデスクトップで常に作業タブと View Header の二層にする             | View Header はビュー固有の現在地・検索・操作がある場合だけ描き、重複する横段を作らない       | §4.5                              |
+| 2026-08-17 | AppHeader のタブ末尾に汎用の新規作成（`+`）を任意表示する                     | 画面を開いたときにプロダクト側がタブを追加し、AppHeader は ID・選択・閉じるだけを約束する    | §4.5                              |
+| 2026-08-19 | FilterBar / SavedViewPicker を独立 Tier 2 部品として追加                      | 保存ビューは AppHeader のタブと DataTable の外部制御状態で構成。FilterBar は要求発生まで保留 | §4・§7 Phase B                    |
 
 ---
 
@@ -957,12 +967,54 @@ Ibuki の9ファミリーを移植して不足分を新造するより大幅に�
 | ActionCard / FormCard / Section / EmptyState                                       | OpenStatusテンプレート                                               | ダッシュボードSaaS全般で使う定型カード構成                                                                                                                                                                                                                            |
 | **Table プリミティブ**（Table/THead/TBody/TRow/TCell）                             | 新規（Tier 0 側に置く）                                              | トークンでスタイルしただけの薄い要素群。TanStack 非依存                                                                                                                                                                                                               |
 | **DataTable**                                                                      | shadcn/ui（Base UI variant）を取り込み＋再スタイル                   | TanStack Table v8 の上に、ソート・ページネーション・カラム表示切替・loading/empty/error を載せた完成品。**doc32 §6.5-2 の「列位置決め打ち」バグを、カラム定義でしか値を取れないAPIによって構造的に封じる**                                                            |
-| **FilterBar / SavedViewPicker（汎用部分）**                                        | ベンチマーク §7.3                                                    | 一覧の絞り込みと保存ビュー。業務語彙を持たない骨格のみ                                                                                                                                                                                                                |
-| **CommandPalette**                                                                 | shadcn/ui `Command` を取り込み                                       | Cmd+K。主要操作は画面上にも残す前提（カタログの cmdk も候補）                                                                                                                                                                                                         |
+| **FilterBar / SavedViewPicker**                                                    | **独立部品としては実装しない**                                       | 保存ビューは AppHeader のタブと DataTable の外部制御状態をプロダクト側で構成する。列単位の条件は列見出しへ置き、FilterBar は横断的な AND / OR 条件が実要件になった時点まで保留                                                                                        |
+| **CommandPalette**                                                                 | shadcn/ui 4.16.1 `Command`（cmdk 1.1.1）を取り込み＋再スタイル       | Cmd/Ctrl+K。主要操作は画面上にも残す。外部の編集欄ではショートカットを横取りしない                                                                                                                                                                                    |
 | **チャート一式**（Area/Bar/Line/Pie/Radar/Gauge/Funnel/Scatter/Sankey/Heatmap 等） | [bklit-ui](https://github.com/bklit/bklit-ui) を取り込み＋再スタイル | 本物の shadcn レジストリ（`shadcn add @bklit/line-chart`）。15種以上。**チャートは MIT、Studio は独占なので MIT 部分のみ取る**。`levelColors` 等の prop から data-viz トークンを注入する                                                                              |
 | **Grass（草ヒートマップ）**                                                        | 同上 `heatmap-chart`                                                 | **Ibuki の Grass は上流でカバー済み**（週×曜日グリッド／月ラベル／0-4の5段階／`weekStartDay`／`xDomain`／Less-More凡例）。`grass-math.ts` の週配置ロジックごと不要になる。ただし「animated cells」「hover時のscaling」が Calm UI と reduced-motion に適合するか要確認 |
 | **TimelineRow**                                                                    | Ibuki `timeline-row.tsx`                                             | **上流に無い。自前維持。** doc32 §6.5-5 の「画面ごとに固定ピクセル値をコピペ」を prop 化で解決した資産であり、失ってはいけない                                                                                                                                        |
 | **TrackBar**                                                                       | Ibuki `track-bar.tsx`                                                | 上流に無い。自前維持                                                                                                                                                                                                                                                  |
+
+**2026-08-16 DataTable 実装契約**：`@tanstack/react-table@8.21.3`（MIT）を提供側の
+devDependencyとレジストリアイテムの依存へ完全固定した。`data-table` は `app-shell` と分けた
+独立の `registry:block` とし、次を契約にする。
+
+- 列ヘッダーを押して、列単位のテキスト／単一選択フィルタと昇順／降順を操作する
+- 列表示は安定した列IDをキーに `columnVisibility` で外部制御する。設定画面は業務画面側で組む
+- `columnFilters` / `defaultColumnFilters` / `onColumnFiltersChange` と
+  `sorting` / `defaultSorting` / `onSortingChange` で、列フィルタと並び順を
+  controlled / uncontrolled の両方で扱う
+- フィルタ後件数は `onFilteredRowCountChange` で StatusBar など表の外へ渡す
+- `selectable` で先頭に選択列を追加する。行選択は controlled / uncontrolled の両方を
+  受け、ヘッダーのチェックボックスは表示中の行の全選択と一部選択（mixed）を表す
+- 選択結果は行IDだけでなく `onSelectedRowsChange` で元データを外へ渡し、StatusBar などの
+  一括操作へ接続できるようにする
+- 列操作は低コントラストの chevron を常設し、ホバーで見出し面を反転させない。フィルタ・
+  ソート適用時だけ記号とアクセント色を状態表示へ使う
+- loading / empty / error を内蔵し、`pageSize` を指定した場合だけページングする
+- 横スクロール領域の端でも列メニューが切れないよう、メニューはヘッダーへ位置付けた
+  ポータルとして描画する
+
+**2026-08-19 保存ビュー契約**：保存ビューは独立した `SavedViewPicker` を追加せず、
+`AppHeader` のタブIDと、外部制御した `DataTable` の `columnFilters` / `sorting` を
+プロダクト側で対応付ける。ビュー名・共有範囲・永続化先は業務要件なので基盤へ持ち込まない。
+列単位の条件は既存の列見出しメニュー、件数は既存の `StatusBar` に置く。複数列をまたぐ
+ネストした AND / OR 条件が必要になった場合だけ、常設の横段ではなく既存ヘッダーの
+action領域から開くオンデマンドUIとして `FilterBar` を再検討する。
+
+**2026-08-18 CommandPalette 実装契約**：固定済みshadcn CLI 4.16.1の `base-nova/command` を
+確認し、同じ `Command → Input + List → Group / Item / Separator / Empty` 構造と
+`cmdk@1.1.1`（MIT）の検索・キーボード挙動を採用した。`command-palette` は独立の
+`registry:block` とし、次を契約にする。
+
+- commandとgroupは安定したIDを持つ。表示ラベルや配列位置を実行分岐のキーにしない
+- `groups` のデータ駆動APIと `onCommandSelect(command)` で、現在文脈に応じた候補を組む
+- `open` / `defaultOpen` / `onOpenChange` で制御・非制御の両方を扱い、AppTitleBarの入口と接続する
+- 既定のCmd/Ctrl+Kは、パレット外のinput / textarea / select / contenteditableでは横取りしない。
+  記事編集のリンク挿入等を守り、`shortcutKey={null}` でグローバルキー自体も無効化できる
+- CommandPaletteは補助入口であり、主要な移動・編集・一括操作は画面上にも残す
+- shadcnのDialog / InputGroupは持ち込まず、既存Tier 0のネイティブ `Modal` を使う。
+  Modalへ視覚タイトルなしの `ariaLabel` と上寄せの `placement="top"` だけを追加する
+- モバイルも同じtop layerのdialogを使い、Drawerとの二重実装やフォーカス挙動の分岐を作らない
 
 ### Tier 3 — 明示的にプロダクト固有（汎用化しない）
 
@@ -998,14 +1050,33 @@ VersionDiff／ApprovalBar／PublishStatus
   必要か・何を置くかを決める材料であって、実装の形を決めるものではない
 - **トークンの値（色・タイポ・モーション・エレベーションの色）** … Kedama
 
-| コンポーネント | 役割                                                         | 出典                                     |
-| -------------- | ------------------------------------------------------------ | ---------------------------------------- |
-| `AppShell`     | 全体の骨格。どのスロットを持つかを型で規定する               | Ibuki `.app`                             |
-| `SidebarNav`   | 左サイドバー（224〜240px）。ラベル付きナビ                   | Ibuki `.side` ／ ベンチ §7.2             |
-| `IconRail`     | 左端のアイコンのみの細いレール（VS Code / Linear 型）        | ベンチ §3.2・3.3                         |
-| `AppHeader`    | 上部バー。パンくず／検索／Cmd+K／通知／ユーザー              | Ibuki `.apphead` ／ ベンチ §7.2          |
-| `StatusBar`    | 下部ステータスバー。接続状態・保存状態・件数等               | Ibuki `.statusbar`（未コンポーネント化） |
-| `RightPane`    | 開閉可能な右ペイン（320〜400px）。モバイルでは Drawer へ変換 | ベンチ §7.2                              |
+| コンポーネント | 役割                                                                 | 出典                                      |
+| -------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| `AppShell`     | 全体の骨格。どのスロットを持つかを型で規定する                       | Ibuki `.app`                              |
+| `AppTitleBar`  | 全体の履歴移動・Command Center・レイアウト操作を置く最上段           | VS Code Title Bar / Command Center        |
+| `SidebarNav`   | 左サイドバー（224〜240px）。ラベル付きナビ                           | Ibuki `.side` ／ ベンチ §7.2              |
+| `IconRail`     | 左端のアイコンのみの細いレール。名前は `aria-label` / `title` に残す | ベンチ §3.2・3.3 ／ VS Code Activity Bar  |
+| `AppHeader`    | 作業タブと、必要時だけ現在ビューのパンくず／操作を出す View Header   | Linear view header ／ VS Code editor tabs |
+| `StatusBar`    | 下部ステータスバー。接続状態・保存状態・件数等                       | Ibuki `.statusbar`（未コンポーネント化）  |
+| `RightPane`    | 開閉可能な右ペイン（320〜400px）。モバイルでは Drawer へ変換         | ベンチ §7.2                               |
+
+**2026-08-15 デザインレビューの具体化**：初回実装は各スロットを備えていたが、単一ヘッダーに
+異なる階層の操作が同居し、IconRail の可視ラベルと大きな選択面が SidebarNav と競合していた。
+VS Code と Linear の公式資料を再調査し、クロームの責務を次のように分ける。
+
+- IconRail は視覚的にアイコンのみとし、領域の切替だけを担う。名前は支援技術とホバーで失わない
+- IconRail 下部のアカウント／設定はアプリ全体、選択中サイトの設定は SidebarNav のスコープとする
+- AppTitleBar を全幅の最上段として分離し、全体検索とレイアウト操作を Editor 内へ混ぜない
+- AppHeader は矩形の連続タブを持つ。View Header はビュー固有の現在地・検索・操作がある場合だけ加え、
+  タブと同じ現在地を繰り返すだけの横段は描かない。モバイルは必要な View Header だけを残す
+- タブは ID / 選択 / 閉じるを約束する。画面を開いた結果としてプロダクト側が追加し、既に開いていれば
+  選択する。対象が曖昧な汎用の `+` は置かない。履歴・並べ替え・ピン留め・永続化も各プロダクト側
+- Title Bar / タブ / View Header は 36px、Activity Bar は48pxセルを基準にし、反復作業向けの密度を作る
+- アプリクロームを後退させ、主コンテンツを連続した作業面として見せる
+
+調査根拠と採用しなかった範囲は `docs/app-shell-design-review.md` に記録する。これは既存条項の
+撤回ではなく、AppTitleBar / AppHeader / IconRail の責務を具体化する更新である。ただし
+2026-08-16 の「AppHeader を常に二層にする」から条件付き表示への変更は撤回として索引に登録した。
 
 **シェル適用ルール（最重要）**：`AppShell` は「どのルートに外枠を着せるか」を**明示的に選択させる
 API** を持つこと。ログイン・招待受諾・2段階認証など**認証前の画面にサイドバーが出てはならない**。
@@ -1141,6 +1212,12 @@ Storybook で組んだ本番コンポーネントに、既存のデータ取得�
    - 紹介面 … `src/stories/Registry.mdx` ＋ `RegistryCatalog.tsx`（`registry.json` から生成）
    - 公開 URL … `https://kedama-design.github.io/KedamaDesignSystem/r/[name].json`
 
+   **2026-08-19 現在**：`app-shell` / `data-table` / `command-palette` の3アイテムを実装。
+   DataTable は記事管理固有の18列を持たず、列定義とサイト別の表示設定はプロダクト側で
+   組み合わせる。保存ビューはAppHeaderのタブIDとDataTableの外部制御状態をプロダクト側で
+   対応付けるため、FilterBar / SavedViewPickerは独立アイテムにしない。CommandPaletteも
+   業務語彙を持たず、現在文脈のcommand群はプロダクト側で組む。次は残りのTier 2を進める。
+
 5. **Phase C（すらすらスタジオの presentational 層 再構築＝本番実証）★ゴール達成地点**：
    すらすらスタジオの画面を、HTMLプロトタイプを介さず **Storybook上で本番コンポーネントを
    組む形で設計 → そのままcontainerを被せて本番化**する。ここで「プロトタイプと本番が同一
@@ -1193,7 +1270,7 @@ Phase D/E はIbukiの本番影響があるため、Codexレビュー＋段階的
 | bmad-ux discovery との関係                 | discovery を一旦中断。「Kedamaから段階移行」の仮説は破棄（Kedamaは供給元）                                                                 | §2.1.5                               |
 | AppShell の扱い                            | 在庫から欠落していたため Tier 2 に追加。**Phase B で最優先**                                                                               | §4.5                                 |
 | すらすらスタジオの独立ダッシュボード       | 作らない。記事一覧をホーム兼ダッシュボードとする（ベンチマーク §2）                                                                        | §4.6                                 |
-| データテーブル                             | TanStack Table v8（すらすらスタジオに導入済み）。v9はベータのため見送り                                                                    | §4                                   |
+| データテーブル                             | TanStack Table v8.21.3を完全固定した独立 `registry:block`。列ヘッダーフィルタ・列ID表示制御・行選択・状態・任意ページングを提供            | §4                                   |
 | Mantine                                    | 不採用（独自テーマ体系がKedamaのトークン体系と競合するため）                                                                               | §2.1.5                               |
 | **パッケージ名**                           | **`@kedama-design/design-system`**。GitHub Organization `kedama-design` を新規作成し移管（`@kedama` は取得不可）                           | §2.1                                 |
 | **チャートの配布層**                       | Tier 1（npm）を解体し Tier 2（レジストリ）へ移す。一貫性は data-viz トークンで担保                                                         | §4                                   |

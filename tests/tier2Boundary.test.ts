@@ -143,6 +143,7 @@ describe('Tier 2 の配布境界', () => {
     for (const required of [
       'AppShell.tsx',
       'AuthShell.tsx',
+      'AppTitleBar.tsx',
       'SidebarNav.tsx',
       'IconRail.tsx',
       'AppHeader.tsx',
@@ -156,5 +157,33 @@ describe('Tier 2 の配布境界', () => {
   it('app-shell は Tier 0 を npm 依存として宣言している', () => {
     const appShell = registry.items.find((item) => item.name === 'app-shell')!;
     expect(appShell.dependencies ?? []).toContain('@kedama-design/design-system');
+  });
+
+  it('data-table は独立した block として TanStack Table v8 を固定する', () => {
+    const dataTable = registry.items.find((item) => item.name === 'data-table');
+    expect(dataTable, 'registry.json に data-table がありません').toBeDefined();
+    expect(dataTable!.type).toBe('registry:block');
+    expect(dataTable!.dependencies ?? []).toEqual([
+      '@kedama-design/design-system',
+      '@tanstack/react-table@8.21.3',
+    ]);
+    expect(dataTable!.files.map((file) => file.path.split('/').pop())).toEqual([
+      'DataTable.tsx',
+      'index.ts',
+    ]);
+  });
+
+  it('command-palette は独立した block として cmdk を固定する', () => {
+    const commandPalette = registry.items.find((item) => item.name === 'command-palette');
+    expect(commandPalette, 'registry.json に command-palette がありません').toBeDefined();
+    expect(commandPalette!.type).toBe('registry:block');
+    expect(commandPalette!.dependencies ?? []).toEqual([
+      '@kedama-design/design-system',
+      'cmdk@1.1.1',
+    ]);
+    expect(commandPalette!.files.map((file) => file.path.split('/').pop())).toEqual([
+      'CommandPalette.tsx',
+      'index.ts',
+    ]);
   });
 });

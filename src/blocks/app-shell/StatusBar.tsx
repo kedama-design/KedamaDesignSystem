@@ -33,7 +33,7 @@ export interface StatusBarProps extends React.HTMLAttributes<HTMLElement> {
   'aria-label'?: string;
 }
 
-const STATUS_BAR_HEIGHT = '1.75rem';
+const STATUS_BAR_HEIGHT = '1.5rem';
 
 export const StatusBar = React.forwardRef<HTMLElement, StatusBarProps>(function StatusBar(
   { left, right, children, className, style, ...props },
@@ -47,8 +47,8 @@ export const StatusBar = React.forwardRef<HTMLElement, StatusBarProps>(function 
       data-slot="status-bar"
       aria-label={ariaLabel}
       className={cn(
-        'flex h-(--app-shell-status-bar-height) shrink-0 items-center gap-3',
-        'border-t border-border-muted bg-surface px-3 text-xs text-fg-muted',
+        'flex h-(--app-shell-status-bar-height) shrink-0 items-center gap-2.5',
+        'border-t border-border-muted bg-sidebar px-2 text-xs text-fg-muted',
         className,
       )}
       style={
@@ -57,7 +57,7 @@ export const StatusBar = React.forwardRef<HTMLElement, StatusBarProps>(function 
       {...rest}
     >
       {left != null && (
-        <div data-slot="status-bar-left" className="flex min-w-0 items-center gap-3">
+        <div data-slot="status-bar-left" className="flex min-w-0 items-center gap-2.5">
           {left}
         </div>
       )}
@@ -65,7 +65,7 @@ export const StatusBar = React.forwardRef<HTMLElement, StatusBarProps>(function 
       {children}
 
       {right != null && (
-        <div data-slot="status-bar-right" className="ml-auto flex min-w-0 items-center gap-3">
+        <div data-slot="status-bar-right" className="ml-auto flex min-w-0 items-center gap-2.5">
           {right}
         </div>
       )}

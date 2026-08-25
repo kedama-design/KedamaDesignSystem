@@ -72,9 +72,13 @@ src/
     semantic/       ← 用途（fg.default, heading-2xl）
   components/       ← Button, Badge, TextField, Card, Modal, Icon
   blocks/           ← Tier 2（レジストリ配布・npm では配らない）
-    app-shell/      ← AppShell / AuthShell / SidebarNav / IconRail /
+    app-shell/      ← AppShell / AuthShell / AppTitleBar / SidebarNav / IconRail /
                       AppHeader / StatusBar / RightPane。registry.json の1アイテム。
                       src/index.ts から export しない
+    data-table/     ← TanStack Table v8。registry.json の別アイテム。
+                      src/index.ts から export しない
+    command-palette/ ← cmdk。registry.json の別アイテム。
+                       src/index.ts から export しない
   styles/
     tailwind.css    ← @theme でトークンを Tailwind に接続
     tokens.css      ← 自動生成（編集禁止）

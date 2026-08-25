@@ -4,6 +4,12 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Modal } from './Modal';
 
+const sizeClassesForTest = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-2xl',
+} as const;
+
 // jsdom では HTMLDialogElement.showModal / close が未実装のため、モックする
 beforeEach(() => {
   if (!HTMLDialogElement.prototype.showModal) {
@@ -125,6 +131,27 @@ describe('Modal', () => {
     expect(document.getElementById(describedBy!)?.textContent).toBe('説明文');
   });
 
+  it('視覚的な title が無いとき ariaLabel で名前を付けられる', () => {
+    render(
+      <Modal open onClose={vi.fn()} ariaLabel="コマンドパレット">
+        内容
+      </Modal>,
+    );
+    expect(screen.getByRole('dialog', { name: 'コマンドパレット' })).toBeInTheDocument();
+  });
+
+  it('top placement は上寄せの余白を使う', () => {
+    render(
+      <Modal open onClose={vi.fn()} ariaLabel="検索" placement="top">
+        内容
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: '検索' });
+    expect(dialog.className).toContain('mt-4');
+    expect(dialog.className).toContain('sm:mt-[18vh]');
+    expect(dialog.className).not.toContain('m-auto');
+  });
+
   // ─── サブコンポーネント ───────────────────────────────
 
   it('renders Modal.Body', () => {
@@ -163,7 +190,9 @@ describe('Modal', () => {
         <Modal.Body>内容</Modal.Body>
       </Modal>,
     );
-    expect(container.innerHTML).toBeTruthy();
+    const dialog = container.querySelector('dialog');
+    expect(dialog).toHaveClass('w-[calc(100%_-_2rem)]');
+    expect(dialog).toHaveClass(sizeClassesForTest[size]);
   });
 
   // ─── showModal / close 呼び出し ──────────────────────

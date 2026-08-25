@@ -48,6 +48,7 @@ import { useIsMobile } from './useIsMobile';
  * @example
  * ```tsx
  * <AppShell
+ *   titleBar={<AppTitleBar commandCenter={commandCenter} actions={layoutActions} />}
  *   iconRail={<IconRail items={rails} activeId="articles" onSelect={select} />}
  *   sidebar={<SidebarNav groups={nav} activeId="all" onSelect={select} />}
  *   header={<AppHeader breadcrumbs={crumbs} actions={actions} />}
@@ -97,6 +98,8 @@ export interface AppShellProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   /** 主コンテンツ。`<main>` の中に入る */
   children: React.ReactNode;
 
+  /** ワークベンチ全体の最上段。{@link AppTitleBar} を想定 */
+  titleBar?: React.ReactNode;
   /** 左端のアイコンレール。{@link IconRail} を想定 */
   iconRail?: React.ReactNode;
   /** 左サイドバー。{@link SidebarNav} を想定 */
@@ -136,6 +139,8 @@ export interface AppShellProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   railWidth?: string;
   /** 右ペインの幅。既定 `22.5rem`（360px。§4.5 の 320〜400px の中央） */
   rightPaneWidth?: string;
+  /** 現在ビューのヘッダー高。既定 `2.25rem`（36px。VS Code の行密度） */
+  viewHeaderHeight?: string;
 }
 
 // ─── コンテキスト ───────────────────────────────────────
@@ -171,12 +176,14 @@ const DEFAULT_SIDEBAR_WIDTH = '15rem';
 const DEFAULT_SIDEBAR_WIDTH_ICON = '3rem';
 const DEFAULT_RAIL_WIDTH = '3rem';
 const DEFAULT_RIGHT_PANE_WIDTH = '22.5rem';
+const DEFAULT_VIEW_HEADER_HEIGHT = '2.25rem';
 
 // ─── AppShell ───────────────────────────────────────────
 
 export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
   {
     children,
+    titleBar,
     iconRail,
     sidebar,
     header,
@@ -194,6 +201,7 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(function
     sidebarWidthIcon = DEFAULT_SIDEBAR_WIDTH_ICON,
     railWidth = DEFAULT_RAIL_WIDTH,
     rightPaneWidth = DEFAULT_RIGHT_PANE_WIDTH,
+    viewHeaderHeight = DEFAULT_VIEW_HEADER_HEIGHT,
     className,
     style,
     ...props
@@ -301,11 +309,14 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(function
             '--sidebar-width-icon': sidebarWidthIcon,
             '--app-shell-rail-width': railWidth,
             '--app-shell-right-pane-width': rightPaneWidth,
+            '--app-shell-view-header-height': viewHeaderHeight,
             ...style,
           } as React.CSSProperties
         }
         {...props}
       >
+        {titleBar}
+
         <div data-slot="app-shell-body" className="flex min-h-0 min-w-0 flex-1">
           {iconRail}
           {sidebar}
@@ -314,7 +325,10 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(function
             {header}
 
             <div data-slot="app-shell-workspace" className="flex min-h-0 min-w-0 flex-1">
-              <main data-slot="app-shell-content" className="min-h-0 min-w-0 flex-1 overflow-auto">
+              <main
+                data-slot="app-shell-content"
+                className="min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain bg-surface"
+              >
                 {children}
               </main>
               {rightPane}

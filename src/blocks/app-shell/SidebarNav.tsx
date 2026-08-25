@@ -65,7 +65,7 @@ export interface SidebarNavProps extends Omit<React.HTMLAttributes<HTMLElement>,
   onSelect?: (item: SidebarNavItem) => void;
   /** 上部（プロダクト切替・ワークスペース名など） */
   header?: React.ReactNode;
-  /** 下部（ユーザー・設定など） */
+  /** 下部の補助領域。アプリ全体のアカウント／設定は IconRail.footerItems を使う */
   footer?: React.ReactNode;
   /** ナビゲーションランドマークの名前。既定「メインナビゲーション」 */
   'aria-label'?: string;
@@ -74,12 +74,12 @@ export interface SidebarNavProps extends Omit<React.HTMLAttributes<HTMLElement>,
 // ─── 1項目 ──────────────────────────────────────────────
 
 const itemClassName = cn(
-  'group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md',
-  'px-2 py-1.5 text-left text-sm text-fg-default',
+  'group/menu-button flex min-h-6 w-full items-center gap-1.5 overflow-hidden rounded-sm',
+  'px-2 py-1 text-left text-xs text-fg-muted',
   'transition-colors duration-fast ease-default',
   'outline-hidden focus-visible:ring-2 focus-visible:ring-border-focus',
-  'hover:bg-hover',
-  'data-active:bg-selected data-active:font-medium',
+  'hover:bg-hover hover:text-fg-default',
+  'data-active:bg-selected data-active:text-fg-default',
   'data-disabled:pointer-events-none data-disabled:text-fg-disabled',
   // 畳んだとき（collapsible="icon"）はアイコンだけを中央に置く
   'group-data-[collapsible=icon]/sidebar:justify-center',
@@ -174,10 +174,7 @@ function SidebarNavBody({
   return (
     <>
       {header != null && (
-        <div
-          data-slot="sidebar-nav-header"
-          className="flex shrink-0 flex-col gap-2 border-b border-sidebar-border p-2"
-        >
+        <div data-slot="sidebar-nav-header" className="flex shrink-0 flex-col gap-1 p-1">
           {header}
         </div>
       )}
@@ -185,20 +182,20 @@ function SidebarNavBody({
       <nav
         data-slot="sidebar-nav-content"
         aria-label={label}
-        className="flex min-h-0 flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto p-2"
+        className="flex min-h-0 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto p-1"
       >
         {groups.map((group) => (
-          <div key={group.id} data-slot="sidebar-nav-group" className="flex flex-col gap-1">
+          <div key={group.id} data-slot="sidebar-nav-group" className="flex flex-col gap-0.5">
             {group.label != null && (
               <div
                 data-slot="sidebar-nav-group-label"
-                className="px-2 py-1 text-2xs leading-relaxed font-medium tracking-wide text-fg-muted uppercase group-data-[collapsible=icon]/sidebar:hidden"
+                className="px-2 py-1 text-2xs leading-relaxed font-medium text-fg-muted group-data-[collapsible=icon]/sidebar:hidden"
               >
                 {group.label}
               </div>
             )}
 
-            <ul className="flex flex-col gap-0.5">
+            <ul className="flex flex-col">
               {group.items.map((item) => (
                 <li key={item.id} data-slot="sidebar-nav-item">
                   <NavButton item={item} active={item.id === activeId} onSelect={onSelect} />
@@ -227,7 +224,7 @@ function SidebarNavBody({
       {footer != null && (
         <div
           data-slot="sidebar-nav-footer"
-          className="flex shrink-0 flex-col gap-2 border-t border-sidebar-border p-2"
+          className="flex shrink-0 flex-col gap-1 border-t border-sidebar-border p-1"
         >
           {footer}
         </div>

@@ -1,6 +1,6 @@
 {
   "name": "@kedama-design/design-system",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Kedama Design System — Calm UI tokens and components for internal business systems",
   "license": "UNLICENSED",
@@ -65,6 +65,7 @@
     "@storybook/react": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
     "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/react-table": "8.21.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -72,6 +73,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.3.0",
+    "cmdk": "1.1.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.0.1",
