@@ -1,6 +1,6 @@
 {
   "name": "@kedama-design/design-system",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Kedama Design System — Calm UI tokens and components for internal business systems",
   "license": "UNLICENSED",

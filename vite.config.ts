@@ -52,6 +52,35 @@ export default defineConfig({
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime', 'lucide-react'],
       output: {
+        /**
+         * root entry にだけ `use client` ディレクティブを出す。
+         *
+         * ## なぜ要るか
+         *
+         * Rollup は**バンドル時にモジュール先頭のディレクティブを落とす**。
+         * `ThemeProvider.tsx` などは `'use client'` を持つが、単一バンドルへ
+         * まとめた時点で消えるため、配布物の `dist/index.js` は
+         * 「サーバでも実行してよいコード」に見えてしまう。
+         *
+         * Next.js App Router の **Server Component** から import すると
+         * `React.createContext` をサーバ側で呼ぶことになり production build が
+         * 落ちる（すらすらスタジオで実測）:
+         *
+         *   Failed to collect configuration for /_not-found
+         *   TypeError: O.createContext is not a function
+         *
+         * root entry は Provider・hooks・状態を持つ部品を含むため、
+         * 全体をクライアント境界として宣言するのが正しい。
+         *
+         * ## tokens entry には付けない
+         *
+         * `src/tokens/` は値だけの定数で React に依存しない。Server Component
+         * から読める状態を保つため、ここにディレクティブを付けてはいけない
+         * （付けると `@kedama-design/design-system/tokens` がサーバで使えなくなる）。
+         *
+         * `scripts/verify-package-boundary.ts` が build 後に両方を検証する。
+         */
+        banner: (chunk) => (chunk.isEntry && chunk.name === 'index' ? `'use client';` : ''),
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',

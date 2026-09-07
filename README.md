@@ -98,6 +98,54 @@ const primaryColor = semanticColors.accent.primary; // '#315039'
 const gap = spacing[16]; // '16px'
 ```
 
+### React Server Component から使う（Next.js App Router）
+
+**パッケージのルート（`@kedama-design/design-system`）はクライアント境界です。**
+配布物の `dist/index.js` / `dist/index.cjs` は先頭に `use client` ディレクティブを持ちます。
+`ThemeProvider` をはじめ Provider・hooks・状態を持つ部品を含むためです。
+
+| したいこと                                     | import 元                             | Server Component から                |
+| ---------------------------------------------- | ------------------------------------- | ------------------------------------ |
+| **トークン値だけ**使う（色・余白・文字サイズ） | `@kedama-design/design-system/tokens` | **可**                               |
+| コンポーネントを描画する                       | `@kedama-design/design-system`        | 可（クライアント境界として扱われる） |
+
+**Server Component で値だけ欲しいときは、必ず `/tokens` サブパスから import してください。**
+`tokens` entry は値だけの定数で React に依存せず、ディレクティブも付きません。
+
+```tsx
+// app/page.tsx — Server Component
+import { semanticColors } from '@kedama-design/design-system/tokens';
+
+export default function Page() {
+  return <main style={{ color: semanticColors.fg.default }}>…</main>;
+}
+```
+
+`ThemeProvider` は Server Component である `app/layout.tsx` から直接 import して構いません。
+ルート entry がクライアント境界を宣言しているため、Next.js が正しく振り分けます。
+
+```tsx
+// app/layout.tsx — Server Component のままでよい
+import { ThemeProvider } from '@kedama-design/design-system';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ja" suppressHydrationWarning>
+      <body>
+        <ThemeProvider defaultTheme="system">{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+> **公開済み 0.1.1 を使っている場合の注意**
+> 0.1.1 の配布物には `use client` ディレクティブが**入っていません**。
+> Server Component から import すると production build が
+> `TypeError: createContext is not a function` で落ちます。
+> 回避するには、消費側に `"use client"` を付けた再エクスポート用モジュールを 1 つ挟んでください。
+> `0.1.2` 以降は不要です（`scripts/verify-package-boundary.ts` が build ごとに検証します）。
+
 ## フォントの扱い
 
 **このパッケージはフォントを同梱しません。読み込みも行いません。**
