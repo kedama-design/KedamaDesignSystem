@@ -1,0 +1,52 @@
+{
+  "note": "共通UIガイドラインの写し。files は写した元の各ファイルの sha256（.DS_Store は写していない）。modified に載っているファイルは写したあとに直したもの（理由つき）で、modifiedSha256 は直したあとのいまの sha256。それ以外は元と同じであることを、どちらも core/test/tokens.test.mjs が確かめる",
+  "source": "スラスラスタジオ/ui-guidelines/",
+  "copiedAt": "2026-11-13",
+  "updatedAt": "2026-11-14",
+  "files": {
+    "README.md": "13665b09b2b2272ee4904d298186b094f35805029b36b48951d8b2eb003cd336",
+    "docs/01_原則.md": "c7939efe3b118002b3ccd22096c8ef32f85d715faaae63a3c11aed7342ff7823",
+    "docs/02_AppShell.md": "e3dc2ff04e3080defba65414fc91763b58b2dc3527820ea198086e4e10936aa2",
+    "docs/03_色と書体.md": "fbc078dc209ffc6316f5d41841f966b970055c9c63b02cbe136d2643742e65d0",
+    "docs/04_状態アイコン.md": "3cccc7b379889ef9b8f7ce728ef0559d7fa91ee717acd0de6bbfecd9276b5ec0",
+    "docs/05_部品.md": "e94fc8686b28a4fae3f62debd96b39dfd937f1a5b160fa3879a1366b33a081ef",
+    "docs/06_画面パターン.md": "f1cb69b4d9087047b737c5c4b07dcd6e7c2c66944209d37d819e2b5acff97123",
+    "docs/07_追加.md": "a31d110219103e04431ec43cb66603e7dd27e15cf855233bc0a881e36fba65cd",
+    "icons/publish-failed.svg": "d3afed51bbd4f2824468ac7d60414b1c7cd7ff25eb8ac4e63db756bc8f065729",
+    "icons/publish-published.svg": "eb6f9b86879f549baffad6c14094986df9aa25372598eecb02ef5ec7eb91e329",
+    "icons/publish-unpublished.svg": "1a8018df9dc95659a1afa7f6c35f68b39224154386f2a43385d28d6cf80b8061",
+    "icons/status-approved.svg": "d6015f4fbd8191d10c05340b46bffb27ad9745a3f5e413573d72e8fc49fde62e",
+    "icons/status-client-review.svg": "993b619fe7fee35a05b35419b5719952755e209e059546f2cc399113456abbde",
+    "icons/status-draft.svg": "afe4ce9d7009f50b14015245e6c490212c4627785c56f6a4daadce940de99cef",
+    "icons/status-idea.svg": "9f8d20642c6ec9b781d714715f2d540afe518c8078a15e5d352dd93483454e20",
+    "icons/status-internal-review.svg": "11919c198cfff5e86997f521dcf5b0dd3e218738789f96e2a54e7ceeff9ce265",
+    "images/00_appshell_anatomy.png": "ec9dfa130585dc1ade80518981e6b9b74c552332b54bf13221ebbdef29b385b1",
+    "images/01_list.png": "c9773e81ba247ea0f05bf23a0182f000626c9ab9c498505b298d7330e6fb0130",
+    "images/02_editor_article.png": "85e5304e93e93b92bf722c4b4e322234411da8ba0cb2baa5b6ca79e861db83a3",
+    "images/03_editor_keywords.png": "8f6c1d94b72bca993937ccf963a6b79ebffdd75d5574b71a2aa4a7908cc4c02f",
+    "images/04_editor_outline.png": "abe23515bd1e8669cdcdda2acd2683466d1cfcd1baef4e2ca74578c29538fb0d",
+    "images/05_colors_and_status_icons.png": "cbde606f403bb3db7b80161a82d4b6adbd999a7d68704181b939c838e18ec5bd",
+    "mockups/ShellEditor.html": "3257c5cc9c97bc053a8258d242866586125cc5ef63544165187ecfa6758ab819",
+    "mockups/ShellKeywords.html": "1647f1791075493a6348b62c24e89e32cc43bf3ffc34432ce4867fdf21d798f1",
+    "mockups/ShellList.html": "6387e30b48c723504fa6cdecfe7757a51117a74f951fdccaa870a48a110b3b9e",
+    "mockups/ShellOutline.html": "338f52ffa26137003df1c5462697704669c6bca6fa11cdfce01f11827f9cd83c",
+    "tokens/tokens.css": "e64896574dfee59189431764c587cb9f003d97aa607396a0c875ea999660dccb",
+    "tokens/tokens.json": "d951e37c4ab12ed6ea557bc09688eabada89ab045405bf31f75c6448563f210d"
+  },
+  "modified": {
+    "README.md": "決定事項の表に 2026-11-13 の決定（正の置き場所・純白を使わない・入力欄の枠の部品での扱い・他の部品集の扱い）を追記。tokens.css の説明の行を直した。2026-11-14: 入力欄の枠の部品での扱い（D6）の見直しと、アイコン2つの来歴情報を取り除いたことを追記",
+    "tokens/tokens.css": "下部の他の部品集（Sparkle Design）向けの上書き案の :root を削除し、冒頭のコメントを直した。--ui-surface-page を #ffffff → #fffefc（純白を使わない）",
+    "tokens/tokens.json": "color.surface.page と color.action.secondary.value を #ffffff → #fffefc（純白を使わない）。contrastOnWhite が純白の地での値である旨を $note に追記（値は消さない）",
+    "docs/03_色と書体.md": "色の表の「本文の面」を #ffffff → #fffefc（純白を使わない）",
+    "icons/status-approved.svg": "白い線（stroke）を #ffffff → #fffefc（純白を使わない。2026-11-13）。中身と合わなくなった埋め込みの来歴情報（<metadata> の C2PA と xmlns:c2pa の宣言）を取り除いた（2026-11-14 yuuki）。描く形と色はこの2点のほかは元と同じ",
+    "icons/publish-failed.svg": "白い線（stroke）を #ffffff → #fffefc（純白を使わない。2026-11-13）。中身と合わなくなった埋め込みの来歴情報（<metadata> の C2PA と xmlns:c2pa の宣言）を取り除いた（2026-11-14 yuuki）。描く形と色はこの2点のほかは元と同じ"
+  },
+  "modifiedSha256": {
+    "README.md": "aa3b6576ea0c2fb4172187143c77636c73fd5dddc6fed855f1b2b21e199d98b2",
+    "tokens/tokens.css": "09901510c895f47b31d14866d8752185376f52a469f030d1960b36112bec6a9c",
+    "tokens/tokens.json": "832ec43114ebd8ea70cd980d2f1c4161c65d9721bc65222c8b3497eb8f4b32c3",
+    "docs/03_色と書体.md": "69ca4850ea687ffed08035d876b893fc31b7998e0577c6d5a50ef4c7951f7e1d",
+    "icons/status-approved.svg": "c6cf3b88c68b0b047e7bbed21f831baa011115b7fe7f6b733d968bfc3561ff71",
+    "icons/publish-failed.svg": "236941d3e05363a8714600b7f7b835ef4250c185835a9891fa4f033a86277248"
+  }
+}

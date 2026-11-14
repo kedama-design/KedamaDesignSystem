@@ -1,0 +1,49 @@
+/* 共通UIガイドライン v1.1 — CSS変数（tokens.json と同じ値）
+   独自名（--ui-*）: どのシステムでもそのまま使える。
+   2026-11-13: 本文の面を #fffefc に変更（純白を使わない。README の決定事項）。
+   以前ここにあった他の部品集の変数への上書き案は削除した（経緯は README）。 */
+:root {
+  --ui-surface-app: #f5f4f0;
+  --ui-surface-sidebar: #fdfcfa;
+  --ui-surface-page: #fffefc;
+  --ui-surface-panel: #fffefc;
+  --ui-surface-subtle: #f8f7f3;
+  --ui-surface-hover: #eeece7;
+  --ui-surface-selected: #e7e5df;
+  --ui-surface-highlight: #f3ecd2;
+
+  --ui-border-low: #f1f0eb;
+  --ui-border-middle: #e8e6e0;
+  --ui-border-high: #d6d4cd;
+  --ui-border-input: #8a8983; /* 2026-11-05 追加。入力欄の枠だけに使う（3:1） */
+
+  --ui-text-high: #26251f;
+  --ui-text-middle: #4a4943;
+  --ui-text-low: #6c6b64;
+  --ui-text-disabled: #a3a29b;
+
+  --ui-action-primary: #26251f;
+  --ui-action-on-primary: #fffefc;
+
+  --ui-status-neutral: #8a8983;
+  --ui-status-progress: #c27a1a;
+  --ui-status-waiting: #4a6fb5;
+  --ui-status-success: #3f8a5a;
+  --ui-status-info: #6c6b64;
+  --ui-status-danger: #c4473a;
+
+  --ui-font-ui: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  --ui-font-reading: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  --ui-radius-sm: 6px;
+  --ui-radius-md: 8px;
+  --ui-radius-lg: 10px;
+  --ui-radius-xl: 12px;
+  --ui-radius-2xl: 16px;
+
+  --ui-topbar-h: 40px;
+  --ui-rail-w: 56px;
+  --ui-sidebar-w: 280px;
+  --ui-panel-w: 340px;
+  --ui-shadow-floating: 0 1px 2px rgba(38,37,31,0.04), 0 4px 16px rgba(38,37,31,0.05);
+}

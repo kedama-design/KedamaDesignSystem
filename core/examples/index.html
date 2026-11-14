@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@kedama-design/core 見本</title>
+    <!-- core の部品だけを相対パスで読む（React・Tailwind なし）。順番は tokens → base → components -->
+    <link rel="stylesheet" href="../ui/tokens.css" />
+    <link rel="stylesheet" href="../ui/base.css" />
+    <link rel="stylesheet" href="../ui/components.css" />
+    <style>
+      /* 見本のページの並べ方だけ（色は --ui-* の名前だけを使う。部品の見た目は変えない） */
+      body {
+        margin: 0;
+        background: var(--ui-surface-app);
+        color: var(--ui-text-high);
+        font-size: var(--ui-font-size-base);
+      }
+      .demo-head {
+        padding: var(--ui-space-6) var(--ui-page-pad-x) var(--ui-space-2);
+      }
+      .demo-head h1 {
+        margin: 0 0 var(--ui-space-2);
+        font-size: var(--ui-font-size-2xl);
+      }
+      .demo-head p {
+        margin: 0;
+        color: var(--ui-text-middle);
+      }
+      .demo-main {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+        gap: var(--ui-space-4);
+        padding: var(--ui-space-4) var(--ui-page-pad-x) var(--ui-space-12);
+      }
+      .demo-sec {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-space-3);
+        padding: var(--ui-space-4);
+        border: 1px solid var(--ui-border-middle);
+        border-radius: var(--ui-radius-xl);
+        background: var(--ui-surface-page);
+      }
+      .demo-sec--wide {
+        grid-column: 1 / -1;
+      }
+      .demo-sec h2 {
+        margin: 0;
+        font-size: var(--ui-font-size-lg);
+      }
+      .demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--ui-space-2);
+      }
+      .demo-grid {
+        display: grid;
+        grid-template-columns: 9em 1fr;
+        align-items: center;
+        gap: var(--ui-space-2) var(--ui-space-3);
+      }
+      .demo-label {
+        color: var(--ui-text-low);
+        font-size: var(--ui-font-size-sm);
+      }
+      .demo-note {
+        margin: 0;
+        color: var(--ui-text-low);
+        font-size: var(--ui-font-size-sm);
+      }
+      .demo-probe {
+        width: 48px;
+        height: 24px;
+        border: 2px solid var(--ui-border-input);
+        border-radius: var(--ui-radius-sm);
+      }
+      .demo-audit {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--ui-font-size-sm);
+      }
+      .demo-audit th,
+      .demo-audit td {
+        padding: var(--ui-space-1) var(--ui-space-2);
+        border-bottom: 1px solid var(--ui-border-low);
+        text-align: left;
+        vertical-align: top;
+      }
+      .demo-audit code {
+        font-size: var(--ui-font-size-xs);
+      }
+      .demo-inline-dialog {
+        position: static;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="demo-head">
+      <h1>@kedama-design/core 見本</h1>
+      <p>
+        全部品・全状態。hover・active・focus の欄は、部品の CSS の
+        <code>:hover</code> などの規則を、そのまま
+        <code>[data-force]</code> の印に読み替えて当てたもの（下の「解決値の実測」の方法を参照）。
+      </p>
+      <p>
+        <a href="#audit">解決値の実測へ</a>（base.css のリンク）／ 動き:
+        <span id="motion-mode"></span>
+      </p>
+    </header>
+
+    <main class="demo-main">
+      <!-- ボタン -->
+      <section class="demo-sec demo-sec--wide" id="buttons">
+        <h2>ボタン（.tsk-btn）</h2>
+        <div class="demo-grid">
+          <span class="demo-label">副（既定）</span>
+          <div class="demo-row">
+            <button class="tsk-btn" type="button" id="m-secondary">保存しない</button>
+            <button class="tsk-btn" type="button" data-force="hover">hover</button>
+            <button class="tsk-btn" type="button" data-force="active">active</button>
+            <button class="tsk-btn" type="button" data-force="focus">focus</button>
+            <button class="tsk-btn" type="button" disabled>disabled</button>
+            <a class="tsk-btn" href="#buttons" aria-disabled="true">aria-disabled</a>
+          </div>
+          <span class="demo-label">主</span>
+          <div class="demo-row">
+            <button class="tsk-btn tsk-btn--primary" type="button" id="m-primary">保存する</button>
+            <button
+              class="tsk-btn tsk-btn--primary"
+              type="button"
+              data-force="hover"
+              id="m-primary-hover"
+            >
+              hover
+            </button>
+            <button
+              class="tsk-btn tsk-btn--primary"
+              type="button"
+              data-force="active"
+              id="m-primary-active"
+            >
+              active
+            </button>
+            <button class="tsk-btn tsk-btn--primary" type="button" data-force="focus">focus</button>
+            <button class="tsk-btn tsk-btn--primary" type="button" disabled>disabled</button>
+          </div>
+          <span class="demo-label">ゴースト</span>
+          <div class="demo-row">
+            <button class="tsk-btn tsk-btn--ghost" type="button">取り消す</button>
+            <button class="tsk-btn tsk-btn--ghost" type="button" data-force="hover">hover</button>
+            <button class="tsk-btn tsk-btn--ghost" type="button" data-force="focus">focus</button>
+            <button class="tsk-btn tsk-btn--ghost" type="button" disabled>disabled</button>
+          </div>
+          <span class="demo-label">小（--sm）</span>
+          <div class="demo-row">
+            <button class="tsk-btn tsk-btn--sm" type="button">小さい副</button>
+            <button class="tsk-btn tsk-btn--sm tsk-btn--primary" type="button">小さい主</button>
+            <button class="tsk-btn tsk-btn--sm tsk-btn--ghost" type="button">小さいゴースト</button>
+            <button class="tsk-btn tsk-btn--sm" type="button" disabled>disabled</button>
+          </div>
+          <span class="demo-label">アイコン（.tsk-iconbtn）</span>
+          <div class="demo-row" id="iconbtns"></div>
+        </div>
+      </section>
+
+      <!-- 入力 -->
+      <section class="demo-sec" id="inputs">
+        <h2>入力（.tsk-input）</h2>
+        <div class="demo-grid">
+          <span class="demo-label">既定</span>
+          <input class="tsk-input" id="m-input" value="山田 太郎" aria-label="既定" />
+          <span class="demo-label">見本の文字</span>
+          <input class="tsk-input" placeholder="例 東京都千代田区" aria-label="見本の文字" />
+          <span class="demo-label">hover</span>
+          <input
+            class="tsk-input"
+            data-force="hover"
+            id="m-input-hover"
+            value="hover"
+            aria-label="hover"
+          />
+          <span class="demo-label">focus</span>
+          <input class="tsk-input" data-force="focus" value="focus" aria-label="focus" />
+          <span class="demo-label">読むだけ</span>
+          <input class="tsk-input" readonly value="読むだけ（readonly）" aria-label="読むだけ" />
+          <span class="demo-label">無効</span>
+          <input class="tsk-input" disabled value="無効（disabled）" aria-label="無効" />
+          <span class="demo-label">誤り</span>
+          <input
+            class="tsk-input"
+            aria-invalid="true"
+            id="m-input-invalid"
+            value="誤り"
+            aria-label="誤り"
+          />
+          <span class="demo-label">誤り＋focus</span>
+          <input
+            class="tsk-input"
+            aria-invalid="true"
+            data-force="focus"
+            value="誤り＋focus"
+            aria-label="誤り＋focus"
+          />
+          <span class="demo-label">小（--sm）</span>
+          <input class="tsk-input tsk-input--sm" value="小さい欄" aria-label="小" />
+          <span class="demo-label">数（--num）</span>
+          <span class="tsk-input-box"
+            ><input class="tsk-input tsk-input--num" value="1,234,567" aria-label="数"
+          /></span>
+          <span class="demo-label">複数行</span>
+          <textarea class="tsk-input" aria-label="複数行">
+複数行の欄。
+2行目。</textarea
+          >
+        </div>
+      </section>
+
+      <!-- 欄 -->
+      <section class="demo-sec" id="fields">
+        <h2>欄（.tsk-field）と日付の欄</h2>
+        <div class="tsk-field">
+          <label class="tsk-field__label" for="f-name"
+            >氏名 <span class="tsk-field__req">必須</span></label
+          >
+          <input class="tsk-input" id="f-name" value="山田 太郎" />
+          <p class="tsk-field__help">戸籍に書かれたとおりに入れてください。</p>
+        </div>
+        <div class="tsk-field tsk-field--invalid">
+          <label class="tsk-field__label" for="f-mail"
+            >メール <span class="tsk-field__req">必須</span></label
+          >
+          <input class="tsk-input" id="f-mail" value="yamada@" />
+          <p class="tsk-field__error" data-slot="error"></p>
+        </div>
+        <div class="tsk-field" id="date-field">
+          <label class="tsk-field__label" for="f-date">日付（ui/dateinput.js）</label>
+          <input class="tsk-input" id="f-date" value="2026/9/8" />
+          <p class="tsk-field__help" id="f-date-help"></p>
+        </div>
+        <div class="tsk-field">
+          <label class="tsk-field__label" for="f-date-draft">日付（打ちかけ）</label>
+          <input class="tsk-input" id="f-date-draft" value="2026-09" aria-invalid="true" />
+          <p class="tsk-field__error" id="f-date-draft-error"></p>
+        </div>
+      </section>
+
+      <!-- 選択・チェック -->
+      <section class="demo-sec" id="selects">
+        <h2>選択（.tsk-select）とチェック（.tsk-check）</h2>
+        <div class="demo-grid">
+          <span class="demo-label">既定</span>
+          <span class="tsk-select" data-chevron
+            ><select class="tsk-select__control" id="m-select" aria-label="既定">
+              <option>取締役</option>
+              <option>監査役</option>
+            </select></span
+          >
+          <span class="demo-label">hover</span>
+          <span class="tsk-select" data-chevron
+            ><select
+              class="tsk-select__control"
+              data-force="hover"
+              id="m-select-hover"
+              aria-label="hover"
+            >
+              <option>hover</option>
+            </select></span
+          >
+          <span class="demo-label">focus</span>
+          <span class="tsk-select" data-chevron
+            ><select class="tsk-select__control" data-force="focus" aria-label="focus">
+              <option>focus</option>
+            </select></span
+          >
+          <span class="demo-label">誤り</span>
+          <span class="tsk-select" data-chevron
+            ><select class="tsk-select__control" aria-invalid="true" aria-label="誤り">
+              <option>選んでください</option>
+            </select></span
+          >
+          <span class="demo-label">無効</span>
+          <span class="tsk-select" data-chevron
+            ><select class="tsk-select__control" disabled aria-label="無効">
+              <option>無効</option>
+            </select></span
+          >
+          <span class="demo-label">小（--sm）</span>
+          <span class="tsk-select tsk-select--sm" data-chevron
+            ><select class="tsk-select__control tsk-select__control--sm" aria-label="小">
+              <option>すべて</option>
+            </select></span
+          >
+          <span class="demo-label">チェック</span>
+          <div class="demo-row">
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="checkbox" checked /><span
+                class="tsk-check__label"
+                >選んだ</span
+              ></label
+            >
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="checkbox" /><span class="tsk-check__label"
+                >選んでいない</span
+              ></label
+            >
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="checkbox" data-force="focus" /><span
+                class="tsk-check__label"
+                >focus</span
+              ></label
+            >
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="checkbox" disabled /><span
+                class="tsk-check__label"
+                >無効</span
+              ></label
+            >
+          </div>
+          <span class="demo-label">ラジオ</span>
+          <div class="demo-row">
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="radio" name="r" checked /><span
+                class="tsk-check__label"
+                >書面</span
+              ></label
+            >
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="radio" name="r" /><span
+                class="tsk-check__label"
+                >会議</span
+              ></label
+            >
+            <label class="tsk-check"
+              ><input class="tsk-check__input" type="radio" name="r2" disabled /><span
+                class="tsk-check__label"
+                >無効</span
+              ></label
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- 状態のアイコン -->
+      <section class="demo-sec" id="status">
+        <h2>状態のアイコン（.tsk-icon・.tsk-status）</h2>
+        <div class="demo-grid" id="status-grid"></div>
+        <p class="demo-note">
+          色はアイコンだけ。異常（danger）だけ文字が太い。文字のラベルを必ず添える。
+        </p>
+      </section>
+
+      <!-- チップ・切り替え -->
+      <section class="demo-sec" id="chips">
+        <h2>チップ（.tsk-chip）と切り替え（.tsk-seg）</h2>
+        <div class="demo-row">
+          <span class="tsk-chip">取締役</span>
+          <span class="tsk-chip">新任</span>
+          <span class="tsk-chip tsk-chip--highlight">｛会社名｝</span>
+        </div>
+        <div class="demo-row">
+          <div class="tsk-seg" role="group" aria-label="表示">
+            <button class="tsk-seg__btn" type="button" aria-pressed="true">一覧</button>
+            <button class="tsk-seg__btn" type="button" aria-pressed="false">カード</button>
+            <button class="tsk-seg__btn" type="button" aria-pressed="false" data-force="hover">
+              hover
+            </button>
+            <button class="tsk-seg__btn" type="button" aria-pressed="false" data-force="focus">
+              focus
+            </button>
+            <button class="tsk-seg__btn" type="button" aria-pressed="false" disabled>無効</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- カード・帯 -->
+      <section class="demo-sec" id="cards">
+        <h2>カード（.tsk-card）と帯（.tsk-msg）</h2>
+        <div class="tsk-card" id="m-card">
+          <div class="tsk-card__head">
+            <h3 class="tsk-card__title">取締役の変更</h3>
+            <span class="tsk-chip">2件</span>
+          </div>
+          <div class="tsk-card__body">
+            <p style="margin: 0">カードの本文。面は本文の面（--ui-surface-page）。</p>
+          </div>
+        </div>
+        <div class="tsk-msg" id="msg">
+          <div class="tsk-msg__body">
+            <p class="tsk-msg__title">直してほしい箇所が2つあります</p>
+            <ul class="tsk-msg__items">
+              <li class="tsk-msg__item">
+                <p class="tsk-msg__summary">就任日が空です</p>
+                <dl class="tsk-msg__rows">
+                  <dt>箇所</dt>
+                  <dd>取締役 › 山田 太郎</dd>
+                  <dt>直し方</dt>
+                  <dd>2026-09-08 の形で入れてください</dd>
+                </dl>
+              </li>
+              <li class="tsk-msg__item">
+                <p class="tsk-msg__summary">住所が長すぎます</p>
+              </li>
+            </ul>
+            <div class="tsk-msg__actions">
+              <button class="tsk-btn tsk-btn--sm" type="button">箇所へ移る</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 表 -->
+      <section class="demo-sec demo-sec--wide" id="tables">
+        <h2>表（.tsk-table）</h2>
+        <div class="tsk-table-wrap" id="m-table">
+          <table class="tsk-table">
+            <thead>
+              <tr>
+                <th>件名</th>
+                <th>状態</th>
+                <th>担当</th>
+                <th class="is-num">件数</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <p class="demo-note">2行目は hover（is-link の行）、3行目は選択中（aria-selected）。</p>
+      </section>
+
+      <!-- 手順 -->
+      <section class="demo-sec" id="steps">
+        <h2>手順（.tsk-steps）</h2>
+        <ol class="tsk-steps">
+          <li class="tsk-steps__step" data-status="done">
+            <button class="tsk-steps__item" type="button">
+              <span class="tsk-steps__number">1</span
+              ><span class="tsk-steps__title">基本の情報（済み）</span>
+            </button>
+          </li>
+          <li class="tsk-steps__step" aria-current="step">
+            <button class="tsk-steps__item" type="button">
+              <span class="tsk-steps__number">2</span
+              ><span class="tsk-steps__title">変更の中身（いま）</span>
+            </button>
+            <ul class="tsk-steps__sub">
+              <li><span class="tsk-steps__item">取締役</span></li>
+              <li><span class="tsk-steps__item">監査役</span></li>
+            </ul>
+          </li>
+          <li class="tsk-steps__step">
+            <button class="tsk-steps__item" type="button" data-force="hover">
+              <span class="tsk-steps__number">3</span
+              ><span class="tsk-steps__title">書類（hover）</span>
+            </button>
+          </li>
+          <li class="tsk-steps__step">
+            <span class="tsk-steps__item"
+              ><span class="tsk-steps__number">4</span
+              ><span class="tsk-steps__title">確認（未到達）</span></span
+            >
+          </li>
+        </ol>
+        <ol class="tsk-steps tsk-steps--status" id="steps-status"></ol>
+      </section>
+
+      <!-- 折りたたみ -->
+      <section class="demo-sec" id="disclosure">
+        <h2>折りたたみ（.tsk-disclosure）</h2>
+        <details class="tsk-disclosure">
+          <summary>閉じている</summary>
+          <div class="tsk-disclosure__body"><p style="margin: 0">中身</p></div>
+        </details>
+        <details class="tsk-disclosure" open>
+          <summary>開いている</summary>
+          <div class="tsk-disclosure__body"><p style="margin: 0">開いたときの中身。</p></div>
+        </details>
+        <details class="tsk-disclosure">
+          <summary data-force="focus">focus</summary>
+          <div class="tsk-disclosure__body"><p style="margin: 0">中身</p></div>
+        </details>
+        <details class="tsk-disclosure tsk-disclosure--plain" open>
+          <summary>枠なし（--plain）</summary>
+          <div class="tsk-disclosure__body">
+            <p style="margin: 0">枠の無い折りたたみの中身。</p>
+          </div>
+        </details>
+      </section>
+
+      <!-- 小窓・トースト・ドロワー -->
+      <section class="demo-sec demo-sec--wide" id="overlays">
+        <h2>小窓（.tsk-dialog）・トースト（ui/toast.js）・ドロワー（ui/drawer.js）</h2>
+        <div class="demo-row">
+          <button class="tsk-btn" type="button" id="open-dialog">小窓を開く（モーダル）</button>
+          <button class="tsk-btn" type="button" data-toast="success">トースト（完了）</button>
+          <button class="tsk-btn" type="button" data-toast="error">トースト（エラー）</button>
+          <button class="tsk-btn" type="button" data-toast="info">トースト（お知らせ）</button>
+          <button class="tsk-btn" type="button" data-toast="action">トースト（ボタンつき）</button>
+          <button class="tsk-btn tsk-btn--primary" type="button" id="open-drawer">
+            ドロワーを開く
+          </button>
+        </div>
+        <p class="demo-note">
+          下は小窓の見た目（その場に置くため position だけ static
+          にしている）。?show=dialog・?show=toasts・?show=drawer で開いた状態のまま表示する。
+        </p>
+        <dialog class="tsk-dialog demo-inline-dialog" open id="m-dialog">
+          <div class="tsk-dialog__inner">
+            <div class="tsk-dialog__head">
+              <h3 class="tsk-dialog__title">書類を作り直しますか</h3>
+            </div>
+            <div class="tsk-dialog__body">
+              <p style="margin: 0">
+                入力した内容から書類を作り直します。手で直した箇所は消えます。
+              </p>
+            </div>
+            <div class="tsk-dialog__foot">
+              <button class="tsk-btn" type="button">やめる</button>
+              <button class="tsk-btn tsk-btn--primary" type="button">作り直す</button>
+            </div>
+          </div>
+        </dialog>
+        <dialog class="tsk-dialog" id="modal-dialog" aria-labelledby="modal-title">
+          <div class="tsk-dialog__inner">
+            <div class="tsk-dialog__head">
+              <h3 class="tsk-dialog__title" id="modal-title">モーダルの小窓</h3>
+            </div>
+            <div class="tsk-dialog__scroll">
+              <div class="tsk-dialog__body">
+                <p style="margin: 0">後ろは覆い（--ui-scrim）。Esc で閉じる。</p>
+              </div>
+            </div>
+            <div class="tsk-dialog__foot">
+              <button class="tsk-btn tsk-btn--primary" type="button" id="close-dialog">
+                閉じる
+              </button>
+            </div>
+          </div>
+        </dialog>
+      </section>
+
+      <!-- 実測 -->
+      <section class="demo-sec demo-sec--wide" id="audit">
+        <h2>解決値の実測（getComputedStyle）</h2>
+        <p class="demo-note">
+          ブラウザが実際に当てた値を getComputedStyle で読み、ui/tokens.css の値（:root の
+          getPropertyValue）と比べる。 hover・active は、部品の CSS の規則をそのまま [data-force]
+          に読み替えて当てた要素で測る（方法は
+          docs/stage1-log.md）。入力欄の枠の値（--ui-border-input）は部品が使っていないので、その値を当てた見本の箱で測る。
+        </p>
+        <div class="demo-row">
+          <span class="demo-label">--ui-border-input の見本の箱</span
+          ><span class="demo-probe" id="m-probe-input"></span>
+        </div>
+        <table class="demo-audit">
+          <thead>
+            <tr>
+              <th>測ったもの</th>
+              <th>要素・性質</th>
+              <th>実測</th>
+              <th>期待（トークン）</th>
+              <th>結果</th>
+            </tr>
+          </thead>
+          <tbody id="audit-body"></tbody>
+        </table>
+        <pre id="audit-json" class="demo-note" style="white-space: pre-wrap"></pre>
+      </section>
+    </main>
+
+    <script type="module">
+      import { createToaster } from '../ui/toast.js';
+      import { openDrawer } from '../ui/drawer.js';
+      import { STATUS_KINDS, STATUS_ICONS, statusIconNode, glyphNode } from '../ui/icons.js';
+      import {
+        normalizeDateText,
+        dateInputDraft,
+        dateDraftLine,
+        DATE_TEXT_ATTR,
+        DATE_TEXT_PLACEHOLDER,
+      } from '../ui/dateinput.js';
+
+      const $ = (sel) => document.querySelector(sel);
+      const el = (tag, attrs = {}, ...kids) => {
+        const n = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        for (const k of kids) n.append(k);
+        return n;
+      };
+
+      /* ---------- hover・active・focus を見せる: 部品の CSS の規則を [data-force] に読み替えて足す ---------- */
+      const FORCE = [
+        [/:hover\b/g, '[data-force~="hover"]'],
+        [/:active\b/g, '[data-force~="active"]'],
+        [/:focus-visible\b/g, '[data-force~="focus"]'],
+      ];
+      const hasState = (s) => /:(hover|active|focus-visible)\b/.test(s);
+      function forcedRules(rules) {
+        const out = [];
+        for (const r of rules) {
+          if (r instanceof CSSMediaRule) {
+            const inner = forcedRules(r.cssRules);
+            if (inner.length) out.push(`@media ${r.conditionText} { ${inner.join('\n')} }`);
+            continue;
+          }
+          if (!(r instanceof CSSStyleRule) || !hasState(r.selectorText)) continue;
+          const sel = r.selectorText
+            .split(',')
+            .map((s) => s.trim())
+            .filter(hasState)
+            .map((s) => FORCE.reduce((acc, [re, to]) => acc.replace(re, to), s));
+          out.push(`${sel.join(', ')} { ${r.style.cssText} }`);
+        }
+        return out;
+      }
+      const forced = [];
+      for (const sheet of document.styleSheets) {
+        if (/\/ui\/(base|components)\.css$/.test(sheet.href || ''))
+          forced.push(...forcedRules(sheet.cssRules));
+      }
+      document.head.append(el('style', { id: 'forced-states' }, forced.join('\n')));
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      $('#motion-mode').textContent = reduced
+        ? '動きを減らす設定（透明度だけで出し入れ）'
+        : '通常（減衰ばね）';
+
+      /* ---------- アイコンのボタン ---------- */
+      const iconbtn = (glyph, label, attrs = {}) => {
+        const b = el('button', {
+          class: 'tsk-iconbtn',
+          type: 'button',
+          'aria-label': label,
+          ...attrs,
+        });
+        b.append(glyphNode(document, glyph));
+        return b;
+      };
+      $('#iconbtns').append(
+        iconbtn('close', '閉じる'),
+        iconbtn('plus', '足す'),
+        iconbtn('chevron', '開く'),
+        iconbtn('close', 'hover', { 'data-force': 'hover' }),
+        iconbtn('plus', '押した状態', { 'aria-pressed': 'true' }),
+        iconbtn('chevron', 'focus', { 'data-force': 'focus' }),
+        iconbtn('close', '無効', { disabled: '' }),
+      );
+
+      /* ---------- 選択の ▾ ---------- */
+      for (const box of document.querySelectorAll('[data-chevron]')) {
+        const g = glyphNode(document, 'chevron');
+        g.setAttribute('class', 'tsk-glyph tsk-select__chevron');
+        box.append(g);
+      }
+
+      /* ---------- 状態のアイコン ---------- */
+      for (const kind of STATUS_KINDS) {
+        const status = el('span', { class: `tsk-status tsk-status--${kind}` });
+        status.append(
+          statusIconNode(document, kind, { decorative: true }),
+          el('span', { class: 'tsk-status__label' }, STATUS_ICONS[kind].label),
+        );
+        if (kind === 'success') status.id = 'm-status-success';
+        $('#status-grid').append(el('code', { class: 'demo-label' }, kind), status);
+      }
+
+      /* ---------- 欄の誤り ---------- */
+      const mailErr = $('[data-slot="error"]');
+      mailErr.append(
+        statusIconNode(document, 'danger', { label: '誤り' }),
+        'メールの形になっていません（@ のあとが空です）',
+      );
+
+      /* ---------- 日付の欄 ---------- */
+      for (const id of ['#f-date', '#f-date-draft']) {
+        const input = $(id);
+        input.setAttribute('type', 'text');
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('placeholder', DATE_TEXT_PLACEHOLDER);
+        input.setAttribute(DATE_TEXT_ATTR, '');
+      }
+      const showDate = () => {
+        const v = normalizeDateText($('#f-date').value);
+        $('#f-date-help').textContent = v ? `読んだ値: ${v}` : '空です';
+      };
+      $('#f-date').addEventListener('input', showDate);
+      showDate();
+      const draftErr = $('#f-date-draft-error');
+      draftErr.append(statusIconNode(document, 'danger', { label: '誤り' }), dateDraftLine('日付'));
+      draftErr.hidden = !dateInputDraft($('#f-date-draft'));
+
+      /* ---------- 表 ---------- */
+      const rows = [
+        ['定時株主総会の議事録', 'success', '完了', '山田', '3'],
+        ['取締役の変更（hover）', 'progress', '進行中', '佐藤', '12'],
+        ['本店の移転（選択中）', 'waiting', '確認待ち', '鈴木', '1,024'],
+        ['役員の重任', 'todo', '未着手', '高橋', '0'],
+      ];
+      for (const [i, [title, kind, label, who, n]] of rows.entries()) {
+        const tr = el('tr', { class: 'is-link' });
+        if (i === 1) tr.setAttribute('data-force', 'hover');
+        if (i === 2) tr.setAttribute('aria-selected', 'true');
+        const status = el('span', { class: `tsk-status tsk-status--${kind}` });
+        status.append(statusIconNode(document, kind, { decorative: true }), label);
+        tr.append(
+          el('td', { class: 'is-title' }, title),
+          el('td', {}, status),
+          el('td', {}, who),
+          el('td', { class: 'is-num' }, n),
+        );
+        $('#table-body').append(tr);
+      }
+
+      /* ---------- 手順（状態の印） ---------- */
+      for (const [kind, title, attrs] of [
+        ['success', '済み', {}],
+        ['danger', '止まっている', {}],
+        ['progress', 'いま', { 'aria-current': 'step' }],
+        ['todo', '未到達', {}],
+      ]) {
+        const num = el('span', { class: 'tsk-steps__number' });
+        num.append(statusIconNode(document, kind, { decorative: true }));
+        $('#steps-status').append(
+          el(
+            'li',
+            { class: 'tsk-steps__step', ...attrs },
+            el(
+              'span',
+              { class: 'tsk-steps__item' },
+              num,
+              el('span', { class: 'tsk-steps__title' }, title),
+            ),
+          ),
+        );
+      }
+
+      /* ---------- 小窓・トースト・ドロワー ---------- */
+      const modal = $('#modal-dialog');
+      $('#open-dialog').addEventListener('click', () => modal.showModal());
+      $('#close-dialog').addEventListener('click', () => modal.close());
+
+      const pinned = new URLSearchParams(location.search).get('show') || '';
+      const toaster = createToaster({ duration: pinned.includes('toasts') ? 600000 : 5000 });
+      const TOASTS = {
+        success: { kind: 'success', title: '保存しました' },
+        error: {
+          kind: 'error',
+          title: '保存できませんでした',
+          detail: 'フォルダに書き込む権限がありません。',
+        },
+        info: {
+          kind: 'info',
+          title: '新しい版があります',
+          detail: '開き直すと新しい版になります。',
+        },
+        action: {
+          kind: 'success',
+          title: '山田 太郎を外しました',
+          action: { label: '元に戻す', onClick: () => toaster.show(TOASTS.info) },
+        },
+      };
+      for (const b of document.querySelectorAll('[data-toast]')) {
+        b.addEventListener('click', () => toaster.show(TOASTS[b.dataset.toast]));
+      }
+
+      const drawerBody = (body) => {
+        const field = el('div', { class: 'tsk-field' });
+        field.append(
+          el('label', { class: 'tsk-field__label', for: 'd-name' }, '氏名'),
+          el('input', { class: 'tsk-input', id: 'd-name', value: '山田 太郎' }),
+        );
+        const field2 = el('div', { class: 'tsk-field' });
+        field2.append(
+          el('label', { class: 'tsk-field__label', for: 'd-addr' }, '住所'),
+          el('input', {
+            class: 'tsk-input',
+            id: 'd-addr',
+            value: '東京都千代田区丸の内一丁目1番1号',
+          }),
+        );
+        body.append(field, field2);
+      };
+      const showDrawer = (opener) =>
+        openDrawer({
+          title: '山田 太郎',
+          badge: '取締役・新任',
+          note: '入力はすぐに保存されます',
+          body: drawerBody,
+          opener,
+        });
+      $('#open-drawer').addEventListener('click', (e) => showDrawer(e.currentTarget));
+
+      if (pinned.includes('dialog')) modal.showModal();
+      if (pinned.includes('toasts'))
+        for (const k of ['error', 'success', 'info', 'action']) toaster.show(TOASTS[k]);
+      if (pinned.includes('drawer')) showDrawer($('#open-drawer'));
+
+      /* ---------- 解決値の実測 ---------- */
+      const root = getComputedStyle(document.documentElement);
+      const token = (name) => root.getPropertyValue(name).trim();
+      const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+      const rgbOf = (css) => (css.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+      const rgbText = (rgb) => `rgb(${rgb.join(', ')})`;
+      const lum = (rgb) => {
+        const [r, g, b] = rgb.map((c) => {
+          const s = c / 255;
+          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const ratio = (a, b) => {
+        const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+      };
+      const audit = [];
+      const measure = (what, sel, prop, tokenName) => {
+        const node = $(sel);
+        const got = node ? getComputedStyle(node).getPropertyValue(prop) : '(要素が無い)';
+        const want = token(tokenName);
+        const ok = node && rgbText(rgbOf(got)) === rgbText(hexToRgb(want));
+        audit.push({
+          what,
+          element: `${sel} ${prop}`,
+          got,
+          want: `${tokenName} = ${want}`,
+          ok: Boolean(ok),
+        });
+      };
+      measure('主ボタン 通常の地', '#m-primary', 'background-color', '--ui-action-primary');
+      measure('主ボタン 通常の文字', '#m-primary', 'color', '--ui-action-on-primary');
+      measure(
+        '主ボタン hover の地',
+        '#m-primary-hover',
+        'background-color',
+        '--ui-action-primary-hover',
+      );
+      measure(
+        '主ボタン hover の枠',
+        '#m-primary-hover',
+        'border-top-color',
+        '--ui-action-primary-hover',
+      );
+      measure(
+        '主ボタン active の地',
+        '#m-primary-active',
+        'background-color',
+        '--ui-action-primary-active',
+      );
+      measure(
+        '主ボタン active の枠',
+        '#m-primary-active',
+        'border-top-color',
+        '--ui-action-primary-active',
+      );
+      measure('副ボタンの地', '#m-secondary', 'background-color', '--ui-action-secondary');
+      measure('副ボタンの枠', '#m-secondary', 'border-top-color', '--ui-action-secondary-border');
+      measure('本文の面（カード）', '#m-card', 'background-color', '--ui-surface-page');
+      measure('本文の面（表の枠）', '#m-table', 'background-color', '--ui-surface-page');
+      measure('本文の面（小窓）', '#m-dialog', 'background-color', '--ui-surface-page');
+      measure('入力の地', '#m-input', 'background-color', '--ui-surface-panel');
+      // D6 の見直し（2026-11-14）: 入力・選択の枠は border-input。重ねても（hover）枠は変えない
+      measure('入力の枠', '#m-input', 'border-top-color', '--ui-border-input');
+      measure(
+        '入力の枠 hover（変えない）',
+        '#m-input-hover',
+        'border-top-color',
+        '--ui-border-input',
+      );
+      measure('入力の枠 誤り', '#m-input-invalid', 'border-top-color', '--ui-status-danger');
+      measure('選択の枠', '#m-select', 'border-top-color', '--ui-border-input');
+      measure(
+        '選択の枠 hover（変えない）',
+        '#m-select-hover',
+        'border-top-color',
+        '--ui-border-input',
+      );
+      measure(
+        '手順の番号の丸い枠（入力欄ではない。border-high のまま）',
+        '#steps > ol.tsk-steps:not(.tsk-steps--status) > li:nth-child(4) .tsk-steps__number',
+        'border-top-color',
+        '--ui-border-high',
+      );
+      measure(
+        '状態アイコン 完了の円',
+        '#m-status-success [data-part="fill"]',
+        'fill',
+        '--ui-status-success',
+      );
+      measure(
+        '状態アイコン 完了の線（mark）',
+        '#m-status-success [data-part="mark"]',
+        'stroke',
+        '--ui-surface-page',
+      );
+      measure(
+        '入力欄の枠の値（見本の箱）',
+        '#m-probe-input',
+        'border-top-color',
+        '--ui-border-input',
+      );
+
+      // D6 の比（実測の色どうしで計算）
+      const cs = (sel) => getComputedStyle($(sel));
+      const page = rgbOf(cs('#m-card').backgroundColor);
+      const inputBg = rgbOf(cs('#m-input').backgroundColor);
+      const inputBorder = rgbOf(cs('#m-input').borderTopColor);
+      const selectBorder = rgbOf(cs('#m-select').borderTopColor);
+      const ratios = {
+        inputBorderOnPage: Number(ratio(inputBorder, page).toFixed(2)),
+        inputBorderOnInputBg: Number(ratio(inputBorder, inputBg).toFixed(2)),
+        selectBorderOnPage: Number(ratio(selectBorder, page).toFixed(2)),
+        borderInputProbeOnPage: Number(
+          ratio(rgbOf(cs('#m-probe-input').borderTopColor), page).toFixed(2),
+        ),
+      };
+
+      for (const r of audit) {
+        $('#audit-body').append(
+          el(
+            'tr',
+            {},
+            el('td', {}, r.what),
+            el('td', {}, el('code', {}, r.element)),
+            el('td', {}, el('code', {}, r.got)),
+            el('td', {}, el('code', {}, r.want)),
+            el('td', {}, r.ok ? '一致' : '不一致'),
+          ),
+        );
+      }
+      window.__audit = {
+        rows: audit,
+        ratios,
+        forcedRules: forced.length,
+        userAgent: navigator.userAgent,
+      };
+      $('#audit-json').textContent =
+        `D6 の比（実測）: 入力の枠 / 本文の面 = ${ratios.inputBorderOnPage}:1、` +
+        `入力の枠 / 入力の地 = ${ratios.inputBorderOnInputBg}:1、選択の枠 / 本文の面 = ${ratios.selectBorderOnPage}:1。` +
+        `一致 ${audit.filter((r) => r.ok).length} / ${audit.length}。読み替えた規則 ${forced.length}。`;
+    </script>
+  </body>
+</html>

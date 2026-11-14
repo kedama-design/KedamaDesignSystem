@@ -1,0 +1,28 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/*
+ * base.css — 画面の土台。ここ1か所の基本の見た目（tokens.css の次、components.css より前に読み込む）。
+ * 値は ui/tokens.css の --ui-* だけ。使う側の画面の CSS より前に入れる（上書きされる側）。
+ *   - 文字: 画面の書体（--ui-font-ui）
+ *   - 小窓を開いたあいだ: うしろの画面をスクロールさせない
+ *   - リンク: インク色＋下線（色は状態のアイコンだけ。訪れたリンクも色を変えない）
+ *   - フォーカスの輪: インク色の 2px（部品の輪と同じ。黄色の影は付けない）
+ */
+html {
+  scrollbar-gutter: stable;
+  font-family: var(--ui-font-ui);
+}
+html:has(:modal) { overflow: clip; scrollbar-gutter: auto; }
+body:has(:modal) { overflow: auto; scrollbar-gutter: stable; }
+
+:where(a):any-link {
+  color: var(--ui-text-high);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+:where(a):any-link:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--ui-text-high);
+  outline-offset: 2px;
+}

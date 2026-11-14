@@ -1,0 +1,106 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/*
+ * 共有の値。値の正は core/guidelines/tokens/tokens.json（共通UIガイドライン。test/tokens.test.mjs が照合する）。
+ * 名前はすべて --ui- で始める（使う側の画面の変数と並んでも重ならないため）。
+ * 明るい画面だけ。色の値を書いてよいのはこのファイルだけ（components.css・base.css・JS はここの名前だけを使う）。
+ * 純白は使わない。いちばん明るい面は #fffefc。
+ */
+:root {
+  /* 面（guidelines tokens.css） */
+  --ui-surface-app: #f5f4f0;
+  --ui-surface-sidebar: #fdfcfa;
+  --ui-surface-page: #fffefc;
+  --ui-surface-panel: #fffefc;
+  --ui-surface-subtle: #f8f7f3;
+  --ui-surface-hover: #eeece7;
+  --ui-surface-selected: #e7e5df;
+  --ui-surface-highlight: #f3ecd2;
+
+  /* 線 */
+  --ui-border-low: #f1f0eb;
+  --ui-border-middle: #e8e6e0;
+  --ui-border-high: #d6d4cd;
+  /* 入力欄の枠（ガイドライン v1.1。3:1）。部品の入力・選択の枠に使う（2026-11-14。border-high は副ボタンの枠・手順の番号の丸） */
+  --ui-border-input: #8a8983;
+
+  /* 文字 */
+  --ui-text-high: #26251f;
+  --ui-text-middle: #4a4943;
+  --ui-text-low: #6c6b64;
+  --ui-text-disabled: #a3a29b;
+
+  /* 操作（主ボタンはインク色）。secondary は tokens.json */
+  --ui-action-primary: #26251f;
+  --ui-action-on-primary: #fffefc;
+  /* hover・active は自前の決め方（test/tokens.test.mjs の DERIVED）: インク色を白へ 12% 混ぜる／黒へ 25% 混ぜる */
+  --ui-action-primary-hover: #403f3a;
+  --ui-action-primary-active: #1d1c17;
+  --ui-action-secondary: #fffefc;
+  --ui-action-secondary-border: #d6d4cd;
+  --ui-action-on-secondary: #26251f;
+
+  /* 状態（色を付けるのは状態のアイコンだけ） */
+  --ui-status-neutral: #8a8983;
+  --ui-status-progress: #c27a1a;
+  --ui-status-waiting: #4a6fb5;
+  --ui-status-success: #3f8a5a;
+  --ui-status-info: #6c6b64;
+  --ui-status-danger: #c4473a;
+
+  /* 書体 */
+  --ui-font-ui: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  --ui-font-reading: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  /* 文字の大きさと太さ（tokens.json の font.size / font.weight） */
+  --ui-font-size-xs: 11px;
+  --ui-font-size-sm: 12px;
+  --ui-font-size-md: 13px;
+  --ui-font-size-base: 14px;
+  --ui-font-size-lg: 16px;
+  --ui-font-size-xl: 20px;
+  --ui-font-size-2xl: 22px;
+  --ui-font-size-3xl: 28px;
+  --ui-font-weight-regular: 400;
+  --ui-font-weight-medium: 500;
+  --ui-font-weight-semibold: 600;
+  --ui-font-weight-bold: 700;
+
+  /* 余白（4px 刻み。tokens.json の space.values。名前の数字 × 4px） */
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+  --ui-space-6: 24px;
+  --ui-space-7: 28px;
+  --ui-space-8: 32px;
+  --ui-space-10: 40px;
+  --ui-space-12: 48px;
+
+  /* 角丸 */
+  --ui-radius-sm: 6px;
+  --ui-radius-md: 8px;
+  --ui-radius-lg: 10px;
+  --ui-radius-xl: 12px;
+  --ui-radius-2xl: 16px;
+  --ui-radius-full: 9999px;
+
+  /* 外枠の寸法（tokens.css と tokens.json の layout） */
+  --ui-topbar-h: 40px;
+  --ui-rail-w: 56px;
+  --ui-rail-item: 40px;
+  --ui-sidebar-w: 280px;
+  --ui-panel-w: 340px;
+  --ui-page-pad-x: 24px;
+  --ui-tab-h: 44px;
+  --ui-row-h: 44px;
+  --ui-control-h-sm: 28px;
+  --ui-control-h-md: 36px;
+
+  /* 浮いた面の影（右パネル・トースト・ドロワー。guidelines が定める影はこの1つだけ） */
+  --ui-shadow-floating: 0 1px 2px rgba(38,37,31,0.04), 0 4px 16px rgba(38,37,31,0.05);
+
+  /* ここから下は guidelines に無い値（test/tokens.test.mjs の DERIVED に理由つきで載せる） */
+  /* ドロワーの後ろの覆い。インク色（--ui-text-high と同じ 38,37,31）の 10% */
+  --ui-scrim: rgba(38,37,31,0.10);
+}

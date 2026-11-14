@@ -47,13 +47,28 @@ Codex がこのリポジトリで作業する際のコンテキスト。
 - `.claude/rules/frontend.md` — コンポーネント実装規約、テスト、Storybook
 - `.claude/rules/figma-design-system.md` — Figma MCP フロー、トークンマッピング
 
+### core（`@kedama-design/core`。`core/`）
+
+React 版（`src/`）とは別の、独立したパッケージ。共有の値（`--ui-*`）と、仕組みに依存しない部品
+（素の CSS と ESM の JavaScript）。2026-11-13 の段1で作った（設計記録は `core/docs/stage1-log.md`）。
+
+- **依存を持ち込まない**（実行時・開発時とも。React・Tailwind・Base UI・jsdom なども入れない。テストは `node --test` だけ）
+- **色の値を書いてよいのは `core/ui/tokens.css` だけ**。ほかの CSS・JS は `var(--ui-*)` の名前だけ
+- **正は `core/guidelines/`（値は `core/guidelines/tokens/tokens.json`）**。値を変えるときは tokens.json を先に直し、`core/ui/tokens.css` を合わせる（一致はテストが確かめる）
+- **純白は core でも使わない**（最明は `#fffefc`）
+- **class の接頭辞 `tsk-` は変えない**
+- **Sparkle Design は土台にしない**（参考にとどめる）
+- **部品を直すときは core を先に直し、登記議事録つくるさんへ写す**（`core/ui/` のファイル名は登記の `src/ui/` と同じ）
+- `core/ui/`・`core/guidelines/` は prettier をかけない（`.prettierignore`）。部品の振る舞い・セレクタ・書式を変えるときは、登記の文字列ベースのテストに響くことを意識する
+- core のテストは `cd core && npm test`（CI の「Core tests」）。ルートの vitest は `core/**` を外している
+- 公開（npm publish）は人が判断する。エージェントは公開しない
+
 ## 運用ルール（環境に起因するもの）
 
 ### git
 
-**エージェントはコミット・push を行わない。ユーザーが自分の端末から行う。**
-ブリッジ経由の git は identity が未設定で `.git` の権限も足りず、`index.lock` の
-残骸を作る。変更はワーキングツリーに残したまま報告すること。
+**作業用の枝へのコミットはエージェントが行う。push と main への統合は yuuki が行う。**
+（2026-11-14 yuuki。以前は、ブリッジ経由の git の identity・`.git` の権限・`index.lock` の残骸の問題のため、エージェントはコミットもしなかった）
 
 ### node_modules
 
@@ -150,6 +165,12 @@ tests/
   componentCollision.test.ts ← 同じ役割の部品が2つ存在しないこと
   classConflict.test.ts     ← 同じ CSS プロパティを触るクラスの重なりを禁止
   setup.ts                  ← jest-dom セットアップ
+core/               ← @kedama-design/core（独立したパッケージ。上の「core」の決まり）
+  ui/               ← tokens.css（色の値はここだけ）・base.css・components.css・motion/toast/drawer/dateinput/icons.js
+  guidelines/       ← 共通UIガイドラインの正（tokens.json が値の正）。SOURCE.json に写した元の sha256
+  test/             ← node:test（依存なし）
+  examples/         ← 全部品・全状態の見本と解決値の実測（配らない）
+  docs/             ← 段1の設計記録・報告（配らない）
 ```
 
 **`cn()` は clsx のみで tailwind-merge を含まない**（`docs/proposal-tailwind-merge.md` で

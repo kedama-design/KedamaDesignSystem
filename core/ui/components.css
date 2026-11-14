@@ -1,0 +1,530 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/*
+ * 部品の CSS。class はすべて tsk- で始まる（使う側の画面・文書の class と重ならない名前。test/css.test.mjs が見張る）。
+ * 色は ui/tokens.css の --ui- の名前だけを使い、値を直書きしない。要素の名前だけの規則（table{} など）を書かない
+ * ＝読み込んでも、tsk- の class を付けていない要素には何も効かない。
+ * 寸法の出どころ: ボタン・入力の角丸 6px・高さ 36px / 28px（guidelines 03・tokens.json）、表・カードの角丸 10px、行の高さ約 44px（06）。
+ */
+
+/* ---------- ボタン ---------- */
+.tsk-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+  height: var(--ui-control-h-md);
+  padding: 0 14px;
+  border: 1px solid var(--ui-action-secondary-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-action-secondary);
+  color: var(--ui-action-on-secondary);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  font-weight: var(--ui-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tsk-btn:hover { background: var(--ui-surface-subtle); }
+.tsk-btn:active { background: var(--ui-surface-selected); }
+.tsk-btn--primary {
+  border-color: var(--ui-action-primary);
+  background: var(--ui-action-primary);
+  color: var(--ui-action-on-primary);
+}
+.tsk-btn--primary:hover { border-color: var(--ui-action-primary-hover); background: var(--ui-action-primary-hover); }
+.tsk-btn--primary:active { border-color: var(--ui-action-primary-active); background: var(--ui-action-primary-active); }
+.tsk-btn--ghost { border-color: transparent; background: transparent; }
+.tsk-btn--ghost:hover { background: var(--ui-surface-hover); }
+.tsk-btn--sm { height: var(--ui-control-h-sm); padding: 0 10px; font-size: var(--ui-font-size-md); }
+.tsk-btn:disabled,
+.tsk-btn[aria-disabled="true"] {
+  border-color: var(--ui-border-middle);
+  background: var(--ui-surface-subtle);
+  color: var(--ui-text-disabled);
+  cursor: default;
+}
+.tsk-btn--ghost:disabled,
+.tsk-btn--ghost[aria-disabled="true"] { border-color: transparent; background: transparent; }
+
+/* アイコンだけのボタン（必ず aria-label を付ける） */
+.tsk-iconbtn {
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  width: var(--ui-control-h-sm);
+  height: var(--ui-control-h-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-middle);
+  cursor: pointer;
+}
+.tsk-iconbtn:hover { background: var(--ui-surface-hover); color: var(--ui-text-high); }
+.tsk-iconbtn[aria-pressed="true"] { background: var(--ui-surface-selected); color: var(--ui-text-high); }
+.tsk-iconbtn:disabled,
+.tsk-iconbtn[aria-disabled="true"] { background: transparent; color: var(--ui-text-disabled); cursor: default; }
+.tsk-iconbtn svg { width: 16px; height: 16px; }
+/* 線のアイコン（×・＋など。形は ui/icons.js） */
+.tsk-glyph { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.tsk-btn:focus-visible,
+.tsk-iconbtn:focus-visible,
+.tsk-input:focus-visible,
+.tsk-seg__btn:focus-visible {
+  outline: 2px solid var(--ui-text-high);
+  outline-offset: 2px;
+  /* 使う側の全体の :focus-visible が影を足していても消す（部品の輪はこの1本だけ） */
+  box-shadow: none;
+}
+.tsk-drawer:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: 2px; box-shadow: var(--ui-shadow-floating); }
+.tsk-input[aria-invalid="true"]:focus-visible,
+.tsk-field--invalid .tsk-input:focus-visible { box-shadow: inset 0 0 0 1px var(--ui-status-danger); }
+
+/* ---------- 入力・選択 ---------- */
+.tsk-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ui-control-h-md);
+  padding: 0 10px;
+  border: 1px solid var(--ui-border-input);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-panel);
+  color: var(--ui-text-high);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+}
+.tsk-input::placeholder { color: var(--ui-text-low); }
+textarea.tsk-input { height: auto; min-height: 72px; padding: var(--ui-space-2) 10px; line-height: 1.6; resize: vertical; }
+.tsk-input[readonly] { border-color: var(--ui-border-middle); background: var(--ui-surface-subtle); color: var(--ui-text-middle); }
+.tsk-input:disabled { border-color: var(--ui-border-middle); background: var(--ui-surface-subtle); color: var(--ui-text-disabled); cursor: not-allowed; }
+.tsk-input[aria-invalid="true"],
+.tsk-field--invalid .tsk-input {
+  border-color: var(--ui-status-danger);
+  box-shadow: inset 0 0 0 1px var(--ui-status-danger);
+}
+
+/* ---------- 欄（見出し・必須・説明・欄の下の1行） ---------- */
+.tsk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-family: var(--ui-font-ui);
+  color: var(--ui-text-high);
+}
+.tsk-field__label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--ui-font-size-md);
+  font-weight: var(--ui-font-weight-semibold);
+  color: var(--ui-text-middle);
+}
+/* 「必須」は灰色の字（赤くしない） */
+.tsk-field__req { font-size: var(--ui-font-size-sm); font-weight: var(--ui-font-weight-regular); color: var(--ui-text-low); }
+.tsk-field__help { margin: 0; font-size: var(--ui-font-size-sm); line-height: 1.5; color: var(--ui-text-low); }
+.tsk-field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--ui-font-size-sm);
+  line-height: 1.5;
+  color: var(--ui-text-high);
+}
+.tsk-field__error .tsk-icon { margin-top: 1px; }
+
+/* ---------- カード ---------- */
+.tsk-card {
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-page);
+  font-family: var(--ui-font-ui);
+  color: var(--ui-text-high);
+}
+.tsk-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: 14px var(--ui-space-4);
+  border-bottom: 1px solid var(--ui-border-low);
+}
+.tsk-card__title { flex: 1 1 auto; min-width: 0; margin: 0; font-size: var(--ui-font-size-lg); font-weight: var(--ui-font-weight-semibold); }
+.tsk-card__body { display: flex; flex-direction: column; gap: var(--ui-space-4); padding: var(--ui-space-4); }
+
+/* ---------- 表 ---------- */
+.tsk-table-wrap { border: 1px solid var(--ui-border-middle); border-radius: var(--ui-radius-lg); overflow-x: auto; background: var(--ui-surface-page); }
+.tsk-table { width: 100%; border-collapse: collapse; font-family: var(--ui-font-ui); font-size: var(--ui-font-size-base); color: var(--ui-text-high); }
+.tsk-table th {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ui-border-middle);
+  background: var(--ui-surface-subtle);
+  color: var(--ui-text-middle);
+  font-size: var(--ui-font-size-md);
+  font-weight: var(--ui-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+}
+.tsk-table td { padding: 11px 14px; border-bottom: 1px solid var(--ui-border-low); line-height: 1.6; vertical-align: middle; }
+.tsk-table tbody tr:last-child td { border-bottom: 0; }
+.tsk-table tbody tr.is-link { cursor: pointer; }
+.tsk-table tbody tr.is-link:hover { background: var(--ui-surface-subtle); }
+.tsk-table tbody tr[aria-selected="true"] { background: var(--ui-surface-subtle); }
+.tsk-table .is-title { font-weight: var(--ui-font-weight-semibold); }
+.tsk-table .is-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ui-text-low); }
+
+/* ---------- 帯（インラインメッセージ。見出し1行＋箇所・理由・直し方。地は塗らず、アイコンだけに色） ---------- */
+.tsk-msg {
+  display: flex;
+  gap: 10px;
+  padding: var(--ui-space-3) 14px;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-lg);
+  background: transparent;
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  line-height: 1.6;
+  color: var(--ui-text-high);
+}
+.tsk-msg > .tsk-icon { margin-top: 3px; }
+.tsk-msg__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.tsk-msg__title { margin: 0; font-weight: var(--ui-font-weight-semibold); }
+.tsk-msg__items { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--ui-space-2); }
+.tsk-msg__item + .tsk-msg__item { padding-top: var(--ui-space-2); border-top: 1px solid var(--ui-border-low); }
+.tsk-msg__summary { margin: 0 0 2px; }
+.tsk-msg__rows { margin: 0; display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 2px var(--ui-space-2); font-size: var(--ui-font-size-md); }
+.tsk-msg__rows dt { color: var(--ui-text-low); }
+.tsk-msg__rows dd { margin: 0; overflow-wrap: anywhere; }
+.tsk-msg__actions { display: flex; flex-wrap: wrap; gap: var(--ui-space-2); margin-top: var(--ui-space-1); }
+
+/* ---------- チップ（状態の表示には使わない。状態は .tsk-status） ---------- */
+.tsk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+  height: 22px;
+  padding: 0 var(--ui-space-2);
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-subtle);
+  color: var(--ui-text-middle);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-sm);
+  white-space: nowrap;
+}
+/* 差し込みなど、本文の中で強調する箇所（guidelines の唯一の色付きの面） */
+.tsk-chip--highlight { border-color: transparent; background: var(--ui-surface-highlight); color: var(--ui-text-high); }
+
+/* ---------- 状態のアイコン（形でも区別でき、文字のラベルを必ず添える。色はここだけ） ---------- */
+.tsk-icon { flex: none; width: 16px; height: 16px; vertical-align: -3px; color: var(--ui-status-neutral); }
+.tsk-icon [data-part="ring"] { fill: none; stroke: currentColor; }
+.tsk-icon [data-part="fill"] { fill: currentColor; stroke: none; }
+.tsk-icon [data-part="line"] { fill: none; stroke: currentColor; }
+.tsk-icon [data-part="mark"] { fill: none; stroke: var(--ui-surface-page); }
+.tsk-icon--idea,
+.tsk-icon--todo,
+.tsk-icon--none { color: var(--ui-status-neutral); }
+.tsk-icon--progress { color: var(--ui-status-progress); }
+.tsk-icon--waiting { color: var(--ui-status-waiting); }
+.tsk-icon--success { color: var(--ui-status-success); }
+.tsk-icon--info { color: var(--ui-status-info); }
+.tsk-icon--danger { color: var(--ui-status-danger); }
+.tsk-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  color: var(--ui-text-high);
+}
+.tsk-status .tsk-icon { vertical-align: 0; }
+/* 異常だけ文字を太くする（guidelines 04） */
+.tsk-status--danger { font-weight: var(--ui-font-weight-semibold); }
+
+/* ---------- 切り替え（セグメント） ---------- */
+.tsk-seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-surface-subtle);
+  font-family: var(--ui-font-ui);
+}
+.tsk-seg__btn {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-middle);
+  font-family: inherit;
+  font-size: var(--ui-font-size-sm);
+  cursor: pointer;
+}
+.tsk-seg__btn:hover { color: var(--ui-text-high); }
+.tsk-seg__btn[aria-pressed="true"] {
+  border-color: var(--ui-border-middle);
+  background: var(--ui-surface-page);
+  color: var(--ui-text-high);
+  font-weight: var(--ui-font-weight-semibold);
+}
+.tsk-seg__btn:disabled { color: var(--ui-text-disabled); cursor: default; }
+
+/* ---------- トースト（右下。動きは ui/toast.js の減衰ばね） ---------- */
+.tsk-toasts {
+  position: fixed;
+  right: var(--ui-space-5);
+  bottom: var(--ui-space-5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+.tsk-toast {
+  box-sizing: border-box;
+  pointer-events: auto;
+  display: flex;
+  gap: 10px;
+  width: 360px;
+  max-width: calc(100vw - 2 * var(--ui-space-5));
+  padding: var(--ui-space-3) 10px var(--ui-space-3) 14px;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-panel);
+  box-shadow: var(--ui-shadow-floating);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  line-height: 1.6;
+  color: var(--ui-text-high);
+  will-change: transform;
+}
+.tsk-toast > .tsk-icon { margin-top: 3px; }
+.tsk-toast__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tsk-toast__title { margin: 0; font-weight: var(--ui-font-weight-semibold); overflow-wrap: anywhere; }
+.tsk-toast__detail { margin: 0; font-size: var(--ui-font-size-md); color: var(--ui-text-middle); overflow-wrap: anywhere; }
+.tsk-toast__action { align-self: flex-start; margin-top: var(--ui-space-2); }
+.tsk-toast__bar { height: 2px; margin-top: var(--ui-space-2); border-radius: 2px; background: var(--ui-border-middle); overflow: hidden; }
+.tsk-toast__bar-fill { display: block; height: 100%; background: var(--ui-text-low); transform-origin: left center; }
+.tsk-toast .tsk-iconbtn { width: 24px; height: 24px; margin: -2px 0 0; }
+.tsk-toast .tsk-iconbtn svg { width: 14px; height: 14px; }
+
+/* ---------- ドロワー（右から。動きは ui/drawer.js。狭い画面では画面いっぱい） ---------- */
+.tsk-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: var(--ui-scrim);
+  opacity: 0;
+  transition: opacity 0.18s ease-out;
+}
+.tsk-scrim.is-on { opacity: 1; }
+.tsk-drawer {
+  box-sizing: border-box;
+  position: fixed;
+  top: var(--ui-space-3);
+  right: var(--ui-space-3);
+  bottom: var(--ui-space-3);
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, calc(100vw - 2 * var(--ui-space-3)));
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-2xl);
+  background: var(--ui-surface-panel);
+  box-shadow: var(--ui-shadow-floating);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  line-height: 1.6;
+  color: var(--ui-text-high);
+  will-change: transform;
+}
+.tsk-drawer__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: 14px 14px 14px 18px;
+  border-bottom: 1px solid var(--ui-border-low);
+}
+.tsk-drawer__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--ui-font-size-lg);
+  font-weight: var(--ui-font-weight-semibold);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* 見出し（名前など）を優先して見せ、見出しの右のチップのほうを縮める（チップの文字が長くても見出しが切れないように） */
+.tsk-drawer__title { flex-shrink: 0; max-width: 100%; }
+.tsk-drawer__head:has(.tsk-drawer__badge:not([hidden])) .tsk-drawer__title { max-width: 60%; }
+.tsk-drawer__badge { display: block; flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tsk-drawer__body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 18px; }
+.tsk-drawer__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-3) 14px;
+  border-top: 1px solid var(--ui-border-low);
+}
+.tsk-drawer__note { flex: 1 1 auto; min-width: 0; font-size: var(--ui-font-size-sm); color: var(--ui-text-low); }
+@media (max-width: 600px) {
+  .tsk-drawer { top: 0; right: 0; bottom: 0; left: 0; width: auto; border: 0; border-radius: 0; }
+}
+
+/* ======================================================================== 追加の部品（選択・チェック・手順・折りたたみ・小窓） */
+/*
+ * 角丸の決め（ui-guidelines の値）: 押す・打つもの（ボタン・入力・選択・チェック・チップ）＝6（sm）、
+ * それらに付く小さな浮き物（選択の一覧・セグメント）＝8（md）、カード・表・帯・トースト・小窓＝10（lg）、
+ * 本文の面＝12（xl）、ドロワー＝16（2xl）
+ */
+
+/* ---------- 選択（select ＋ ▾。▾ は選択の右端の中ほどに重ねる） ---------- */
+.tsk-select { position: relative; display: inline-flex; align-items: center; min-width: 0; max-width: 100%; }
+.tsk-select__control {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: var(--ui-control-h-md);
+  padding: 0 32px 0 10px;
+  border: 1px solid var(--ui-border-input);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-panel);
+  color: var(--ui-text-high);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  -webkit-appearance: none;
+  appearance: none;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.tsk-select__control:disabled { border-color: var(--ui-border-middle); background: var(--ui-surface-subtle); color: var(--ui-text-disabled); cursor: not-allowed; }
+.tsk-select__control[aria-invalid="true"] { border-color: var(--ui-status-danger); box-shadow: inset 0 0 0 1px var(--ui-status-danger); }
+.tsk-select__control:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: 2px; box-shadow: none; }
+.tsk-select__chevron { position: absolute; right: 10px; top: 50%; width: 14px; height: 14px; margin-top: -7px; color: var(--ui-text-middle); pointer-events: none; }
+.tsk-select--sm .tsk-select__control { height: var(--ui-control-h-sm); font-size: var(--ui-font-size-md); }
+
+/* ---------- チェック・ラジオ（見出しと一緒に1行） ---------- */
+.tsk-check { display: inline-flex; align-items: flex-start; gap: var(--ui-space-2); font-family: var(--ui-font-ui); font-size: var(--ui-font-size-base); line-height: 1.5; color: var(--ui-text-high); cursor: pointer; }
+.tsk-check__input { flex: none; width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--ui-action-primary); cursor: pointer; }
+.tsk-check__input:disabled { cursor: not-allowed; }
+.tsk-check__input:disabled + .tsk-check__label { color: var(--ui-text-disabled); }
+.tsk-check__input:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: 2px; box-shadow: none; }
+.tsk-check__label { min-width: 0; }
+
+/* ---------- 手順の縦の並び（右のパネル。いまの手順は面の明るさ、済んだ手順は✓） ---------- */
+.tsk-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; font-family: var(--ui-font-ui); }
+.tsk-steps__step { position: relative; }
+.tsk-steps__item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-middle);
+  font: inherit;
+  font-size: var(--ui-font-size-base);
+  text-align: left;
+  text-decoration: none;
+}
+button.tsk-steps__item { cursor: pointer; }
+button.tsk-steps__item:hover { background: var(--ui-surface-hover); color: var(--ui-text-high); }
+.tsk-steps__item:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: 2px; box-shadow: none; }
+.tsk-steps__step[aria-current="step"] .tsk-steps__item { background: var(--ui-surface-selected); color: var(--ui-text-high); font-weight: var(--ui-font-weight-semibold); }
+.tsk-steps__number {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--ui-border-high);
+  border-radius: var(--ui-radius-full);
+  font-size: var(--ui-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-middle);
+}
+.tsk-steps__step[aria-current="step"] .tsk-steps__number { border-color: var(--ui-text-high); background: var(--ui-text-high); color: var(--ui-surface-page); }
+.tsk-steps__step[data-status="done"] .tsk-steps__number { border-color: var(--ui-status-success); color: var(--ui-status-success); }
+.tsk-steps__title { min-width: 0; }
+/* 状態の印の並び（済み＝緑のチェック・止まっている＝赤・いま＝半分・未到達＝空の丸）。印そのものが色を持つので枠は付けない */
+.tsk-steps--status .tsk-steps__number,
+.tsk-steps--status .tsk-steps__step[aria-current="step"] .tsk-steps__number,
+.tsk-steps--status .tsk-steps__step[data-status="done"] .tsk-steps__number { width: 16px; height: 16px; border: 0; background: transparent; }
+.tsk-steps__sub { margin: 2px 0 6px 42px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
+
+/* ---------- 折りたたみ（summary を押して開く。開閉の▸は回す） ---------- */
+.tsk-disclosure { border: 1px solid var(--ui-border-middle); border-radius: var(--ui-radius-lg); background: var(--ui-surface-page); font-family: var(--ui-font-ui); color: var(--ui-text-high); }
+.tsk-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  min-height: 44px;
+  padding: 0 var(--ui-space-4);
+  font-size: var(--ui-font-size-base);
+  font-weight: var(--ui-font-weight-semibold);
+  list-style: none;
+  cursor: pointer;
+}
+.tsk-disclosure > summary::-webkit-details-marker { display: none; }
+.tsk-disclosure > summary::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--ui-text-middle);
+  transition: transform 120ms ease-out;
+}
+.tsk-disclosure[open] > summary::before { transform: rotate(90deg); }
+.tsk-disclosure > summary:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: -2px; border-radius: var(--ui-radius-lg); box-shadow: none; }
+.tsk-disclosure__body { display: flex; flex-direction: column; gap: var(--ui-space-4); padding: 0 var(--ui-space-4) var(--ui-space-4); }
+.tsk-disclosure--plain { border: 0; background: transparent; }
+.tsk-disclosure--plain > summary { padding: 0; min-height: 32px; font-weight: var(--ui-font-weight-regular); color: var(--ui-text-middle); }
+.tsk-disclosure--plain .tsk-disclosure__body { padding: var(--ui-space-2) 0 0; }
+
+/* ---------- 小窓（dialog 要素） ---------- */
+.tsk-dialog {
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-page);
+  color: var(--ui-text-high);
+  box-shadow: var(--ui-shadow-floating);
+  font-family: var(--ui-font-ui);
+}
+.tsk-dialog::backdrop { background: var(--ui-scrim); }
+.tsk-dialog__head { display: flex; align-items: center; gap: var(--ui-space-2); padding: var(--ui-space-4) var(--ui-space-5) var(--ui-space-2); }
+.tsk-dialog__title { flex: 1 1 auto; margin: 0; font-size: var(--ui-font-size-lg); font-weight: var(--ui-font-weight-semibold); }
+.tsk-dialog__body { display: flex; flex-direction: column; gap: var(--ui-space-4); padding: var(--ui-space-2) var(--ui-space-5) var(--ui-space-4); overflow-y: auto; }
+.tsk-dialog__inner { display: flex; flex-direction: column; max-height: inherit; }
+.tsk-dialog__scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.tsk-dialog__scroll > .tsk-dialog__body { overflow: visible; }
+.tsk-dialog__foot { display: flex; justify-content: flex-end; gap: var(--ui-space-2); padding: var(--ui-space-3) var(--ui-space-5) var(--ui-space-4); border-top: 1px solid var(--ui-border-low); }
+
+/* 画面には見せず、読み上げにだけ使う */
+.tsk-visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 小さい欄・選択（一覧の絞り込みなど）。入力と選択を包む要素は並びに入るだけ（見た目は中の部品が持つ） */
+.tsk-input--sm { height: var(--ui-control-h-sm); font-size: var(--ui-font-size-md); }
+.tsk-select__control--sm { height: var(--ui-control-h-sm); font-size: var(--ui-font-size-md); }
+.tsk-input-box { display: inline-flex; min-width: 0; }
+.tsk-input-box > .tsk-input { flex: 1 1 auto; }
+.tsk-check__box { display: contents; }
+.tsk-select__wrap { display: contents; }
+.tsk-input--num { text-align: right; font-variant-numeric: tabular-nums; }
