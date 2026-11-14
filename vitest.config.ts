@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import { resolve } from 'node:path';
 
 /**
@@ -28,6 +28,13 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
+
+    /*
+     * core/ は独立したパッケージ（@kedama-design/core）。テストは node:test で、
+     * `cd core && npm test` が走らせる（CI の「Core tests」）。vitest の既定の
+     * include（*.test.mjs のファイル）に当たるので、ここで外す。
+     */
+    exclude: [...configDefaults.exclude, 'core/**'],
 
     /**
      * クラウドストレージ上のチェックアウトでのみワーカーを 1 本に絞る

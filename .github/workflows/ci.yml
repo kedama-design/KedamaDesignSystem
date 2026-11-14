@@ -62,6 +62,18 @@ jobs:
       - name: Test
         run: pnpm test
 
+      # @kedama-design/core（core/）は独立したパッケージ。依存を持たず、node:test だけで走る
+      # （ルートの pnpm install や lockfile とは関係しない）。vitest.config.ts は core/** を外している。
+      - name: Core tests
+        working-directory: core
+        run: npm test
+
+      # core の配布物の確認。npm pack で tarball を一時ディレクトリに作って展開し、中身が配る物だけか・
+      # exports の行き先・パッケージ名での import を確かめる。公開（npm publish）はしない。
+      - name: Core package check
+        working-directory: core
+        run: npm run verify:pack
+
       # Phase A-1 の完了条件のひとつ。generator を2回走らせて出力が
       # 一致することを確認する。生成物（tokens.css / alias-*.css）は
       # .gitignore 対象なので git diff では検証できず、退避して比較する。

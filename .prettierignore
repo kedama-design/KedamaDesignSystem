@@ -18,3 +18,12 @@ src/styles/alias-shadcn.css
 # 読めなくなるため。Kedama トークンでの再スタイルによる差分だけが
 # 見えている状態を保つ。
 src/components/ui/
+
+# @kedama-design/core の写し。
+#
+# core/ui/ は登記議事録つくるさんの src/ui/ と同じ書式のまま保つ（段3で写し戻すとき、
+# 登記の文字列ベースのテストがそのまま通るように）。core/guidelines/ はガイドラインの
+# 写しで、直したファイル以外は元と同じ sha256 であることを core のテストが確かめる。
+# core のほかのファイル（test・examples・README・docs）は prettier に従う。
+core/ui/
+core/guidelines/
