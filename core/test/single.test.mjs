@@ -70,6 +70,8 @@ describe('単一の HTML への取り込み（scripts/single-html.mjs）', () =>
     );
     assert.equal(typeof core.createToaster, 'function');
     assert.equal(typeof core.openDrawer, 'function');
+    assert.equal(typeof core.attachShell, 'function', '外枠（0.2.0）');
+    assert.deepEqual({ ...core.SHELL_MEDIA }, { ...(await import('../ui/shell.js')).SHELL_MEDIA });
   });
 
   it('まとめた HTML は CSS を読み込み順に中へ入れ、外のファイルを読まない', () => {

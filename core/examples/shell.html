@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@kedama-design/core 外枠の見本</title>
+    <!-- core の部品だけを相対パスで読む（React・Tailwind なし）。順番は tokens → base → components → shell -->
+    <link rel="stylesheet" href="../ui/tokens.css" />
+    <link rel="stylesheet" href="../ui/base.css" />
+    <link rel="stylesheet" href="../ui/components.css" />
+    <link rel="stylesheet" href="../ui/shell.css" />
+    <style>
+      /* 見本のページの中身の並べ方だけ（色は --ui-* の名前だけを使う。外枠の見た目は変えない） */
+      body {
+        margin: 0;
+      }
+      .demo-page h1 {
+        margin: 0 0 var(--ui-space-2);
+        font-size: var(--ui-font-size-2xl);
+      }
+      .demo-lead {
+        margin: 0 0 var(--ui-space-4);
+        color: var(--ui-text-middle);
+      }
+      .demo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--ui-space-4);
+      }
+      .demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--ui-space-2);
+      }
+      .demo-state {
+        display: grid;
+        grid-template-columns: 9em 1fr;
+        gap: var(--ui-space-1) var(--ui-space-3);
+        margin: 0;
+        font-size: var(--ui-font-size-md);
+      }
+      .demo-state dt {
+        color: var(--ui-text-low);
+      }
+      .demo-state dd {
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .demo-log {
+        max-height: 10em;
+        margin: var(--ui-space-2) 0 0;
+        padding: 0 0 0 var(--ui-space-5);
+        overflow: auto;
+        font-size: var(--ui-font-size-sm);
+        color: var(--ui-text-middle);
+      }
+      .demo-panel-head {
+        display: flex;
+        align-items: center;
+        gap: var(--ui-space-2);
+        padding: var(--ui-space-2) 0;
+        border-bottom: 1px solid var(--ui-border-low);
+      }
+      .demo-panel-head h2 {
+        flex: 1 1 auto;
+        margin: 0;
+        font-size: var(--ui-font-size-base);
+        font-weight: var(--ui-font-weight-semibold);
+      }
+      .demo-panel-sec {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-space-2);
+        padding: var(--ui-space-3) 0;
+        border-bottom: 1px solid var(--ui-border-low);
+      }
+      .demo-panel-sec h3 {
+        margin: 0;
+        font-size: var(--ui-font-size-md);
+        font-weight: var(--ui-font-weight-medium);
+        color: var(--ui-text-low);
+      }
+      .demo-client {
+        flex: 1 1 auto;
+        min-width: 0;
+        justify-content: flex-start;
+        font-weight: var(--ui-font-weight-bold);
+      }
+      .demo-avatar {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--ui-radius-full);
+        background: var(--ui-action-primary);
+        color: var(--ui-action-on-primary);
+        font-size: var(--ui-font-size-xs);
+        font-weight: var(--ui-font-weight-bold);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tsk-shell" data-sidebar="open" data-panel="closed" data-rail="shown">
+      <header class="tsk-shell__topbar">
+        <div class="tsk-shell__start">
+          <span class="tsk-shell__history">
+            <button class="tsk-iconbtn" type="button" aria-label="戻る">
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 12H5M11 6l-6 6 6 6" />
+              </svg>
+            </button>
+            <button class="tsk-iconbtn" type="button" aria-label="進む" disabled>
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </span>
+          <button
+            class="tsk-iconbtn"
+            type="button"
+            data-shell-toggle="sidebar"
+            aria-label="サイドバー"
+            id="tog-sidebar"
+          >
+            <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M9 4v16" />
+            </svg>
+          </button>
+        </div>
+        <nav class="tsk-shell__crumbs" aria-label="パンくず">
+          <a href="#settings">設定</a> ›
+          <span aria-current="page">通知の設定（とても長い画面の名前は省いて … で見せる）</span>
+        </nav>
+        <div class="tsk-shell__end">
+          <button class="tsk-btn tsk-btn--sm" type="button" id="save">保存</button>
+          <button
+            class="tsk-iconbtn"
+            type="button"
+            data-shell-toggle="panel"
+            aria-label="右のパネル"
+            id="tog-panel"
+          >
+            <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M15 4v16" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="tsk-shell__body">
+        <div class="tsk-shell__side" aria-label="メニュー">
+          <div class="tsk-shell__side-head">
+            <button class="tsk-btn tsk-btn--ghost demo-client" type="button" id="client">
+              けだま株式会社 ▾
+            </button>
+            <button
+              class="tsk-iconbtn"
+              type="button"
+              data-shell-close
+              aria-label="メニューを閉じる"
+              id="side-close"
+            >
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+          <nav class="tsk-shell__rail" aria-label="アプリの切り替え">
+            <a class="tsk-shell__app" href="#calendar" aria-label="カレンダー" title="カレンダー">
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4M16 3v4" />
+              </svg>
+            </a>
+            <a
+              class="tsk-shell__app"
+              href="#settings"
+              aria-label="設定"
+              title="設定"
+              aria-current="true"
+            >
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"
+                />
+              </svg>
+            </a>
+            <span class="tsk-shell__rail-sep" aria-hidden="true"></span>
+            <a class="tsk-shell__app" href="#plugins" aria-label="プラグイン" title="プラグイン">
+              <svg class="tsk-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="4" width="7" height="7" rx="1.5" />
+                <rect x="13" y="4" width="7" height="7" rx="1.5" />
+                <rect x="4" y="13" width="7" height="7" rx="1.5" />
+                <path d="M16.5 13v7M13 16.5h7" />
+              </svg>
+            </a>
+            <span class="tsk-shell__rail-fill"></span>
+            <a class="tsk-shell__app" href="#account" aria-label="アカウント" title="アカウント">
+              <span class="demo-avatar" aria-hidden="true">KD</span>
+            </a>
+          </nav>
+          <div class="tsk-shell__sidebar" aria-label="設定のメニュー">
+            <nav class="tsk-shell__nav" aria-label="画面">
+              <a class="tsk-shell__nav-item" href="#general" id="nav-first">全体の設定</a>
+              <a class="tsk-shell__nav-item" href="#notify" aria-current="page">通知の設定</a>
+              <a class="tsk-shell__nav-item" href="#members"
+                >メンバー<span class="tsk-shell__nav-count">12</span></a
+              >
+              <a class="tsk-shell__nav-item" href="#review"
+                >自分の確認待ち<span class="tsk-shell__nav-count">1</span></a
+              >
+            </nav>
+            <div class="tsk-shell__nav">
+              <p class="tsk-shell__nav-heading">最近の項目</p>
+              <a class="tsk-shell__nav-item" href="#recent1">11月の定例の通知</a>
+              <a class="tsk-shell__nav-item" href="#recent2">祝日の扱い</a>
+            </div>
+            <div class="demo-row">
+              <button
+                class="tsk-btn tsk-btn--sm"
+                type="button"
+                data-demo="drawer"
+                id="sidebar-drawer"
+              >
+                ドロワーを開く
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tsk-shell__face">
+          <main class="tsk-shell__page demo-page">
+            <h1>外枠の見本</h1>
+            <p class="demo-lead">
+              幅を 1440・1024・390px
+              に変えて、サイドバー・右パネルの開閉、ドロワー・トーストとの重なりを確かめる。
+            </p>
+            <div class="demo-grid">
+              <section class="tsk-card">
+                <div class="tsk-card__head"><h2 class="tsk-card__title">いまの状態</h2></div>
+                <div class="tsk-card__body">
+                  <dl class="demo-state" id="state"></dl>
+                </div>
+              </section>
+              <section class="tsk-card">
+                <div class="tsk-card__head"><h2 class="tsk-card__title">つなぐ・外す</h2></div>
+                <div class="tsk-card__body demo-row">
+                  <button class="tsk-btn tsk-btn--sm" type="button" id="connect">つなぐ</button>
+                  <button class="tsk-btn tsk-btn--sm" type="button" id="disconnect">外す</button>
+                  <button class="tsk-btn tsk-btn--sm" type="button" id="reconnect">
+                    外してつなぐ
+                  </button>
+                </div>
+              </section>
+              <section class="tsk-card">
+                <div class="tsk-card__head">
+                  <h2 class="tsk-card__title">好みの反映（onRequest）</h2>
+                </div>
+                <div class="tsk-card__body">
+                  <div class="tsk-seg" role="group" aria-label="好みの反映" id="request-mode">
+                    <button class="tsk-seg__btn" type="button" data-mode="none" aria-pressed="true">
+                      無し
+                    </button>
+                    <button class="tsk-seg__btn" type="button" data-mode="now" aria-pressed="false">
+                      すぐ
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-mode="late"
+                      aria-pressed="false"
+                    >
+                      300ms 遅らせる
+                    </button>
+                  </div>
+                  <ol class="demo-log" id="log"></ol>
+                </div>
+              </section>
+              <section class="tsk-card">
+                <div class="tsk-card__head"><h2 class="tsk-card__title">重ねる部品</h2></div>
+                <div class="tsk-card__body demo-row">
+                  <button class="tsk-btn tsk-btn--sm" type="button" data-demo="drawer">
+                    ドロワーを開く
+                  </button>
+                  <button class="tsk-btn tsk-btn--sm" type="button" data-demo="toast">
+                    知らせを出す
+                  </button>
+                  <label class="tsk-check"
+                    ><input class="tsk-check__input" type="checkbox" id="rail-hidden" /><span
+                      class="tsk-check__label"
+                      >アプリが1つ（列を隠す）</span
+                    ></label
+                  >
+                </div>
+              </section>
+              <section class="tsk-card">
+                <div class="tsk-card__head">
+                  <h2 class="tsk-card__title">右パネルの中身（Tab の確かめ）</h2>
+                </div>
+                <div class="tsk-card__body">
+                  <div class="tsk-seg" role="group" aria-label="右パネルの中身" id="panel-variant">
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="normal"
+                      aria-pressed="true"
+                    >
+                      普通
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="hide-ends"
+                      aria-pressed="false"
+                    >
+                      最初と最後を隠す
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="empty"
+                      aria-pressed="false"
+                    >
+                      0件
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="fieldset"
+                      aria-pressed="false"
+                    >
+                      無効な fieldset
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="fieldset-only"
+                      aria-pressed="false"
+                    >
+                      無効な欄だけ
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </main>
+          <aside class="tsk-shell__panel" aria-label="詳細" id="panel"></aside>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { attachShell } from '../ui/shell.js';
+      import { openDrawer } from '../ui/drawer.js';
+      import { createToaster } from '../ui/toast.js';
+
+      const root = document.querySelector('.tsk-shell');
+      const page = () => document.querySelector('.tsk-shell__page');
+      const panel = document.getElementById('panel');
+      const toaster = createToaster();
+      const requests = [];
+      let shell = null;
+      let requestMode = 'none';
+
+      const h = (tag, attrs = {}, ...kids) => {
+        const n = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        n.append(...kids);
+        return n;
+      };
+      const smallBtn = (text, attrs = {}) =>
+        h('button', { class: 'tsk-btn tsk-btn--sm', type: 'button', ...attrs }, text);
+      const disabledFieldset = () =>
+        h(
+          'fieldset',
+          { disabled: '', id: 'fs' },
+          h('legend', {}, '止めている欄'),
+          h('input', { class: 'tsk-input', id: 'fs-input', value: '変えられない' }),
+        );
+
+      /* ---- 右パネルの中身（4b・4c の確かめ用に切り替える） ---- */
+      function renderPanel(variant) {
+        panel.replaceChildren();
+        if (variant === 'empty') {
+          panel.append(
+            h('div', { class: 'demo-panel-head' }, h('h2', {}, '詳細（操作できるものが無い）')),
+            h('p', {}, '中に移れる要素が無い。Tab はこの面に留まる。'),
+          );
+          return;
+        }
+        if (variant === 'fieldset-only') {
+          panel.append(
+            h('div', { class: 'demo-panel-head' }, h('h2', {}, '詳細（無効な欄だけ）')),
+            disabledFieldset(),
+          );
+          return;
+        }
+        if (variant === 'fieldset') panel.append(disabledFieldset());
+        if (variant === 'hide-ends')
+          panel.append(smallBtn('隠れた最初', { id: 'hidden-first', style: 'display:none' }));
+        const close = h(
+          'button',
+          {
+            class: 'tsk-iconbtn',
+            type: 'button',
+            'data-shell-close': '',
+            'aria-label': '右のパネルを閉じる',
+            id: 'panel-close',
+          },
+          '×',
+        );
+        panel.append(
+          h('div', { class: 'demo-panel-head' }, h('h2', {}, '詳細')),
+          h(
+            'section',
+            { class: 'demo-panel-sec' },
+            h('h3', {}, '状態'),
+            h(
+              'div',
+              { class: 'demo-row' },
+              smallBtn('状態を変える', { id: 'panel-first' }),
+              smallBtn('ドロワーを開く', { 'data-demo': 'drawer', id: 'panel-drawer' }),
+            ),
+          ),
+          h(
+            'section',
+            { class: 'demo-panel-sec' },
+            h('h3', {}, '知らせ'),
+            h(
+              'div',
+              { class: 'demo-row' },
+              smallBtn('知らせを出す', { 'data-demo': 'toast', id: 'panel-toast' }),
+            ),
+          ),
+          h('div', { class: 'demo-row' }, close),
+        );
+        if (variant === 'hide-ends')
+          panel.append(smallBtn('隠れた最後', { id: 'hidden-last', style: 'visibility:hidden' }));
+      }
+
+      /* ---- つなぐ・外す ---- */
+      function onRequest(req) {
+        requests.push({ ...req, at: Math.round(performance.now()) });
+        renderLog();
+        const apply = () => root.setAttribute(`data-${req.target}`, req.open ? 'open' : 'closed');
+        if (requestMode === 'late') setTimeout(apply, 300);
+        else apply();
+      }
+      function connect() {
+        if (shell) return;
+        shell = attachShell(root, requestMode === 'none' ? {} : { onRequest });
+        renderState();
+      }
+      function disconnect() {
+        if (!shell) return;
+        shell.destroy();
+        shell = null;
+        renderState();
+      }
+
+      /* ---- 状態の表示 ---- */
+      function renderState() {
+        const rows = [
+          ['つないでいる', shell ? 'はい' : 'いいえ'],
+          ['data-mode', root.getAttribute('data-mode') ?? '—'],
+          ['data-overlay', root.getAttribute('data-overlay') ?? '—'],
+          ['data-sidebar', root.getAttribute('data-sidebar')],
+          ['data-panel', root.getAttribute('data-panel')],
+          ['data-rail', root.getAttribute('data-rail')],
+          ['幅', `${window.innerWidth}px`],
+        ];
+        document
+          .getElementById('state')
+          .replaceChildren(...rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, String(v))]));
+      }
+      function renderLog() {
+        document
+          .getElementById('log')
+          .replaceChildren(
+            ...requests
+              .slice(-8)
+              .map((r) =>
+                h('li', {}, `${r.at}ms ${r.target} → ${r.open ? 'open' : 'closed'}（${r.reason}）`),
+              ),
+          );
+      }
+      new MutationObserver(renderState).observe(root, { attributes: true });
+      window.addEventListener('resize', renderState);
+
+      /* ---- 操作 ---- */
+      document.getElementById('connect').addEventListener('click', connect);
+      document.getElementById('disconnect').addEventListener('click', disconnect);
+      document.getElementById('reconnect').addEventListener('click', () => {
+        disconnect();
+        connect();
+      });
+      document.getElementById('rail-hidden').addEventListener('change', (e) => {
+        root.setAttribute('data-rail', e.currentTarget.checked ? 'hidden' : 'shown');
+      });
+      const seg = (id, attr, fn) => {
+        const group = document.getElementById(id);
+        group.addEventListener('click', (e) => {
+          const b = e.target.closest('button');
+          if (!b) return;
+          for (const x of group.querySelectorAll('button'))
+            x.setAttribute('aria-pressed', String(x === b));
+          fn(b.getAttribute(attr));
+        });
+      };
+      seg('request-mode', 'data-mode', (m) => {
+        requestMode = m;
+        disconnect();
+        connect();
+      });
+      seg('panel-variant', 'data-variant', renderPanel);
+      // 外枠と一緒に使うドロワーには fallbackFocus で本文を渡す（戻り先が隠れたときの救い。README）
+      function showDrawer(opener) {
+        return openDrawer({
+          title: 'クライアントを切り替える',
+          note: '閉じると開いたボタンへ戻る。隠れていたら本文へ',
+          opener,
+          fallbackFocus: page,
+          body: (el) =>
+            el.append(
+              h(
+                'div',
+                { class: 'tsk-field' },
+                h('label', { class: 'tsk-field__label', for: 'drawer-q' }, '探す'),
+                h('input', { class: 'tsk-input', id: 'drawer-q' }),
+              ),
+            ),
+        });
+      }
+      // 重ねているあいだに出すトーストは知らせだけ（操作ボタンを付けない。README）
+      const showToast = () => toaster.show({ kind: 'info', title: '保存しました（知らせだけ）' });
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-demo]');
+        if (!b) return;
+        if (b.dataset.demo === 'toast') showToast();
+        if (b.dataset.demo === 'drawer') showDrawer(b);
+      });
+
+      renderPanel('normal');
+      connect();
+      // ブラウザでの確かめ（docs/stage2-log.md）が使う口
+      window.__shellDemo = {
+        root,
+        connect,
+        disconnect,
+        requests,
+        renderPanel,
+        showDrawer,
+        showToast,
+        get shell() {
+          return shell;
+        },
+        setRequestMode(m) {
+          document.querySelector(`#request-mode [data-mode="${m}"]`).click();
+        },
+      };
+    </script>
+  </body>
+</html>

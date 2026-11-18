@@ -9,7 +9,7 @@
  *   mid    (768px <= width < 1200px)    … アプリ切替の列は出す。サイドバー・右パネルは data-overlay で本文に重ねる
  *   narrow (width < 768px)              … 上の行 44px。列とサイドバーは左からの引き出し、右パネルは下からのシート
  * 属性: data-sidebar・data-panel（open|closed。使う側）、data-rail（shown|hidden。使う側。どの幅でも列を隠す）、
- *       data-overlay（none|sidebar|panel）・data-mode（wide|mid|narrow）は shell.js だけが書く
+ *       data-overlay（none|sidebar|panel）・data-mode（wide|mid|narrow）・data-switching（段をまたいだ直後の2こま）は shell.js だけが書く
  * tokens に無い数値（34px・44px・80dvh・200ms・重なりの順 800/801 など）は core/docs/stage2-log.md の表に理由を載せる。
  */
 
@@ -70,7 +70,7 @@
   min-height: 0;
   padding: 0 var(--ui-space-2) var(--ui-space-2) 0;
 }
-.tsk-shell__side { display: flex; flex: 0 0 auto; min-height: 0; }
+.tsk-shell__side { box-sizing: border-box; display: flex; flex: 0 0 auto; min-height: 0; }
 /* 引き出しの先頭（クライアントの切り替え・閉じるボタン）。narrow の引き出しの中だけ出す */
 .tsk-shell__side-head { display: none; }
 
@@ -326,6 +326,12 @@
   }
   .tsk-shell[data-overlay="panel"] .tsk-shell__panel { visibility: visible; transform: none; transition-delay: 0s; }
 }
+
+/* ---------- 幅の段をまたいだ直後（shell.js が data-switching を付ける2こま）は動かさない。閉じる動きを本文に重ねない ---------- */
+.tsk-shell[data-switching] .tsk-shell__side,
+.tsk-shell[data-switching] .tsk-shell__sidebar,
+.tsk-shell[data-switching] .tsk-shell__panel,
+.tsk-shell[data-switching] .tsk-shell__scrim { transition-property: none; }
 
 /* ---------- 動きを減らす設定では開閉の動きを 0 に（07 の決まり） ---------- */
 @media (prefers-reduced-motion: reduce) {

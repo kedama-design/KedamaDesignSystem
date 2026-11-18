@@ -8,6 +8,7 @@
  * - 重ねているあいだは、外枠の中の決まった7つの要素だけに inert を付け、ダイアログになる要素に role="dialog"・aria-modal を付ける。
  *   毎回すべてを計算し直す（控えて戻すことはしない）。外枠の外（body の他の子）には触らない
  * - Tab は重ねものの端で折り返す。Esc・覆い・[data-shell-close] で閉じ、開いたボタンへフォーカスを戻す
+ * - 段をまたいだ直後の2こまは data-switching を付ける（shell.css が開閉の動きを止める。閉じる動きを本文に重ねない）
  * - ドロワー（drawer.js）を上に重ねてよい。ドロワーの中の Tab・Esc はドロワーが先に受ける
  * - 接続中、外枠の要素の inert・role・aria-modal・tabindex と開閉ボタンの aria-expanded はここの持ち物。
  *   destroy() で取り除く（使う側の data-sidebar・data-panel・data-rail は変えない）
@@ -134,6 +135,7 @@ export function attachShell(root, { doc, win, onRequest } = {}) {
   let destroyed = false;
   let overlay = 'none';
   let opener = null;
+  let settle = null;
   const part = (k) => findPart(root, PART[k]);
   const lists = Object.entries(SHELL_MEDIA).map(([m, q]) => [m, typeof win.matchMedia === 'function' ? win.matchMedia(q) : null]);
   const currentMode = () => {
@@ -249,8 +251,22 @@ export function attachShell(root, { doc, win, onRequest } = {}) {
     if (focusIsOurs(active)) returnFocus(target, back);
   }
 
+  /** 段をまたいだ直後の2こまは data-switching を付け、閉じる動きを止める（退場の動きが本文に重ならない） */
+  function holdMotion() {
+    if (typeof win.requestAnimationFrame !== 'function') return;
+    if (settle !== null) win.cancelAnimationFrame(settle);
+    root.setAttribute('data-switching', '');
+    settle = win.requestAnimationFrame(() => {
+      settle = win.requestAnimationFrame(() => {
+        settle = null;
+        root.removeAttribute('data-switching');
+      });
+    });
+  }
+
   /** 幅が段をまたいだ: その場で data-mode を書き、重ねものを閉じ、計算し直す */
   function applyMode(next) {
+    holdMotion();
     const before = doc.activeElement;
     const region = regionOf(before);
     const was = overlay;
@@ -368,6 +384,9 @@ export function attachShell(root, { doc, win, onRequest } = {}) {
     destroyed = true;
     attached.delete(root);
     if (observer) observer.disconnect();
+    if (settle !== null) win.cancelAnimationFrame(settle);
+    settle = null;
+    root.removeAttribute('data-switching');
     for (const [, mql] of lists) {
       if (!mql) continue;
       if (typeof mql.removeEventListener === 'function') mql.removeEventListener('change', onMediaChange);

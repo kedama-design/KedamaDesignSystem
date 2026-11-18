@@ -507,6 +507,43 @@ describe('外枠（ui/shell.js）: 重ねて出す・閉じる・フォーカス
   });
 });
 
+describe('外枠（ui/shell.js）: 段をまたいだ直後は動かさない', () => {
+  it('段をまたぐと data-switching を付け、2こまのあとに外す。同じ段の中の幅の変化では付けない', () => {
+    const { root, win, doc } = buildShell({ width: WIDTH.mid });
+    const shell = attachShell(root, { doc, win });
+    assert.equal(root.getAttribute('data-switching'), null, 'つないだだけでは付けない');
+    win.setWidth(900);
+    assert.equal(root.getAttribute('data-switching'), null, '同じ段の中');
+    win.setWidth(WIDTH.narrow);
+    assert.equal(root.getAttribute('data-switching'), '');
+    win.advance(16);
+    assert.equal(root.getAttribute('data-switching'), '', '1こまではまだ');
+    win.advance(16);
+    assert.equal(root.getAttribute('data-switching'), null, '2こまで外す');
+    shell.destroy();
+  });
+
+  it('destroy は予約したこまを無効にし、data-switching を取り除く', () => {
+    const { root, win, doc } = buildShell({ width: WIDTH.mid });
+    const shell = attachShell(root, { doc, win });
+    win.setWidth(WIDTH.wide);
+    shell.destroy();
+    assert.equal(root.getAttribute('data-switching'), null);
+    root.setAttribute('data-switching', 'x'); // 予約が残っていれば、次のこまで消される
+    win.advance(64);
+    assert.equal(root.getAttribute('data-switching'), 'x', '予約は残っていない');
+  });
+
+  it('shell.css は data-switching のあいだ、重ねるもの・覆いの動きを止める（動きを減らす規則の前に置く）', () => {
+    for (const part of ['side', 'sidebar', 'panel', 'scrim'])
+      assert.equal(
+        declOf(`.tsk-shell[data-switching] .tsk-shell__${part}`, 'transition-property'),
+        'none',
+        part,
+      );
+  });
+});
+
 describe('外枠（ui/shell.js）: Tab の折り返し', () => {
   const open = (width = WIDTH.mid, target = 'panel') => {
     const s = buildShell({ width });
