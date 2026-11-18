@@ -142,6 +142,16 @@ describe('部品の CSS（ui/components.css・ui/base.css）', () => {
     ]);
   });
 
+  it('ドロワーの見出しの右のチップは、空のとき（hidden）は出さない（0.2.0 で直した。display: block が hidden に勝っていた）', () => {
+    const css = stripComments(componentsCss());
+    assert.match(css, /\.tsk-drawer__badge\[hidden\]\s*\{\s*display:\s*none;\s*\}/);
+    const at = (re) => css.search(re);
+    assert.ok(
+      at(/\.tsk-drawer__badge\[hidden\]/) > at(/\.tsk-drawer__badge\s*\{/),
+      'display: block の規則より後ろ（同じ強さなら後ろが勝つ。属性の分だけ強くもある）',
+    );
+  });
+
   it('部品の CSS は外のものを読まない・強制しない（@import・url(・!important が無い）', () => {
     for (const css of [componentsCss(), baseCss()])
       assert.doesNotMatch(stripComments(css), /@import|url\(|!important/);
