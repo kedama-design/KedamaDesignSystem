@@ -174,6 +174,11 @@ export function openDrawer({
   function restoreFocus() {
     const target = returnTo && returnTo.isConnected !== false && typeof returnTo.focus === 'function' ? returnTo : (fallbackFocus ? fallbackFocus() : null);
     if (target && typeof target.focus === 'function') target.focus();
+    // 戻り先が隠れていて focus できなかったとき（外枠の重ねものが幅の変化で閉じたなど）は fallbackFocus を試す
+    if (target === returnTo && target && doc.activeElement !== target && fallbackFocus) {
+      const fallback = fallbackFocus();
+      if (fallback && typeof fallback.focus === 'function') fallback.focus();
+    }
   }
 
   function removeNodes() {

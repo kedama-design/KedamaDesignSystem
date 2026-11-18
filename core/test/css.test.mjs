@@ -1,4 +1,4 @@
-// 部品の CSS（ui/components.css・ui/base.css）の決まり。
+// 部品の CSS（ui/components.css・ui/base.css）の決まり。外枠（ui/shell.css）の決まりは shell.test.mjs（間隔の px の直書きはここで見る）。
 //  - 色の値を書いてよいのは ui/tokens.css だけ（ほかの ui の CSS・JS は --ui- の名前だけ）
 //  - 部品が使う var(--ui-…) はすべて tokens.css にある
 //  - components.css の規則は .tsk- の class から始まる（is-* の状態の class は添えてよい）。base.css は要素の規則を持ってよい
@@ -275,7 +275,7 @@ describe('部品の CSS の間隔の px の直書き', () => {
     assert.equal(table.size, PX_EXCEPTIONS.length, '表に同じ行が2つある');
     const seen = new Set();
     const unlisted = [];
-    for (const rel of ['ui/base.css', 'ui/components.css']) {
+    for (const rel of ['ui/base.css', 'ui/components.css', 'ui/shell.css']) {
       for (const { prop, value } of pxLiterals(read(path.join(CORE, rel)))) {
         const key = `${rel}|${prop}: ${value}`;
         seen.add(key);

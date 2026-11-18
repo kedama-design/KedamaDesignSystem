@@ -1,0 +1,336 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/*
+ * shell.css — 外枠（AppShell。guidelines 02_AppShell.md・07_追加.md）。
+ * 読み込む順: tokens → base → components → shell。値は ui/tokens.css の --ui-* だけ（色の値を書かない）。
+ * 重ねて出すときの読み上げ・キーボードは ui/shell.js（attachShell）が受け持つ。
+ *
+ * 幅の段（ui/shell.js の SHELL_MEDIA と同じ文字列。テストが一致を確かめる。範囲の書き方なので 767.5px などの端数にも隙間が無い）
+ *   wide   (width >= 1200px)            … 5つの領域を横に並べる。data-sidebar・data-panel（使う側の好み）で開閉
+ *   mid    (768px <= width < 1200px)    … アプリ切替の列は出す。サイドバー・右パネルは data-overlay で本文に重ねる
+ *   narrow (width < 768px)              … 上の行 44px。列とサイドバーは左からの引き出し、右パネルは下からのシート
+ * 属性: data-sidebar・data-panel（open|closed。使う側）、data-rail（shown|hidden。使う側。どの幅でも列を隠す）、
+ *       data-overlay（none|sidebar|panel）・data-mode（wide|mid|narrow）は shell.js だけが書く
+ * tokens に無い数値（34px・44px・80dvh・200ms・重なりの順 800/801 など）は core/docs/stage2-log.md の表に理由を載せる。
+ */
+
+/* ---------- 外枠 ---------- */
+.tsk-shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--ui-surface-app);
+  color: var(--ui-text-high);
+  font-family: var(--ui-font-ui);
+  font-size: var(--ui-font-size-base);
+  line-height: 1.6;
+}
+
+/* ---------- ① 上の行 ---------- */
+.tsk-shell__topbar {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  height: var(--ui-topbar-h);
+  padding: 0 var(--ui-space-2);
+}
+.tsk-shell__start,
+.tsk-shell__history,
+.tsk-shell__end {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--ui-space-1);
+}
+.tsk-shell__end { margin-left: auto; padding-left: var(--ui-space-3); }
+/* パンくず。ボタン群の右に 12px。長いものは … で省く */
+.tsk-shell__crumbs {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-left: var(--ui-space-3);
+  overflow: hidden;
+  font-size: var(--ui-font-size-md);
+  color: var(--ui-text-low);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tsk-shell__crumbs a { color: inherit; text-decoration: none; }
+.tsk-shell__crumbs a:hover { text-decoration: underline; }
+.tsk-shell__crumbs [aria-current="page"] { color: var(--ui-text-high); }
+
+/* ---------- 列・サイドバー・本文の面を並べる段 ---------- */
+.tsk-shell__body {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 var(--ui-space-2) var(--ui-space-2) 0;
+}
+.tsk-shell__side { display: flex; flex: 0 0 auto; min-height: 0; }
+/* 引き出しの先頭（クライアントの切り替え・閉じるボタン）。narrow の引き出しの中だけ出す */
+.tsk-shell__side-head { display: none; }
+
+/* ---------- ② アプリ切替の列 ---------- */
+.tsk-shell__rail {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ui-space-1);
+  width: var(--ui-rail-w);
+  min-height: 0;
+  padding: var(--ui-space-1) 0;
+  overflow-y: auto;
+}
+.tsk-shell[data-rail="hidden"] .tsk-shell__rail { display: none; }
+.tsk-shell__app {
+  box-sizing: border-box;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--ui-rail-item);
+  height: var(--ui-rail-item);
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-lg);
+  background: transparent;
+  color: var(--ui-text-low);
+  text-decoration: none;
+  cursor: pointer;
+}
+.tsk-shell__app:hover { background: var(--ui-surface-hover); color: var(--ui-text-high); }
+.tsk-shell__app[aria-current]:not([aria-current="false"]) { background: var(--ui-surface-selected); color: var(--ui-text-high); }
+.tsk-shell__app svg { width: 20px; height: 20px; }
+.tsk-shell__rail-sep { flex: 0 0 auto; width: 24px; height: 1px; margin: var(--ui-space-1) 0; background: var(--ui-border-high); }
+.tsk-shell__rail-fill { flex: 1 1 auto; }
+
+/* ---------- ③ サイドバー ---------- */
+.tsk-shell__sidebar {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: var(--ui-space-4);
+  width: var(--ui-sidebar-w);
+  min-height: 0;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  overflow-y: auto;
+  border: 1px solid var(--ui-border-middle);
+  border-right: 0;
+  border-radius: var(--ui-radius-xl) 0 0 var(--ui-radius-xl);
+  background: var(--ui-surface-sidebar);
+}
+.tsk-shell__nav { display: flex; flex-direction: column; gap: 1px; }
+.tsk-shell__nav-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  height: 34px;
+  padding: 0 var(--ui-space-2);
+  border-radius: var(--ui-radius-md);
+  color: var(--ui-text-middle);
+  font-size: var(--ui-font-size-base);
+  text-decoration: none;
+}
+.tsk-shell__nav-item:hover { background: var(--ui-surface-hover); color: var(--ui-text-high); }
+.tsk-shell__nav-item[aria-current="page"] { background: var(--ui-surface-hover); color: var(--ui-text-high); font-weight: var(--ui-font-weight-semibold); }
+.tsk-shell__nav-item svg { flex: 0 0 auto; width: 16px; height: 16px; }
+.tsk-shell__nav-count { margin-left: auto; font-size: var(--ui-font-size-sm); color: var(--ui-text-low); }
+.tsk-shell__nav-heading { margin: 0 var(--ui-space-2) var(--ui-space-1); font-size: var(--ui-font-size-sm); color: var(--ui-text-low); }
+
+/* ---------- ④ 本文の面（本文と右パネルを包む） ---------- */
+.tsk-shell__face {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-surface-page);
+}
+.tsk-shell__page {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto;
+  padding: var(--ui-space-6) var(--ui-page-pad-x);
+}
+
+/* ---------- ⑤ 右パネル（面の内側の右に浮く。自分でスクロールする） ---------- */
+.tsk-shell__panel {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: calc(var(--ui-panel-w) - var(--ui-space-3));
+  margin: var(--ui-space-3) var(--ui-space-3) var(--ui-space-3) 0;
+  padding: var(--ui-space-2) var(--ui-space-5);
+  overflow-y: auto;
+  border: 1px solid var(--ui-border-middle);
+  border-radius: var(--ui-radius-2xl);
+  background: var(--ui-surface-panel);
+  box-shadow: var(--ui-shadow-floating);
+}
+
+/* ---------- 覆い（shell.js が __body の中に足す。押すと重ねものを閉じる） ---------- */
+.tsk-shell__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 800;
+  background: var(--ui-scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition-property: opacity, visibility;
+  transition-duration: 200ms, 0s;
+  transition-delay: 0s, 200ms;
+  transition-timing-function: ease-out;
+}
+.tsk-shell[data-overlay="sidebar"] .tsk-shell__scrim,
+.tsk-shell[data-overlay="panel"] .tsk-shell__scrim { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+/* ---------- フォーカスの輪（インク色の 2px。スクロールする領域の中では内側に描いて欠けさせない） ---------- */
+.tsk-shell__app:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: 2px; box-shadow: none; }
+.tsk-shell__nav-item:focus-visible,
+.tsk-shell__side:focus-visible,
+.tsk-shell__sidebar:focus-visible,
+.tsk-shell__page:focus-visible,
+.tsk-shell__panel:focus-visible { outline: 2px solid var(--ui-text-high); outline-offset: -2px; box-shadow: none; }
+
+/* ---------- wide ---------- */
+@media (width >= 1200px) {
+  .tsk-shell[data-sidebar="closed"] .tsk-shell__sidebar { display: none; }
+  .tsk-shell[data-panel="closed"] .tsk-shell__panel { display: none; }
+  /* サイドバーが開いているときは、サイドバーと面で1つの角丸の塊にする（見本 ShellList.html） */
+  .tsk-shell:not([data-sidebar="closed"]) .tsk-shell__face { border-radius: 0 var(--ui-radius-xl) var(--ui-radius-xl) 0; }
+  .tsk-shell[data-rail="hidden"] .tsk-shell__body { padding-left: var(--ui-space-2); }
+  /* パンくずを本文の文字の左端（面の左端 + 枠 1px + 24px）にそろえるのは、サイドバーが開いていて列があるときだけ */
+  .tsk-shell:not([data-sidebar="closed"]):not([data-rail="hidden"]) .tsk-shell__start { min-width: calc(var(--ui-rail-w) + var(--ui-sidebar-w) - var(--ui-space-2)); }
+  .tsk-shell:not([data-sidebar="closed"]):not([data-rail="hidden"]) .tsk-shell__crumbs { margin-left: 0; padding-left: calc(1px + var(--ui-page-pad-x)); }
+}
+
+/* ---------- mid（サイドバー・右パネルは本文に重ねる） ---------- */
+@media (768px <= width < 1200px) {
+  .tsk-shell[data-rail="hidden"] .tsk-shell__body { padding-left: var(--ui-space-2); }
+  .tsk-shell__sidebar {
+    position: absolute;
+    top: 0;
+    bottom: var(--ui-space-2);
+    left: var(--ui-rail-w);
+    z-index: 801;
+    border-right: 1px solid var(--ui-border-middle);
+    border-radius: var(--ui-radius-xl);
+    box-shadow: var(--ui-shadow-floating);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(calc(-1 * var(--ui-space-3)));
+    transition-property: opacity, transform, visibility;
+    transition-duration: 200ms, 200ms, 0s;
+    transition-delay: 0s, 0s, 200ms;
+    transition-timing-function: ease-out;
+  }
+  .tsk-shell[data-rail="hidden"] .tsk-shell__sidebar { left: var(--ui-space-2); }
+  .tsk-shell[data-overlay="sidebar"] .tsk-shell__sidebar { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  .tsk-shell__panel {
+    position: absolute;
+    top: var(--ui-space-3);
+    right: var(--ui-space-3);
+    bottom: var(--ui-space-3);
+    z-index: 801;
+    width: var(--ui-panel-w);
+    max-width: calc(100% - 2 * var(--ui-space-3));
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(var(--ui-space-3));
+    transition-property: opacity, transform, visibility;
+    transition-duration: 200ms, 200ms, 0s;
+    transition-delay: 0s, 0s, 200ms;
+    transition-timing-function: ease-out;
+  }
+  .tsk-shell[data-overlay="panel"] .tsk-shell__panel { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+}
+
+/* ---------- narrow（上の行 44px。列とサイドバーは左からの引き出し、右パネルは下からのシート） ---------- */
+@media (width < 768px) {
+  .tsk-shell__topbar { height: 44px; padding: 0; }
+  .tsk-shell__start,
+  .tsk-shell__end { gap: 0; }
+  .tsk-shell__history { display: none; }
+  /* 押せる範囲を実寸で 44×44px。間隔 0 で隣と重ならない。輪は内側に描く（上端で欠けない） */
+  .tsk-shell__topbar .tsk-iconbtn,
+  .tsk-shell__side-head .tsk-iconbtn { width: 44px; height: 44px; }
+  .tsk-shell__topbar .tsk-iconbtn:focus-visible,
+  .tsk-shell__side-head .tsk-iconbtn:focus-visible { outline-offset: -2px; }
+  .tsk-shell__body { padding: 0 var(--ui-space-2) var(--ui-space-2); }
+  .tsk-shell__side {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 801;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(var(--ui-rail-w) + var(--ui-sidebar-w), 100vw - 40px);
+    border-right: 1px solid var(--ui-border-middle);
+    background: var(--ui-surface-sidebar);
+    box-shadow: var(--ui-shadow-floating);
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition-property: transform, visibility;
+    transition-duration: 200ms, 0s;
+    transition-delay: 0s, 200ms;
+    transition-timing-function: ease-out;
+  }
+  .tsk-shell[data-overlay="sidebar"] .tsk-shell__side { visibility: visible; transform: none; transition-delay: 0s; }
+  .tsk-shell__side-head {
+    box-sizing: border-box;
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0 0 var(--ui-space-2);
+    border-bottom: 1px solid var(--ui-border-low);
+  }
+  .tsk-shell__rail { grid-column: 1; grid-row: 2; padding-top: var(--ui-space-2); }
+  .tsk-shell__app { width: 44px; height: 44px; }
+  .tsk-shell__sidebar { grid-column: 2; grid-row: 2; width: auto; border: 0; border-radius: 0; background: transparent; }
+  .tsk-shell[data-rail="hidden"] .tsk-shell__sidebar { grid-column: 1 / -1; }
+  .tsk-shell__nav-item { height: 44px; }
+  .tsk-shell__panel {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 801;
+    width: auto;
+    max-height: 80dvh;
+    margin: 0;
+    border-width: 1px 0 0;
+    border-radius: var(--ui-radius-2xl) var(--ui-radius-2xl) 0 0;
+    visibility: hidden;
+    transform: translateY(100%);
+    transition-property: transform, visibility;
+    transition-duration: 200ms, 0s;
+    transition-delay: 0s, 200ms;
+    transition-timing-function: ease-out;
+  }
+  .tsk-shell[data-overlay="panel"] .tsk-shell__panel { visibility: visible; transform: none; transition-delay: 0s; }
+}
+
+/* ---------- 動きを減らす設定では開閉の動きを 0 に（07 の決まり） ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tsk-shell__side,
+  .tsk-shell__sidebar,
+  .tsk-shell__panel,
+  .tsk-shell__scrim { transition-duration: 0s; transition-delay: 0s; }
+}

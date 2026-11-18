@@ -1,4 +1,4 @@
-// 状態のアイコン（ui/icons.js）・トースト（toast.js）・ドロワー（drawer.js）の振る舞い。
+// 状態のアイコン（ui/icons.js）・トースト（toast.js）・ドロワー（drawer.js）の振る舞い。外枠（shell.js）は shell.test.mjs。
 // 移した元: 登記議事録つくるさん _dev/test/uiparts.test.mjs（丸ごと。読む場所と、ESLint の no-this-alias に当たる2か所の書き方だけ変えた）
 // 依存を増やさないため、要るところだけを持つ作り物の DOM と、手で進める時計（描画の合図・タイマー）で動かす。
 import { describe, it } from 'node:test';
@@ -572,6 +572,37 @@ describe('ドロワー（ui/drawer.js）', () => {
     assert.equal(doc.activeElement, other);
   });
 
+  // 段2（0.2.0）の直し。外枠の重ねものが幅の変化で閉じると、開いたボタンは文書に残ったまま隠れる（focus しても移らない）
+  it('opener が文書に残っていても focus できない（隠れた）ときは fallbackFocus へ戻す', () => {
+    const { doc, win, opener, body } = setup();
+    const page = doc.createElement('main');
+    page.setAttribute('tabindex', '-1');
+    doc.body.appendChild(page);
+    const d = openDrawer({ doc, win, title: 't', body, opener, fallbackFocus: () => page });
+    opener.focus = () => {}; // 隠れた要素は focus() しても activeElement が変わらない（ブラウザの動き）
+    d.close();
+    assert.equal(doc.activeElement, page);
+  });
+
+  it('opener へ戻れたときは fallbackFocus を呼ばない（今までの動きのまま）', () => {
+    const { doc, win, opener, body } = setup();
+    let calls = 0;
+    const d = openDrawer({
+      doc,
+      win,
+      title: 't',
+      body,
+      opener,
+      fallbackFocus: () => {
+        calls += 1;
+        return null;
+      },
+    });
+    d.close();
+    assert.equal(doc.activeElement, opener);
+    assert.equal(calls, 0);
+  });
+
   it('開いている間、Tab は中で回る（最後 → 最初、Shift+Tab で最初 → 最後）。無効な欄は飛ばす', () => {
     const { doc, win, body } = setup();
     const d = openDrawer({ doc, win, title: 't', body });
@@ -672,10 +703,9 @@ describe('ドロワー（ui/drawer.js）', () => {
 /* ------------------------------------------------------------------ 静的な決まり */
 
 describe('ui の静的な決まり', () => {
-  const files = ['motion.js', 'icons.js', 'toast.js', 'drawer.js', 'dateinput.js'].map((f) => [
-    f,
-    fs.readFileSync(path.join(CORE, 'ui', f), 'utf8'),
-  ]);
+  const files = ['motion.js', 'icons.js', 'toast.js', 'drawer.js', 'dateinput.js', 'shell.js'].map(
+    (f) => [f, fs.readFileSync(path.join(CORE, 'ui', f), 'utf8')],
+  );
 
   it('innerHTML・outerHTML・insertAdjacentHTML・document.write を使わない（文字は textContent）', () => {
     for (const [f, src] of files)

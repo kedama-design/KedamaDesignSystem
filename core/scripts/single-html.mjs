@@ -18,9 +18,16 @@ const CORE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const UI = path.join(CORE, 'ui');
 
 /** 依存の順（読まれる側が先） */
-export const MODULE_ORDER = Object.freeze(['motion', 'icons', 'dateinput', 'toast', 'drawer']);
+export const MODULE_ORDER = Object.freeze([
+  'motion',
+  'icons',
+  'dateinput',
+  'toast',
+  'drawer',
+  'shell',
+]);
 /** CSS の読み込み順 */
-export const CSS_ORDER = Object.freeze(['tokens', 'base', 'components']);
+export const CSS_ORDER = Object.freeze(['tokens', 'base', 'components', 'shell']);
 
 const IMPORT_LINE = /^import\s*\{([^}]*)\}\s*from\s*'\.\/([a-z]+)\.js';[ \t]*$/gm;
 const EXPORT_DECL = /^export (const|function|let|class) ([A-Za-z_$][\w$]*)/gm;
