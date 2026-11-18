@@ -85,11 +85,15 @@ function isShown(el, win) {
   return true;
 }
 
-/** tabindex 属性の値（整数として読めなければ null。読めないときブラウザは指定が無いものとして扱う） */
+/**
+ * tabindex 属性の値。HTML の整数の読み方に寄せる（前の空白と符号を読み、数字のあとの文字は無視する。"1abc" は 1）。
+ * 整数として読めなければ null（ブラウザは指定が無いものとして扱う）
+ */
 function tabindexAttr(el) {
   const raw = el.getAttribute('tabindex');
-  if (raw === null || !/^\s*[+-]?\d+\s*$/.test(raw)) return null;
-  return parseInt(raw, 10);
+  if (raw === null) return null;
+  const n = parseInt(raw, 10);
+  return Number.isNaN(n) ? null : n;
 }
 
 /** 編集できる領域の入口（contenteditable の要素。親も編集できるなら入口ではない） */

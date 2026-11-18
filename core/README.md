@@ -300,6 +300,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 - Tab の折り返しの候補は、ボタン・入力欄・`href` のあるリンク・`tabindex` が 0 以上の要素・編集できる領域（`contenteditable`。`tabindex` が無くてもよい）です。
   並びはブラウザと同じ（`tabindex` が正のものを値の小さい順に先、そのあと 0 と指定なしを文書の順）。
   `summary`・`iframe`・`audio` の操作などを重ねものの端に置くと、そこから Tab が外へ出ることがあります
+- **正の `tabindex` は勧めません**。折り返すのは端だけで、途中の移動はブラウザに任せています。外枠の外にフォーカスできる要素が
+  先にあると、正の `tabindex` の要素から Tab・Shift+Tab でそこへ出ることがあります
 - 重ねものの中のリンクで画面を移っても、重ねものは自動では閉じません（`shell.close()` を呼ぶ）
 - つないでいないとき（JavaScript なし）は、mid・narrow のサイドバー・右パネルを開けません（wide は `data-*` だけで並びます）
 - 段をまたいだ直後の2こまは `data-switching` を付け、開閉の動きを止めます（閉じる動きが本文に重ならないように）

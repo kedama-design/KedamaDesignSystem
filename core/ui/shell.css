@@ -269,7 +269,8 @@
   .tsk-shell__topbar .tsk-iconbtn:focus-visible,
   .tsk-shell__side-head .tsk-iconbtn:focus-visible { outline-offset: -2px; }
   /* 文字のボタン（tsk-btn）は見た目の高さのまま、押せる範囲だけを上下に広げて 44px にする（幅も 44px 以上）。
-     広げる範囲は上の行（44px）の中に収まる。左右は枠の 1px まで（ボタンの外へは広げないので隣のボタンと重ならない） */
+     広げる範囲は上の行（44px）の中に収まる。左右は枠の 1px まで（ボタンの外へは広げないので隣のボタンと重ならない）。
+     上の行・引き出しの先頭の tsk-btn は横一列が前提（縦に並べると 44px の範囲が重なる） */
   .tsk-shell__topbar .tsk-btn,
   .tsk-shell__side-head .tsk-btn { position: relative; min-width: 44px; }
   .tsk-shell__topbar .tsk-btn::before,

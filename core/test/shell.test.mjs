@@ -670,10 +670,15 @@ describe('外枠（ui/shell.js）: Tab の折り返し', () => {
     p.appendChild(el('button', { id: 'C' }));
     p.appendChild(el('button', { id: 'D', tabindex: '2' }));
     p.appendChild(el('button', { id: 'E', tabindex: 'x' })); // 読めない値は指定なしと同じ
+    p.appendChild(el('button', { id: 'F', tabindex: '1abc' })); // HTML の読み方では 1（数字のあとは無視）
     const s2 = attachShell(root, { doc, win });
     s2.toggle('panel', doc.byId('tog-panel'));
     assert.equal(doc.activeElement.id, 'B', '開くと Tab の順の最初（B）へ');
-    // Tab の順は B → D → A → C → E
+    doc.byId('F').focus();
+    const shiftAtF = new FakeEvent('keydown', { key: 'Tab', shiftKey: true });
+    doc.activeElement.dispatchEvent(shiftAtF);
+    assert.equal(shiftAtF.defaultPrevented, false, 'F（"1abc" = 1）は B の次。先頭ではない');
+    // Tab の順は B → F → D → A → C → E（F は "1abc" = 1。同じ値は文書の順）
     doc.byId('A').focus();
     const shiftAtA = new FakeEvent('keydown', { key: 'Tab', shiftKey: true });
     doc.activeElement.dispatchEvent(shiftAtA);
