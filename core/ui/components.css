@@ -366,6 +366,8 @@ textarea.tsk-input { height: auto; min-height: 72px; padding: var(--ui-space-2) 
 .tsk-drawer__title { flex-shrink: 0; max-width: 100%; }
 .tsk-drawer__head:has(.tsk-drawer__badge:not([hidden])) .tsk-drawer__title { max-width: 60%; }
 .tsk-drawer__badge { display: block; flex: 0 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* 空のとき（drawer.js が hidden を付ける）は出さない。上の display: block が hidden の既定の display: none に勝つため（0.2.0 で直した） */
+.tsk-drawer__badge[hidden] { display: none; }
 .tsk-drawer__body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 18px; }
 .tsk-drawer__foot {
   display: flex;

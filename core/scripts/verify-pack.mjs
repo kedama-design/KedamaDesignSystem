@@ -4,6 +4,7 @@
 //  3) package.json の exports の行き先がすべて tarball の中にあること
 //  4) tarball の中身だけを node_modules/@kedama-design/core に置き、パッケージ名で import できること
 //     （JS は実際に読み込み、DOM に触らない motion・icons・dateinput は呼んでみる。toast・drawer は読み込めることだけ。
+//       shell は小さな作り物の DOM につないで、data-mode を書き、destroy で取り除くことまで動かす。
 //       CSS・JSON・SVG は import.meta.resolve で行き先が解決できること）
 // 依存は使わない（node の標準と、npm・tar のコマンドだけ）。
 import { execFileSync } from 'node:child_process';
@@ -55,7 +56,8 @@ const allowed = (rel) =>
   /^guidelines\/icons\/[a-z-]+\.svg$/.test(rel);
 const extra = inside.filter((rel) => !allowed(rel));
 check(extra.length === 0, `配る物だけ（余分: ${extra.join(', ') || 'なし'}）`);
-check(inside.filter((rel) => rel.startsWith('ui/')).length === 8, 'ui の8ファイルが入っている');
+check(inside.filter((rel) => rel.startsWith('ui/')).length === 10, 'ui の10ファイルが入っている');
+check(inside.length === 22, `配る物は22ファイル（${inside.length}）`);
 check(
   inside.filter((rel) => rel.startsWith('guidelines/icons/')).length === 8,
   'アイコン8つが入っている',
@@ -89,6 +91,30 @@ const toast = await import('@kedama-design/core/toast.js');
 ok(typeof toast.createToaster === 'function', 'toast.js を名前で読める（相対 import の motion.js・icons.js も解決）');
 const drawer = await import('@kedama-design/core/drawer.js');
 ok(typeof drawer.openDrawer === 'function', 'drawer.js を名前で読める（相対 import の motion.js・icons.js も解決）');
+const shell = await import('@kedama-design/core/shell.js');
+{
+  // 小さな作り物の DOM（要るところだけ）。wide の幅として答える
+  const mk = (cls) => {
+    const el = { attrs: new Map(cls ? [['class', cls]] : []), children: [], parentNode: null, listeners: [],
+      getAttribute: (k) => (el.attrs.has(k) ? el.attrs.get(k) : null), setAttribute: (k, v) => el.attrs.set(k, String(v)),
+      hasAttribute: (k) => el.attrs.has(k), removeAttribute: (k) => el.attrs.delete(k),
+      appendChild: (c) => { c.parentNode = el; el.children.push(c); return c; },
+      remove: () => { const p = el.parentNode; if (p) p.children.splice(p.children.indexOf(el), 1); el.parentNode = null; },
+      contains: (o) => { for (let n = o; n; n = n.parentNode) if (n === el) return true; return false; },
+      addEventListener: (t, fn) => el.listeners.push([t, fn]), removeEventListener: (t, fn) => { el.listeners = el.listeners.filter((l) => l[0] !== t || l[1] !== fn); } };
+    return el;
+  };
+  const doc = mk(); doc.body = mk(); doc.activeElement = doc.body; doc.createElement = () => mk();
+  const root = mk('tsk-shell'); const body = root.appendChild(mk('tsk-shell__body')); const panel = body.appendChild(mk('tsk-shell__panel'));
+  root.setAttribute('data-panel', 'closed');
+  const win = { matchMedia: (q) => ({ matches: q === shell.SHELL_MEDIA.wide, addEventListener() {}, removeEventListener() {} }) };
+  const s = shell.attachShell(root, { doc, win });
+  ok(root.getAttribute('data-mode') === 'wide' && root.getAttribute('data-overlay') === 'none' && panel.hasAttribute('inert') && body.children.length === 2,
+    'shell.js を名前で読み、attachShell が data-mode・inert・覆いを書く（相対 import の drawer.js も解決）');
+  s.destroy(); s.destroy();
+  ok(!root.hasAttribute('data-mode') && !panel.hasAttribute('inert') && body.children.length === 1 && root.getAttribute('data-panel') === 'closed',
+    'destroy で shell.js が書いた属性と覆いを取り除き、使う側の data-panel は残す');
+}
 for (const key of ${JSON.stringify(keys)}) {
   const spec = '@kedama-design/core' + key.slice(1);
   const url = import.meta.resolve(spec);
