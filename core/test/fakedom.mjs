@@ -3,7 +3,8 @@
 // parts.test.mjs の作り物は focus() でいつも activeElement を変える（段2 の設計の「実装の前に確かめる」で確かめた）。
 // 外枠は「focus して、activeElement が変わったか確かめる」ことで戻り先を選ぶので、ここではブラウザと同じく、
 // inert の中・隠れた要素（display:none・hidden・visibility:hidden）・無効な要素（無効な fieldset の中を含む）・
-// フォーカスできない要素へは focus() しても activeElement を変えない。
+// フォーカスできない要素へは focus() しても activeElement を変えない。編集できる領域（contenteditable）へは移れるが、
+// tabindex の無い編集欄の tabIndex は -1 を返す（ブラウザと同じ。Codex 完了前レビューの指摘1）。
 // ほかに: 幅を変えられる matchMedia、手で流す MutationObserver、getComputedStyle の visibility、描画の合図とタイマー（drawer.js 用）。
 
 export class FakeEvent {
@@ -137,6 +138,22 @@ export class FakeElement {
   get nativelyFocusable() {
     return FORM_TAGS.has(this.tagName) || (this.tagName === 'A' && this.hasAttribute('href'));
   }
+  /** contenteditable（''・true・plaintext-only は編集できる、false はできない、ほかは親に従う） */
+  get isContentEditable() {
+    const v = this.getAttribute('contenteditable');
+    if (v !== null) {
+      const t = v.trim().toLowerCase();
+      if (['', 'true', 'plaintext-only'].includes(t)) return true;
+      if (t === 'false') return false;
+    }
+    const p = this.parentNode;
+    return Boolean(p && p !== this.ownerDocument && p.isContentEditable);
+  }
+  /** 編集できる領域の入口（ブラウザでは tabindex が無くても Tab で移れる。ただし tabIndex のプロパティは -1 を返す） */
+  get editingHost() {
+    const p = this.parentNode;
+    return this.isContentEditable && !(p && p !== this.ownerDocument && p.isContentEditable);
+  }
   get tabIndex() {
     const v = this.getAttribute('tabindex');
     if (v !== null && v.trim() !== '' && !Number.isNaN(Number(v))) return Number(v);
@@ -177,7 +194,7 @@ export class FakeElement {
       this.computedVisibility !== 'hidden' &&
       !this.inInert &&
       !this.actuallyDisabled &&
-      (this.nativelyFocusable || this.hasAttribute('tabindex'))
+      (this.nativelyFocusable || this.editingHost || this.hasAttribute('tabindex'))
     );
   }
   focus() {

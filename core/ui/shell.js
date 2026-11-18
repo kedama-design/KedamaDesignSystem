@@ -85,13 +85,52 @@ function isShown(el, win) {
   return true;
 }
 
-/** dialog の中で、実際に Tab で移れる要素（drawer.js の focusablesIn から、負の tabIndex・inert の中・無効・見えないものを除く） */
+/** tabindex 属性の値（整数として読めなければ null。読めないときブラウザは指定が無いものとして扱う） */
+function tabindexAttr(el) {
+  const raw = el.getAttribute('tabindex');
+  if (raw === null || !/^\s*[+-]?\d+\s*$/.test(raw)) return null;
+  return parseInt(raw, 10);
+}
+
+/** 編集できる領域の入口（contenteditable の要素。親も編集できるなら入口ではない） */
+function isEditingHost(el) {
+  if (typeof el.isContentEditable === 'boolean') {
+    const parent = el.parentNode;
+    return el.isContentEditable && !(parent && parent.isContentEditable === true);
+  }
+  const v = el.getAttribute('contenteditable');
+  return v !== null && ['', 'true', 'plaintext-only'].includes(v.trim().toLowerCase());
+}
+
+/**
+ * dialog の中で、実際に Tab で移れる要素を Tab の順に並べる。
+ * 候補は drawer.js の focusablesIn と、編集できる領域の入口（contenteditable）。そこから、tabindex 属性が負のもの・inert の中・
+ * 無効（無効な fieldset の中を含む）・見えないものを除く（tabIndex のプロパティは見ない。tabindex の無い編集欄は -1 を返すため）。
+ * 並びはブラウザと同じ: tabindex が正のものを値の小さい順（同じ値は文書の順）に先、そのあとに 0 と指定なしを文書の順
+ */
 function tabbablesIn(dialog, win) {
-  return focusablesIn(dialog).filter((el) =>
-    !(typeof el.tabIndex === 'number' && el.tabIndex < 0)
-    && !insideInert(el)
-    && !(typeof el.matches === 'function' && el.matches(':disabled'))
-    && isShown(el, win));
+  const known = new Set(focusablesIn(dialog));
+  const found = [];
+  const walk = (node) => {
+    for (const child of Array.from(node.children || [])) {
+      if (child.hasAttribute && (child.hasAttribute('hidden') || child.getAttribute('aria-hidden') === 'true')) continue;
+      if (known.has(child) || isEditingHost(child)) found.push(child);
+      walk(child);
+    }
+  };
+  walk(dialog);
+  const usable = found.filter((el) => {
+    const ti = tabindexAttr(el);
+    return !(ti !== null && ti < 0)
+      && !insideInert(el)
+      && !(typeof el.matches === 'function' && el.matches(':disabled'))
+      && isShown(el, win);
+  });
+  const order = (el) => {
+    const ti = tabindexAttr(el);
+    return ti !== null && ti > 0 ? ti : Infinity;
+  };
+  return usable.map((el, i) => ({ el, i, o: order(el) })).sort((a, b) => a.o - b.o || a.i - b.i).map((x) => x.el);
 }
 
 /**

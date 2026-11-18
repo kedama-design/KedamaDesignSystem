@@ -343,6 +343,22 @@
                     >
                       無効な欄だけ
                     </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="editable-last"
+                      aria-pressed="false"
+                    >
+                      末尾が編集欄
+                    </button>
+                    <button
+                      class="tsk-seg__btn"
+                      type="button"
+                      data-variant="positive-tabindex"
+                      aria-pressed="false"
+                    >
+                      正の tabindex
+                    </button>
                   </div>
                 </div>
               </section>
@@ -389,6 +405,20 @@
           panel.append(
             h('div', { class: 'demo-panel-head' }, h('h2', {}, '詳細（操作できるものが無い）')),
             h('p', {}, '中に移れる要素が無い。Tab はこの面に留まる。'),
+          );
+          return;
+        }
+        if (variant === 'positive-tabindex') {
+          // 文書の順は A・B（tabindex=1）・C。Tab の順は B → A → C（ブラウザと同じ）
+          panel.append(
+            h('div', { class: 'demo-panel-head' }, h('h2', {}, '詳細（正の tabindex）')),
+            h(
+              'div',
+              { class: 'demo-row' },
+              smallBtn('A', { id: 'ti-a' }),
+              smallBtn('B（tabindex=1）', { id: 'ti-b', tabindex: '1' }),
+              smallBtn('C', { id: 'ti-c' }),
+            ),
           );
           return;
         }
@@ -440,6 +470,19 @@
         );
         if (variant === 'hide-ends')
           panel.append(smallBtn('隠れた最後', { id: 'hidden-last', style: 'visibility:hidden' }));
+        if (variant === 'editable-last')
+          panel.append(
+            h(
+              'div',
+              { class: 'demo-panel-sec' },
+              h('h3', {}, 'メモ（tabindex の無い編集欄）'),
+              h(
+                'div',
+                { class: 'tsk-input', id: 'editor', contenteditable: '', 'aria-label': 'メモ' },
+                'ここに書ける',
+              ),
+            ),
+          );
       }
 
       /* ---- つなぐ・外す ---- */

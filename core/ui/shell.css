@@ -268,6 +268,12 @@
   .tsk-shell__side-head .tsk-iconbtn { width: 44px; height: 44px; }
   .tsk-shell__topbar .tsk-iconbtn:focus-visible,
   .tsk-shell__side-head .tsk-iconbtn:focus-visible { outline-offset: -2px; }
+  /* 文字のボタン（tsk-btn）は見た目の高さのまま、押せる範囲だけを上下に広げて 44px にする（幅も 44px 以上）。
+     広げる範囲は上の行（44px）の中に収まる。左右は枠の 1px まで（ボタンの外へは広げないので隣のボタンと重ならない） */
+  .tsk-shell__topbar .tsk-btn,
+  .tsk-shell__side-head .tsk-btn { position: relative; min-width: 44px; }
+  .tsk-shell__topbar .tsk-btn::before,
+  .tsk-shell__side-head .tsk-btn::before { content: ""; position: absolute; top: 50%; right: -1px; left: -1px; height: 44px; transform: translateY(-50%); }
   .tsk-shell__body { padding: 0 var(--ui-space-2) var(--ui-space-2); }
   .tsk-shell__side {
     position: absolute;

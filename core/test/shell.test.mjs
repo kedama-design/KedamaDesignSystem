@@ -628,6 +628,68 @@ describe('外枠（ui/shell.js）: Tab の折り返し', () => {
     shell.destroy();
   });
 
+  it('末尾が tabindex の無い編集欄（contenteditable）でも、末尾で Tab → 先頭へ。先頭で Shift+Tab → 編集欄へ（Codex 完了前の指摘1）', () => {
+    const { $, doc, key, part, shell, el } = open();
+    const editor = el('div', { id: 'editor', contenteditable: '' });
+    part('panel').appendChild(editor);
+    assert.equal(editor.tabIndex, -1, 'tabindex の無い編集欄の tabIndex は -1（ブラウザと同じ）');
+    editor.focus();
+    assert.equal(doc.activeElement, editor, '編集欄へは移れる');
+    key('Tab');
+    assert.equal(doc.activeElement, $('panel-first'));
+    key('Tab', { shiftKey: true });
+    assert.equal(doc.activeElement, editor);
+    shell.destroy();
+  });
+
+  it('編集欄でも tabindex="-1" なら候補にしない。編集欄の中の要素は入口ではない', () => {
+    const { $, doc, key, part, shell, el } = open();
+    part('panel').appendChild(el('div', { id: 'editor', contenteditable: 'true', tabindex: '-1' }));
+    part('panel').appendChild(
+      el('div', { id: 'host', contenteditable: 'plaintext-only' }, el('span', { id: 'inner' })),
+    );
+    $('host').focus();
+    key('Tab');
+    assert.equal(
+      doc.activeElement,
+      $('panel-first'),
+      '末尾は host（inner・tabindex=-1 の編集欄は数えない）',
+    );
+    key('Tab', { shiftKey: true });
+    assert.equal(doc.activeElement, $('host'));
+    shell.destroy();
+  });
+
+  it('正の tabindex はブラウザと同じ順（正の値の小さい順が先、そのあと 0 と指定なしを文書の順）で端を決める（Codex 完了前の指摘2）', () => {
+    const { doc, key, part, shell, el, root, win } = open();
+    shell.destroy();
+    const p = part('panel');
+    p.textContent = '';
+    p.appendChild(el('button', { id: 'A' }));
+    p.appendChild(el('button', { id: 'B', tabindex: '1' }));
+    p.appendChild(el('button', { id: 'C' }));
+    p.appendChild(el('button', { id: 'D', tabindex: '2' }));
+    p.appendChild(el('button', { id: 'E', tabindex: 'x' })); // 読めない値は指定なしと同じ
+    const s2 = attachShell(root, { doc, win });
+    s2.toggle('panel', doc.byId('tog-panel'));
+    assert.equal(doc.activeElement.id, 'B', '開くと Tab の順の最初（B）へ');
+    // Tab の順は B → D → A → C → E
+    doc.byId('A').focus();
+    const shiftAtA = new FakeEvent('keydown', { key: 'Tab', shiftKey: true });
+    doc.activeElement.dispatchEvent(shiftAtA);
+    assert.equal(shiftAtA.defaultPrevented, false, 'A は先頭ではない（ブラウザが D へ戻す）');
+    doc.byId('E').focus();
+    key('Tab');
+    assert.equal(doc.activeElement.id, 'B', '末尾 E で Tab → 先頭 B');
+    key('Tab', { shiftKey: true });
+    assert.equal(doc.activeElement.id, 'E', '先頭 B で Shift+Tab → 末尾 E');
+    doc.byId('C').focus();
+    const tabAtC = new FakeEvent('keydown', { key: 'Tab' });
+    doc.activeElement.dispatchEvent(tabAtC);
+    assert.equal(tabAtC.defaultPrevented, false, 'C は末尾ではない');
+    s2.destroy();
+  });
+
   it('narrow の引き出しでは、data-rail="hidden" の列の中を候補にしない', () => {
     const s = buildShell({ width: WIDTH.narrow, rail: 'hidden' });
     const shell = attachShell(s.root, { doc: s.doc, win: s.win });
@@ -884,6 +946,21 @@ describe('外枠の CSS（ui/shell.css）', () => {
     ];
     for (const [sel, prop, value] of want)
       assert.equal(declOf(sel, prop, n), value, `${sel} ${prop}`);
+  });
+
+  it('narrow: 上の行と引き出しの先頭の文字のボタン（tsk-btn）は、押せる範囲だけを上下に広げて 44px（幅も 44px 以上。左右は枠まで）', () => {
+    const n = SHELL_MEDIA.narrow;
+    for (const where of ['topbar', 'side-head']) {
+      const btn = `.tsk-shell__${where} .tsk-btn`;
+      assert.equal(declOf(btn, 'position', n), 'relative', btn);
+      assert.equal(declOf(btn, 'min-width', n), '44px', btn);
+      const hit = `${btn}::before`;
+      assert.equal(declOf(hit, 'content', n), '""', hit);
+      assert.equal(declOf(hit, 'position', n), 'absolute', hit);
+      assert.equal(declOf(hit, 'height', n), '44px', hit);
+      assert.equal(declOf(hit, 'left', n), '-1px', `${hit}（枠の 1px まで）`);
+      assert.equal(declOf(hit, 'right', n), '-1px', hit);
+    }
   });
 
   it('フォーカスの輪は 2px・インク色。外枠の中のフォーカスできる要素（アプリ・画面の行・ダイアログ・本文）すべて', () => {
