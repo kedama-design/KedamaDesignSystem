@@ -562,4 +562,5 @@ Node 22.22.1、npm 10.9.4、pnpm 9.15.9。
 ### 10.3 残り
 
 - **仮の札 `0.0.0-stage` の扱い**（yuuki が決める）。`latest` は 0.2.0 なので、版を指定しない取り込みでも 0.2.0 が入る。一覧に残るのを避けるなら、yuuki が `npm deprecate` で「使わない」の印を付ける
+  - → **2026-11-27 に yuuki が deprecate した**。`npm view @kedama-design/core@0.0.0-stage deprecated` の答えは「npmの段階公開で自動で置かれた仮の版。使わないでください」。`latest` は 0.2.0 のまま（指示役が同日に確かめた）
 - README の公開の手順に「承認」の一手と、`total files` の数（22）を書き足した（この枝）

@@ -51,6 +51,7 @@ Codex がこのリポジトリで作業する際のコンテキスト。
 
 React 版（`src/`）とは別の、独立したパッケージ。共有の値（`--ui-*`）と、仕組みに依存しない部品
 （素の CSS と ESM の JavaScript）。2026-11-13 の段1で作った（設計記録は `core/docs/stage1-log.md`）。
+**残りの作業（段3・段4など）と進め方は `ROADMAP.md`**。
 
 - **依存を持ち込まない**（実行時・開発時とも。React・Tailwind・Base UI・jsdom なども入れない。テストは `node --test` だけ）
 - **色の値を書いてよいのは `core/ui/tokens.css` だけ**。ほかの CSS・JS は `var(--ui-*)` の名前だけ
