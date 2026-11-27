@@ -7,7 +7,8 @@ React・Tailwind・Base UI などには依存しません。ビルドの道具�
 - **版の約束: 0.x の間は使う側を壊す変更がありうる。使う側は版を固定する**（下の「版の約束」）
 - 値の正: [`guidelines/tokens/tokens.json`](./guidelines/tokens/tokens.json)（共通UIガイドライン）。`ui/tokens.css` はこれと一致することをテストで確かめている
 
-> npm に出ている版は `npm view @kedama-design/core versions` で分かります。版ごとの変更は、リポジトリの `core/CHANGELOG.md` に書きます（npm には入れていません）。
+> npm に出ている版は `npm view @kedama-design/core versions` で分かります。最初の公開は 0.2.0（2026-11-26）。
+> 一覧に出る `0.0.0-stage` は、最初の公開のときに npm が自動で置いた仮の札で、中身はありません（使わないでください）。版ごとの変更は、リポジトリの `core/CHANGELOG.md` に書きます（npm には入れていません）。
 
 ## 中身
 
@@ -75,7 +76,7 @@ ESM です。`toast.js`・`drawer.js` は同じフォルダの `motion.js`・`ic
 - `dateinput.js` の、ブラウザの日付の欄（`type="date"`）を同じ入口で扱う分岐は**互換用・将来削除**（文字の日付欄へ移しきるまで）
 - 部品の中の文言（「閉じる」「エラー」「お知らせ」、日付の欄の見本「例 2026-04-01」と誤りの1行 など）は**日本語のみ**
 
-## npm から使う（公開したあと）
+## npm から使う
 
 ```js
 import '@kedama-design/core/tokens.css';
@@ -393,12 +394,16 @@ cd core && python3 -m http.server 8000
    npm run verify:pack
    npm publish --dry-run    # 実際には出さない
    ```
-   `--dry-run` の最後の数行で、次を見る: 名前 `@kedama-design/core`、出す版の番号、`total files` が 20 前後、
+   `--dry-run` の最後の数行で、次を見る: 名前 `@kedama-design/core`、出す版の番号、`total files`（0.2.0 は 22）、
    `Publishing to https://registry.npmjs.org with tag latest and public access`。
    ここが通っても、ログインや組織の権限が正しいことまでは分からない（それは次の手順で分かる）
 4. `npm publish` を実行する。2段階の認証を求められたら、画面の案内（ブラウザが開く・キーに触れる など）に従う。
-   出し先と公開の設定は `package.json` の `publishConfig` に書いてある
-5. `npm view @kedama-design/core version` で、出した版の番号が出ることを確かめる
+   出し先と公開の設定は `package.json` の `publishConfig` に書いてある。
+   **承認を求められることがある**: 最初の公開（0.2.0、2026-11-26）では、npm が「段階的な公開（staged publishing）」にした。
+   `npm publish` は成功（`+ @kedama-design/core@0.2.0`）と出たが、版はまだ表に出ず、仮の札 `0.0.0-stage` が `latest` になった。
+   [npmjs.com](https://www.npmjs.com) でパッケージの「Staged Packages」を開き、その版を **Approve**（2段階の認証）して初めて出た。
+   **Reject は押さない**（その版が出ないまま消える）。npm の説明は [Staged publishing](https://docs.npmjs.com/staged-publishing/)
+5. `npm view @kedama-design/core version` で、出した版の番号が出ることを確かめる（`0.0.0-stage` と出たら、上の承認がまだ）
 6. `core/CHANGELOG.md` のその版の「未公開」を、公開した日に直す（エージェントに頼んでよい）
 7. 出したことをエージェントに伝える。外から取り込んで確かめる（`docs/stage2-log.md` に記録する）
 
